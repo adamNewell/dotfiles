@@ -101,13 +101,16 @@ prop () {
 
 install_dotfiles () {
   info 'installing dotfiles'
-
+  
   local overwrite_all=false backup_all=false skip_all=false
   
   find -H "$DOTFILES" -maxdepth 2 -name 'links.prop' -not -path '*.git*' | while read -r linkfile
   do
     while IFS= read -r line
     do
+        # Skip empty lines and lines starting with #
+        [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+        
         local src dst dir
         src=$(echo "$line" | cut -d '=' -f 1)
         dst=$(echo "$line" | cut -d '=' -f 2)
