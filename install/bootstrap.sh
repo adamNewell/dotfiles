@@ -106,6 +106,8 @@ install_dotfiles () {
   info 'installing dotfiles'
 
   local overwrite_all=false backup_all=false skip_all=false
+
+  source ~/.zprofile
   
   find -H "$DOTFILES" -maxdepth 2 -name 'links.prop' -not -path '*.git*' | while read -r linkfile
   do
@@ -126,7 +128,6 @@ install_dotfiles () {
   done
 }
 
-
 create_env_file () {
     if test -f "$HOME/.env.sh"; then
         success "$HOME/.env.sh file already exists, skipping"
@@ -137,8 +138,8 @@ create_env_file () {
 }
 
 install_deps () {
-    info 'Running install-deps.sh scripts'
-    find "$DOTFILES" -mindepth 2 -maxdepth 2 -name 'install-deps.sh' -type f | while read install_script
+    info 'Running deps.sh scripts'
+    find "$DOTFILES" -mindepth 2 -maxdepth 2 -name 'deps.sh' -type f | while read install_script
     do
         info "Running $install_script"
         if bash "$install_script"; then
@@ -149,9 +150,7 @@ install_deps () {
     done
 }
 
-
 ./install/xcode-select.sh
-./install/homebrew-install.sh
 
 create_env_file
 install_deps
