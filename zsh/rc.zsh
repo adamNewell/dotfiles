@@ -1,3 +1,5 @@
+source ~/.env.sh
+
 source_if_exists () {
     if test -r "$1"; then
         source "$1"
@@ -38,6 +40,6 @@ eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes/adamnewe
 eval "$(fzf --zsh)"
 
 eval $(thefuck --alias)
-eval $(zoxide init zsh)
+eval "$(zoxide init zsh)"
 
 source $DOTFILES/include/fzf-git.sh/fzf-git.sh

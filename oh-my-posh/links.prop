@@ -1,1 +1,1 @@
-$DOTFILES/oh-my-posh/adamnewell.toml=$(brew --prefix oh-my-posh)/themes/adam-newell.toml
+$DOTFILES/oh-my-posh/adamnewell.toml=$(brew --prefix oh-my-posh)/themes/adamnewell.toml
