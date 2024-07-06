@@ -103,21 +103,23 @@ install_dotfiles () {
   info 'installing dotfiles'
 
   local overwrite_all=false backup_all=false skip_all=false
-
-  find -H "$DOTFILES" -maxdepth 2 -name 'links.prop' -not -path '*.git*' | while read linkfile
+  
+  find -H "$DOTFILES" -maxdepth 2 -name 'links.prop' -not -path '*.git*' | while read -r linkfile
   do
-    cat "$linkfile" | while read line
+    while IFS= read -r line
     do
         local src dst dir
-        src=$(eval echo "$line" | cut -d '=' -f 1)
-        dst=$(eval echo "$line" | cut -d '=' -f 2)
-        dir=$(dirname $dst)
-
+        src=$(echo "$line" | cut -d '=' -f 1)
+        dst=$(echo "$line" | cut -d '=' -f 2)
+        src=$(eval echo "$src")
+        dst=$(eval echo "$dst")
+        dir=$(dirname "$dst")
         mkdir -p "$dir"
         link_file "$src" "$dst"
-    done
+    done < "$linkfile"
   done
 }
+
 
 create_env_file () {
     if test -f "$HOME/.env.sh"; then
@@ -145,9 +147,10 @@ install_deps () {
 ./xcode-select.sh
 ./homebrew-install.sh
 
+create_env_file
 install_dotfiles
 install_deps
-create_env_file
+
 
 echo ''
 echo ''
