@@ -101,7 +101,7 @@ prop () {
 
 install_dotfiles () {
   info 'installing dotfiles'
-  
+
   local overwrite_all=false backup_all=false skip_all=false
   
   find -H "$DOTFILES" -maxdepth 2 -name 'links.prop' -not -path '*.git*' | while read -r linkfile
@@ -156,5 +156,8 @@ install_deps
 
 
 echo ''
-echo ''
+echo 'Setting reasonable MacOS defaults...'
+source ./install/.macos
+
+
 success 'All installed!'

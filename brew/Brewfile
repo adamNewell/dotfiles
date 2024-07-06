@@ -11,7 +11,6 @@ brew 'docker'
 brew 'eza'
 brew 'findutils'
 brew 'fd'
-brew 'font-hack-nerd-font'
 brew 'fzf'
 brew 'gawk'
 brew 'git'
@@ -22,8 +21,9 @@ brew 'git-lfs'
 brew 'gnu-sed'
 brew 'grep'
 brew 'hub'
-brew 'jandedobbeleer/oh-my-posh/oh-my-posh'
+brew 'oh-my-posh'
 brew 'jq'
+brew 'mackup'
 brew 'mas'
 brew 'nvim'
 brew 'openssh'
@@ -44,12 +44,11 @@ brew 'zoxide'
 
 
 # Apps
-cask 'alacritty'
 cask 'angry-ip-scanner'
 cask 'drawio'
 cask 'firefox@developer-edition'
 cask 'kitty'
-cask 'logitech-g-hub'
+#cask 'logitech-g-hub'
 cask 'obsidian'
 cask 'sublime-text'
 cask 'visual-studio-code'
@@ -57,15 +56,8 @@ cask 'webex'
 cask 'zoom'
 
 # Fonts
-cask 'font-lato'
-cask 'font-open-sans'
-cask 'font-roboto'
-cask 'font-source-code-pro'
-cask 'font-source-code-pro-for-powerline'
-cask 'font-source-sans-pro'
-cask 'font-source-serif-pro'
 cask 'font-hack-nerd-font'
 
 # Mac App Store
-mas 'Serial', id: 877615577
+#mas 'Serial', id: 877615577
 

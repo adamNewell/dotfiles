@@ -11,7 +11,7 @@
     hist = log --graph --pretty=format:‘%Cred%h%Creset %s%C(yellow)%d%Creset %Cgreen(%cr)%Creset [%an]’ --abbrev-commit --date=relative
 
 [commit]
-    template = /Users/adamnewell/.git_commit.txt
+    template = /Users/$(whoami)/.gitcommit.tmpl
 
 [core]
     editor = vim -v +16 +startinsert
