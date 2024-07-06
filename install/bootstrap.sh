@@ -3,7 +3,10 @@
 # This script largely taken from https://github.com/andrew8088/dotfiles/blob/main/install/bootstrap.sh
 
 cd "$(dirname "$0")/.."
-DOTFILES=$(pwd -P)
+export DOTFILES=$(pwd -P)
+
+git submodule init
+git submodule update
 
 set -e
 
