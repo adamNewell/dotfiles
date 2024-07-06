@@ -3,7 +3,6 @@
 # Check if Homebrew is already installed
 if command -v brew >/dev/null 2>&1; then
     echo "Homebrew is already installed."
-    echo "Installing Homebrew packages..."
 else
     echo "Homebrew is not installed. Installing now..."
     
@@ -11,6 +10,7 @@ else
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     
     # Add Homebrew to PATH for the current session
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> /Users/$(whoami)/.zprofile
     eval "$(/opt/homebrew/bin/brew shellenv)"
 
     # Check if installation was successful
