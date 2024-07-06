@@ -151,8 +151,8 @@ install_deps () {
 ./install/homebrew-install.sh
 
 create_env_file
-install_dotfiles
 install_deps
+install_dotfiles
 
 
 echo ''

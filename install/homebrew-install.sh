@@ -26,3 +26,6 @@ else
 fi
 
 source ~/.zprofile
+
+echo "Run the following command and run the bootstrap again"
+echo '"eval "$(/opt/homebrew/bin/brew shellenv)"'
