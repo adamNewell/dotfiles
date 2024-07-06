@@ -144,8 +144,8 @@ install_deps () {
 }
 
 
-./xcode-select.sh
-./homebrew-install.sh
+./install/xcode-select.sh
+./install/homebrew-install.sh
 
 create_env_file
 install_dotfiles
