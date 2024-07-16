@@ -6,6 +6,8 @@ cd "$(dirname "$0")/.."
 export DOTFILES=$(pwd -P)
 export XDG_CONFIG_HOME=~/.config
 
+mkdir -p $XDG_CONFIG_HOME
+
 git submodule init
 git submodule update
 
