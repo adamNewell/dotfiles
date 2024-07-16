@@ -11,7 +11,7 @@ if ! command -v brew &> /dev/null; then
     echo "Homebrew is not installed. Installing Homebrew..."
 
     # Install Homebrew
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     
     # Add Homebrew to PATH for the current session
     eval "$(/opt/homebrew/bin/brew shellenv)"

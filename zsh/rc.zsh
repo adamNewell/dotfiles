@@ -6,10 +6,16 @@ source_if_exists () {
     fi
 }
 
+precmd() {
+    source $DOTFILES/zsh/aliases.zsh
+}
+
 for file in $DOTFILES/zsh/{path,exports,aliases,functions,extra}.zsh; do
     [ -r "$file" ] && [ -f "$file" ] && source_if_exists "$file";
 done;
 unset file;
+
+touch ~/.hushlogin
 
 # ZSH Completion
 zstyle ':completion:*' menu select=2
@@ -29,10 +35,6 @@ if test -z ${ZSH_HIGHLIGHT_DIR+x}; then
 else
     source $ZSH_HIGHLIGHT_DIR/zsh-syntax-highlighting.zsh
 fi
-
-precmd() {
-    source $DOTFILES/zsh/aliases.zsh
-}
 
 eval "$(oh-my-posh init zsh --config $(brew --prefix oh-my-posh)/themes/adamnewell.toml)"
 
