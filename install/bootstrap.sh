@@ -102,6 +102,15 @@ prop () {
    echo $PROP_VALUE
 }
 
+create_env_file () {
+    if test -f "$XDG_CONFIG_HOME/.env"; then
+        success "$XDG_CONFIG_HOME/.env file already exists, skipping"
+    else
+        echo "export DOTFILES=$DOTFILES" > $XDG_CONFIG_HOME/.env
+        success 'created .env file'
+    fi
+}
+
 install_deps () {
     info 'Running deps.sh scripts'
     find "$DOTFILES" -mindepth 2 -maxdepth 2 -name 'deps.sh' -type f | while read install_script
@@ -143,6 +152,7 @@ install_dotfiles () {
 
 ./install/xcode-select.sh
 
+create_env_file
 install_deps
 install_dotfiles
 

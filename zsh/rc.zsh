@@ -1,17 +1,19 @@
+source $HOME/config/env
+
 source_if_exists () {
     if test -r "$1"; then
         source "$1"
     fi
 }
 
-precmd() {
-    source $DOTFILES/zsh/aliases.zsh
-}
-
 for file in $DOTFILES/zsh/{path,exports,aliases,functions,extra}.zsh; do
     [ -r "$file" ] && [ -f "$file" ] && source_if_exists "$file";
 done;
 unset file;
+
+precmd() {
+    source $DOTFILES/zsh/aliases.zsh
+}
 
 touch ~/.hushlogin
 
