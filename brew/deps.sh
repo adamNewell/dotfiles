@@ -19,9 +19,6 @@ if ! command -v brew &> /dev/null; then
     # Check if installation was successful
     if command -v brew >/dev/null 2>&1; then
         echo "Homebrew has been successfully installed."
-            
-        echo "Homebrew has been added to your PATH for this session."
-        echo "Note: You may need to add Homebrew to your PATH permanently in your shell configuration file."
     else
         echo "Failed to install Homebrew. Please check your internet connection and try again."
         exit 1

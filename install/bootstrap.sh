@@ -95,7 +95,6 @@ link_file () {
   fi
 }
 
-
 prop () {
    PROP_KEY=$1
    PROP_FILE=$2
@@ -103,12 +102,23 @@ prop () {
    echo $PROP_VALUE
 }
 
+install_deps () {
+    info 'Running deps.sh scripts'
+    find "$DOTFILES" -mindepth 2 -maxdepth 2 -name 'deps.sh' -type f | while read install_script
+    do
+        info "Running $install_script"
+        if bash "$install_script"; then
+            success "Completed $install_script"
+        else
+            fail "Failed to run $install_script"
+        fi
+    done
+}
+
 install_dotfiles () {
   info 'installing dotfiles'
 
   local overwrite_all=false backup_all=false skip_all=false
-
-  source ~/.zprofile
   
   find -H "$DOTFILES" -maxdepth 2 -name 'links.prop' -not -path '*.git*' | while read -r linkfile
   do
@@ -129,37 +139,13 @@ install_dotfiles () {
   done
 }
 
-create_env_file () {
-    if test -f "$HOME/.env.sh"; then
-        success "$HOME/.env.sh file already exists, skipping"
-    else
-        echo "export DOTFILES=$DOTFILES" > $HOME/.env.sh
-        success 'created ~/.env.sh'
-    fi
-}
-
-install_deps () {
-    info 'Running deps.sh scripts'
-    find "$DOTFILES" -mindepth 2 -maxdepth 2 -name 'deps.sh' -type f | while read install_script
-    do
-        info "Running $install_script"
-        if bash "$install_script"; then
-            success "Completed $install_script"
-        else
-            fail "Failed to run $install_script"
-        fi
-    done
-}
-
 ./install/xcode-select.sh
 
-create_env_file
 install_deps
 install_dotfiles
 
-echo ''
-echo 'Setting reasonable MacOS defaults...'
+#echo ''
+#echo 'Setting reasonable MacOS defaults...'
 #source ./install/.macos
-
 
 success 'All installed!'
