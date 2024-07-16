@@ -223,4 +223,3 @@ fzf_comprun() {
 	  *)			fzf --preview "--preview 'bat -n --color=always --line-range :500 {}'" "$@" ;;
 	esac
 }
-

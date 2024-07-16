@@ -1,3 +1,2 @@
-require("anewell.core")
-require("anewell.lazy")
-
+require("adamNewell.core")
+require("adamNewell.lazy")
