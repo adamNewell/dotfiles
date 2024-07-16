@@ -119,6 +119,8 @@ install_dotfiles () {
   info 'installing dotfiles'
 
   local overwrite_all=false backup_all=false skip_all=false
+
+  eval "$(/opt/homebrew/bin/brew shellenv)"
   
   find -H "$DOTFILES" -maxdepth 2 -name 'links.prop' -not -path '*.git*' | while read -r linkfile
   do
