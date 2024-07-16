@@ -4,6 +4,7 @@
 
 cd "$(dirname "$0")/.."
 export DOTFILES=$(pwd -P)
+export XDG_CONFIG_HOME=~/.config
 
 git submodule init
 git submodule update
@@ -158,7 +159,7 @@ install_dotfiles
 
 echo ''
 echo 'Setting reasonable MacOS defaults...'
-source ./install/.macos
+#source ./install/.macos
 
 
 success 'All installed!'

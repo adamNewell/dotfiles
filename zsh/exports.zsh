@@ -1,4 +1,7 @@
 # Make vim the default editor.
+
+export XDG_CONFIG_HOME=$HOME/.config
+export ZDOTDIR=$XDG_CONFIG_HOME/zsh/
 export EDITOR='vim';
 
 DISABLE_UPDATE_PROMPT="true"
@@ -11,6 +14,7 @@ NODE_REPL_HISTORY_SIZE='32768';
 # Increase Bash history size. Allow 32³ entries; the default is 500.
 export HISTSIZE='32768';
 export HISTFILESIZE="${HISTSIZE}";
+
 # Omit duplicates and commands that begin with a space from history.
 export HISTCONTROL='ignoreboth';
 
@@ -30,8 +34,6 @@ export GREP_OPTIONS='--color=auto';
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh --no-use"
 
-# Path to your oh-my-zsh installation.
-export ZSH="/Users/$USER/.oh-my-zsh"
 export TERM="xterm-256color"
 export VISUAL="vim"
 
@@ -40,14 +42,12 @@ export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
 
 export UPDATE_ZSH_DAYS=7
 
-export HOMEBREW_CASK_OPTS="--appdir=$HOME/Applications"
-
 export FZF_DEFAULT_COMMAND="fd —-hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_COMMAND="FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd —-type=d hidden --strip-cwd-prefix --exclude .git"
 
 export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
-export FZF_ALT_C_OPTS=--preview 'eza --tree --color=always {} | head -200'"
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
 export BAT_THEME="Monokai Extended Bright"
 

@@ -6,8 +6,6 @@ source "$(dirname "$0")/../install/output_functions.sh"
 # Get the directory of the script
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-source ~/.zprofile
-
 # Check if Homebrew is installed
 if ! command -v brew &> /dev/null; then
     echo "Homebrew is not installed. Installing Homebrew..."
@@ -16,7 +14,6 @@ if ! command -v brew &> /dev/null; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     
     # Add Homebrew to PATH for the current session
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
     eval "$(/opt/homebrew/bin/brew shellenv)"
 
     # Check if installation was successful
