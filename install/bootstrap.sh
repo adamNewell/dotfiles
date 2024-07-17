@@ -147,8 +147,6 @@ install_dotfiles () {
   done
 }
 
-./install/xcode-select.sh
-
 create_env_file
 install_deps
 install_dotfiles

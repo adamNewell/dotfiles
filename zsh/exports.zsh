@@ -17,6 +17,7 @@ NODE_REPL_HISTORY_SIZE='32768';
 # Increase Bash history size. Allow 32³ entries; the default is 500.
 export HISTSIZE='32768';
 export HISTFILESIZE="${HISTSIZE}";
+export LESSHISTFILE=$XDG_STATE_HOME/less/history
 
 # Omit duplicates and commands that begin with a space from history.
 export HISTCONTROL='ignoreboth';
