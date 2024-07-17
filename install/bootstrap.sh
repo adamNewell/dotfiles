@@ -155,7 +155,7 @@ install_dotfiles
 #echo 'Setting reasonable MacOS defaults...'
 #source ./install/.macos
 
-brew services start yabai
-brew services start skhd
+yabai --start-service
+skhd --start-service
 
 success 'All installed!'
