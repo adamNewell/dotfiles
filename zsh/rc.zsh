@@ -22,6 +22,7 @@ precmd() {
     source $DOTFILES/zsh/aliases.zsh
 }
 
+# This removes the 'Last login...' line from iTerm2
 touch ~/.hushlogin
 
 # ZSH Completion
