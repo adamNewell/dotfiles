@@ -158,4 +158,6 @@ install_dotfiles
 yabai --start-service
 skhd --start-service
 
+echo 'You will need to restart your machine for all changes to take effect'
+
 success 'All installed!'
