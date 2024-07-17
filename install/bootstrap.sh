@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
-# This script largely taken from https://github.com/andrew8088/dotfiles/blob/main/install/bootstrap.sh
+# This script largely lifted from https://github.com/andrew8088/dotfiles/blob/main/install/bootstrap.sh
 
 cd "$(dirname "$0")/.."
 export DOTFILES=$(pwd -P)
 export XDG_CONFIG_HOME=~/.config
+export XDG_CACHE_HOME=$HOME/.cache
 
 mkdir -p $XDG_CONFIG_HOME
+mkdir -p $XDG_CACHE_HOME
 
 git submodule init
 git submodule update
@@ -158,6 +160,6 @@ install_dotfiles
 yabai --start-service
 skhd --start-service
 
-echo 'You will need to restart your machine for all changes to take effect'
-
 success 'All installed!'
+
+info 'You will need to restart your machine for all changes to take effect'

@@ -1,1 +1,3 @@
-$DOTFILES/zsh/rc.zsh=$HOME/.zshrc
+$DOTFILES/zsh/env.zsh=$HOME/.zshenv
+$DOTFILES/zsh/rc.zsh=$XDG_CONFIG_HOME/zsh/.zshrc
+$DOTFILES/zsh/profile.zsh=$XDG_CONFIG_HOME/zsh/.zprofile

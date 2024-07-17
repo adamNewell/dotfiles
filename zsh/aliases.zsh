@@ -10,3 +10,4 @@ alias cd="z"
 
 alias gst="git status"
 alias gp="git pull"
+alias gd="git diff"

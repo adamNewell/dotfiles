@@ -1,5 +1,12 @@
 source $HOME/.config/.env
 
+# Per https://unix.stackexchange.com/a/654684
+# HISTFILE is used by interactive shells only. Plus, 
+# non-interactive shells & external commands don't need this var. 
+# Hence, we put it in your .zshrc file, since that's sourced for 
+# each interactive shell, and don't export it.
+HISTFILE=$XDG_STATE_HOME/zsh/history
+
 source_if_exists () {
     if test -r "$1"; then
         source "$1"

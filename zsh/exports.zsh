@@ -1,13 +1,16 @@
-# Make vim the default editor.
+# Only vars used by external commands or non-interactive sub 
+# shells need to be exported. Note that you can export vars 
+# without assigning values to them.
+export XDG_CONFIG_HOME XDG_STATE_HOME XDG_CACHE_HOME
+export XDG_DATA_HOME=~/.local/share
 
-export XDG_CONFIG_HOME=$HOME/.config
-export ZDOTDIR=$XDG_CONFIG_HOME/zsh/
-export EDITOR='vim';
+export EDITOR=vim VISUAL=vim;
 
 DISABLE_UPDATE_PROMPT="true"
 
 # Enable persistent REPL history for `node`.
 NODE_REPL_HISTORY_FILE=~/.node_history;
+
 # Allow 32³ entries; the default is 1000.
 NODE_REPL_HISTORY_SIZE='32768';
 
