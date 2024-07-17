@@ -1,5 +1,7 @@
 #!/bin/bash
+
 # Generally speaking, this script will get converted into a gist and put behind a bit.ly link for use
+# Currently, link is: bit.ly/adamNewell-dotfiles
 
 # Check if Xcode Command Line Tools are already installed
 if xcode-select -p &> /dev/null; then
