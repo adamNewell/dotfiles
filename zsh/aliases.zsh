@@ -7,3 +7,6 @@ alias docker-images-update="docker images | grep -v REPOSITORY | awk '{print $1}
 alias eza="eza --long --icons --no-quotes --all --group-directories-first --octal-permissions --no-user --git"
 alias ll="eza"
 alias cd="z"
+
+alias gst="git status"
+alias gp="git pull"
