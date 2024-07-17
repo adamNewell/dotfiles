@@ -49,6 +49,7 @@ brew 'zoxide'
 
 # Apps
 cask 'angry-ip-scanner'
+cask 'bazecor'
 cask 'drawio'
 cask 'firefox@developer-edition'
 cask 'kitty'
