@@ -66,4 +66,4 @@ cask 'font-hack-nerd-font'
 cask 'font-meslo-lg-nerd-font'
 
 # Mac App Store
-#mas 'Serial', id: 877615577
+mas 'Serial', id: 877615577

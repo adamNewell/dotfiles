@@ -3,3 +3,9 @@ engine = icloud
 
 [applications_to_include]
 dirs
+
+[applications_to_ignore]
+kitty
+logitech-options
+mackup
+zoxide
