@@ -97,13 +97,6 @@ link_file () {
   fi
 }
 
-prop () {
-   PROP_KEY=$1
-   PROP_FILE=$2
-   PROP_VALUE=$(eval echo "$(cat $PROP_FILE | grep "$PROP_KEY" | cut -d'=' -f2)")
-   echo $PROP_VALUE
-}
-
 create_env_file () {
     if test -f "$XDG_CONFIG_HOME/.env"; then
         success "$XDG_CONFIG_HOME/.env file already exists, skipping"
@@ -161,5 +154,8 @@ install_dotfiles
 #echo ''
 #echo 'Setting reasonable MacOS defaults...'
 #source ./install/.macos
+
+brew services start yabai
+brew services start skhd
 
 success 'All installed!'

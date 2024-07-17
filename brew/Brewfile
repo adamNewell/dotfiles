@@ -1,5 +1,6 @@
 # Taps
 tap 'buo/cask-upgrade'
+tap 'koekeishiya/formulae'
 
 # Binaries
 brew 'ack'
@@ -35,15 +36,16 @@ brew 'pv'
 brew 'ripgrep'
 brew 'screen'
 brew 'ssh-copy-id'
+brew 'skhd'
 brew 'thefuck'
 brew 'tlrc'
 brew 'tree'
 brew 'wget'
+brew 'yabai'
 brew 'zopfli'
 brew 'zsh'
 brew 'zsh-completions'
 brew 'zoxide'
-
 
 # Apps
 cask 'angry-ip-scanner'
