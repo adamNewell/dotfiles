@@ -337,6 +337,7 @@ write_safari_pref() {
 # Function to write global preferences
 write_global_pref() {
     defaults write NSGlobalDomain "$1" "$2" "$3"
+}
 
 # Privacy: don't send search queries to Apple
 write_safari_pref "UniversalSearchEnabled" "-bool" false
@@ -557,5 +558,3 @@ defaults write com.apple.commerce AutoUpdateRestartRequired -bool true
 
 # Prevent Photos from opening automatically when devices are plugged in
 defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
-
-echo "Done. Note that some of these changes require a logout/restart to take effect."
