@@ -151,9 +151,9 @@ create_env_file
 install_deps
 install_dotfiles
 
-#echo ''
-#echo 'Setting reasonable MacOS defaults...'
-#source ./install/.macos
+echo ''
+echo 'Setting reasonable MacOS defaults...'
+source ./install/macos.sh
 
 yabai --start-service
 skhd --start-service
