@@ -1,7 +1,7 @@
 [storage]
 engine = icloud
 
-[applications_to_include]
+[applications_to_sync]
 dirs
 
 [applications_to_ignore]
