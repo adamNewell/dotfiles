@@ -96,7 +96,7 @@ defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 sudo defaults write /Library/Preferences/com.apple.loginwindow showInputMenu -bool true
 
 # Set the timezone; see `sudo systemsetup -listtimezones` for other values
-sudo systemsetup -settimezone "America/Denver" > /dev/null
+sudo systemsetup -settimezone "America/Denver" > /dev/null 2>&1 || true
 
 ###############################################################################
 # Energy saving                                                               #
