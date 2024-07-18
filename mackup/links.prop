@@ -1,2 +1,2 @@
-$DOTFILES/mackup/config=~/.mackup.cfg
-$DOTFILES/mackup/dirs=~/.mackup/dirs.cfg
+$DOTFILES/mackup/config=$XDG_CONFIG_HOME/mackup/.mackup.cfg
+$DOTFILES/mackup/dirs=~$XDG_CONFIG_HOME/mackup/dirs.cfg
