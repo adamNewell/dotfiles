@@ -160,4 +160,8 @@ skhd --start-service
 
 success 'All installed!'
 
+# Delete remaining artifacts of pre-configured machine
+rm ~/.viminfo
+rm ~/.zsh_history
+
 info 'You will need to restart your machine for all changes to take effect'

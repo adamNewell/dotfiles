@@ -96,7 +96,7 @@ defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 sudo defaults write /Library/Preferences/com.apple.loginwindow showInputMenu -bool true
 
 # Set the timezone; see `sudo systemsetup -listtimezones` for other values
-#sudo systemsetup -settimezone "America/Denver" > /dev/null
+sudo systemsetup -settimezone "America/Denver" > /dev/null
 
 ###############################################################################
 # Energy saving                                                               #
@@ -108,9 +108,8 @@ sudo pmset -a lidwake 1
 # Restart automatically on power loss
 sudo pmset -a autorestart 1
 
-# TODO: Research
 # Restart automatically if the computer freezes
-sudo systemsetup -setrestartfreeze on
+sudo systemsetup -setrestartfreeze on 2>/dev/null || true
 
 # Sleep the display after 15 minutes
 sudo pmset -a displaysleep 15
@@ -229,9 +228,8 @@ defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
 # Disable the warning before emptying the Trash
 defaults write com.apple.finder WarnOnEmptyTrash -bool false
 
-# TODO: Research
 # Show the ~/Library folder
-#chflags nohidden ~/Library && xattr -d com.apple.FinderInfo ~/Library
+chflags nohidden ~/Library && (xattr -l ~/Library | grep -q com.apple.FinderInfo && xattr -d com.apple.FinderInfo ~/Library || true)
 
 # Show the /Volumes folder
 sudo chflags nohidden /Volumes
@@ -295,9 +293,11 @@ defaults write com.apple.dock showhidden -bool true
 # Don’t show recent applications in Dock
 defaults write com.apple.dock show-recents -bool false
 
-#TODO: Research
 # Reset Launchpad, but keep the desktop wallpaper intact
-#find "${HOME}/Library/Application Support/Dock" -name "*-*.db" -maxdepth 1 -delete
+if [ -d "${HOME}/Library/Application Support/Dock" ]; then
+  find "${HOME}/Library/Application Support/Dock" -name "*-*.db" -maxdepth 1 -delete
+fi
+defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock
 
 # Add iOS & Watch Simulator to Launchpad
 sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app" "/Applications/Simulator.app"
@@ -328,80 +328,90 @@ defaults write com.apple.dock wvous-tr-modifier -int 0
 # Safari & WebKit                                                             #
 ###############################################################################
 
-# TODO: Research
-# # Privacy: don’t send search queries to Apple
-# defaults write com.apple.Safari UniversalSearchEnabled -bool false
-# defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+write_safari_pref() {
+    if ! defaults write com.apple.Safari "$1" "$2" "$3" 2>/dev/null; then
+        defaults write -g "$1" "$2" "$3"
+    fi
+}
 
-# # Press Tab to highlight each item on a web page
-# defaults write com.apple.Safari WebKitTabToLinksPreferenceKey -bool true
-# defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2TabsToLinks -bool true
+# Function to write global preferences
+write_global_pref() {
+    defaults write NSGlobalDomain "$1" "$2" "$3"
 
-# # Show the full URL in the address bar (note: this still hides the scheme)
-# defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+# Privacy: don't send search queries to Apple
+write_safari_pref "UniversalSearchEnabled" "-bool" false
+write_safari_pref "SuppressSearchSuggestions" "-bool" true
 
-# # Set Safari’s home page to `about:blank` for faster loading
-# defaults write com.apple.Safari HomePage -string "about:blank"
+# Press Tab to highlight each item on a web page
+write_safari_pref "WebKitTabToLinksPreferenceKey" "-bool" true
+write_safari_pref "com.apple.Safari.ContentPageGroupIdentifier.WebKit2TabsToLinks" "-bool" true
 
-# # Prevent Safari from opening ‘safe’ files automatically after downloading
-# defaults write com.apple.Safari AutoOpenSafeDownloads -bool false
+# Show the full URL in the address bar (note: this still hides the scheme)
+write_safari_pref "ShowFullURLInSmartSearchField" "-bool" true
 
-# # Allow hitting the Backspace key to go to the previous page in history
-# defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2BackspaceKeyNavigationEnabled -bool true
+# Set Safari's home page to `about:blank` for faster loading
+write_safari_pref "HomePage" "-string" "about:blank"
 
-# # Hide Safari’s bookmarks bar by default
-# defaults write com.apple.Safari ShowFavoritesBar -bool false
+# Prevent Safari from opening 'safe' files automatically after downloading
+write_safari_pref "AutoOpenSafeDownloads" "-bool" false
 
-# # Hide Safari’s sidebar in Top Sites
-# defaults write com.apple.Safari ShowSidebarInTopSites -bool false
+# Allow hitting the Backspace key to go to the previous page in history
+write_safari_pref "com.apple.Safari.ContentPageGroupIdentifier.WebKit2BackspaceKeyNavigationEnabled" "-bool" true
 
-# # Disable Safari’s thumbnail cache for History and Top Sites
-# defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 2
+# Hide Safari's bookmarks bar by default
+write_safari_pref "ShowFavoritesBar" "-bool" false
 
-# # Enable Safari’s debug menu
-# defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
+# Hide Safari's sidebar in Top Sites
+write_safari_pref "ShowSidebarInTopSites" "-bool" false
 
-# # Make Safari’s search banners default to Contains instead of Starts With
-# defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false
+# Disable Safari's thumbnail cache for History and Top Sites
+write_safari_pref "DebugSnapshotsUpdatePolicy" "-int" 2
 
-# # Remove useless icons from Safari’s bookmarks bar
-# defaults write com.apple.Safari ProxiesInBookmarksBar "()"
+# Enable Safari's debug menu
+write_safari_pref "IncludeInternalDebugMenu" "-bool" true
 
-# # Enable the Develop menu and the Web Inspector in Safari
-# defaults write com.apple.Safari IncludeDevelopMenu -bool true
-# defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
-# defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
+# Make Safari's search banners default to Contains instead of Starts With
+write_safari_pref "FindOnPageMatchesWordStartsOnly" "-bool" false
 
-# # Add a context menu item for showing the Web Inspector in web views
-# defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
+# Remove useless icons from Safari's bookmarks bar
+write_safari_pref "ProxiesInBookmarksBar" "-string" "()"
 
-# # Enable continuous spellchecking
-# defaults write com.apple.Safari WebContinuousSpellCheckingEnabled -bool true
+# Enable the Develop menu and the Web Inspector in Safari
+write_safari_pref "IncludeDevelopMenu" "-bool" true
+write_safari_pref "WebKitDeveloperExtrasEnabledPreferenceKey" "-bool" true
+write_safari_pref "com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled" "-bool" true
 
-# # Warn about fraudulent websites
-# defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+# Add a context menu item for showing the Web Inspector in web views
+write_global_pref "WebKitDeveloperExtras" "-bool" true
 
-# # Disable Java
-# defaults write com.apple.Safari WebKitJavaEnabled -bool false
-# defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled -bool false
-# defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabledForLocalFiles -bool false
+# Enable continuous spellchecking
+write_safari_pref "WebContinuousSpellCheckingEnabled" "-bool" true
 
-# # Block pop-up windows
-# defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
-# defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
+# Warn about fraudulent websites
+write_safari_pref "WarnAboutFraudulentWebsites" "-bool" true
 
-# # Enable “Do Not Track”
-# defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+# Disable Java
+write_safari_pref "WebKitJavaEnabled" "-bool" false
+write_safari_pref "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled" "-bool" false
+write_safari_pref "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabledForLocalFiles" "-bool" false
 
-# # Update extensions automatically
-# defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
+# Block pop-up windows
+write_safari_pref "WebKitJavaScriptCanOpenWindowsAutomatically" "-bool" false
+write_safari_pref "com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically" "-bool" false
+
+# Enable "Do Not Track"
+write_safari_pref "SendDoNotTrackHTTPHeader" "-bool" true
+
+# Update extensions automatically
+write_safari_pref "InstallExtensionUpdatesAutomatically" "-bool" true
 
 ###############################################################################
 # Spotlight                                                                   #
 ###############################################################################
 
 # Hide Spotlight tray-icon (and subsequent helper)
-#sudo chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
+# sudo chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
+
 # Disable Spotlight indexing for any volume that gets mounted and has not yet
 # been indexed before.
 # Use `sudo mdutil -i off "/Volumes/foo"` to stop indexing any volume.
