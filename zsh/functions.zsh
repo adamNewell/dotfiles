@@ -208,7 +208,7 @@ _fzf_compgen_path () {
 }
 
 # Use fd to generate the list for directory completion
-_ff_compgen_dir () {
+_fzf_compgen_dir () {
 	fd --type=d —-hidden --exclude .git . "$1"
 }
 
