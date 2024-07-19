@@ -12,7 +12,6 @@ yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
 sudo yabai --load-sa
 
 float_apps=(
-    "System Preferences"
     "Karabiner-Elements"
     "Karabiner-EventViewer"
     "Finder"
@@ -25,7 +24,9 @@ manage_off_apps=(
     "Spotify"
     "console"
     "Cisco Webex Start"
+    "Find My"
     "Private Internet Access"
+    "System Settings"
 )
 
 # Float system preferences and disable Yabai from resizing them

@@ -69,6 +69,13 @@ defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 # Only show scrollbars when scrolling
 defaults write NSGlobalDomain AppleShowScrollBars -string "WhenScrolling"
 
+# Add items to the menu bar
+defaults write com.apple.controlcenter Bluetooth -int 18
+defaults write com.apple.controlcenter BatteryShowPercentage -bool true
+defaults write com.apple.controlcenter Sound -int 18
+defaults write com.apple.controlcenter FocusModes -int 18
+defaults write com.apple.controlcenter DisplayModule -int 18
+
 ###############################################################################
 # Trackpad, mouse, keyboard, Bluetooth accessories, and input                 #
 ###############################################################################
