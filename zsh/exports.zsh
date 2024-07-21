@@ -1,8 +1,7 @@
 # Only vars used by external commands or non-interactive sub 
 # shells need to be exported. Note that you can export vars 
 # without assigning values to them.
-export XDG_CONFIG_HOME XDG_STATE_HOME XDG_CACHE_HOME
-export XDG_DATA_HOME=~/.local/share
+export XDG_CONFIG_HOME XDG_STATE_HOME XDG_CACHE_HOME XDG_DATA_HOME XDG_BIN_HOME XDG_LIB_HOME 
 
 export EDITOR=vim VISUAL=vim;
 
@@ -15,12 +14,8 @@ NODE_REPL_HISTORY_FILE=~/.node_history;
 NODE_REPL_HISTORY_SIZE='32768';
 
 # Increase Bash history size. Allow 32³ entries; the default is 500.
-export HISTSIZE='32768';
 export HISTFILESIZE="${HISTSIZE}";
 export LESSHISTFILE=$XDG_STATE_HOME/less/history
-
-# Omit duplicates and commands that begin with a space from history.
-export HISTCONTROL='ignoreboth';
 
 # Prefer US English and use UTF-8.
 export LANG='en_US.UTF-8';

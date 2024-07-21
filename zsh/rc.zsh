@@ -1,11 +1,6 @@
-source $HOME/.config/.env
+setopt INC_APPEND_HISTORY_TIME
 
-# Per https://unix.stackexchange.com/a/654684
-# HISTFILE is used by interactive shells only. Plus, 
-# non-interactive shells & external commands don't need this var. 
-# Hence, we put it in your .zshrc file, since that's sourced for 
-# each interactive shell, and don't export it.
-HISTFILE=$XDG_STATE_HOME/zsh/history
+source $HOME/.config/.env
 
 source_if_exists () {
     if test -r "$1"; then
@@ -18,12 +13,22 @@ for file in $DOTFILES/zsh/{path,exports,aliases,functions,extra}.zsh; do
 done;
 unset file;
 
+# Per https://unix.stackexchange.com/a/654684
+# HISTFILE is used by interactive shells only. Plus, 
+# non-interactive shells & external commands don't need this var. 
+# Hence, we put it and all HIST related variables in your .zshrc file, 
+# since that's sourced for each interactive shell, and don't export it.
+HISTFILE=$XDG_STATE_HOME/zsh/history
+HISTSIZE=32768
+HISTCONTROL='ignoreboth';
+SAVEHIST=$HISTSIZE
+
 precmd() {
     source $DOTFILES/zsh/aliases.zsh
 }
 
 # This removes the 'Last login...' line from iTerm2
-touch ~/.hushlogin
+#touch ~/.hushlogin
 
 # ZSH Completion
 zstyle ':completion:*' menu select=2
