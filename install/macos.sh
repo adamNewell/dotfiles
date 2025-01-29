@@ -324,12 +324,12 @@ sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator (
 # 12: Notification Center
 # 13: Lock Screen
 # Top left screen corner → Mission Control
-defaults write com.apple.dock wvous-tl-corner -int 2
-defaults write com.apple.dock wvous-tl-modifier -int 0
+#defaults write com.apple.dock wvous-tl-corner -int 2
+#defaults write com.apple.dock wvous-tl-modifier -int 0
 
 # Top right screen corner → Desktop
-defaults write com.apple.dock wvous-tr-corner -int 4
-defaults write com.apple.dock wvous-tr-modifier -int 0
+#defaults write com.apple.dock wvous-tr-corner -int 4
+#defaults write com.apple.dock wvous-tr-modifier -int 0
 
 ###############################################################################
 # Safari & WebKit                                                             #
@@ -393,7 +393,7 @@ write_safari_pref "com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperE
 write_global_pref "WebKitDeveloperExtras" "-bool" true
 
 # Enable continuous spellchecking
-write_safari_pref "WebContinuousSpellCheckingEnabled" "-bool" true
+write_safari_pref "WebContinuousSpellCheckingEnabled" "-bool" false
 
 # Warn about fraudulent websites
 write_safari_pref "WarnAboutFraudulentWebsites" "-bool" true
