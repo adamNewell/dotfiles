@@ -8,7 +8,7 @@ source_if_exists () {
     fi
 }
 
-for file in $DOTFILES/zsh/{path,exports,aliases,functions,extra}.zsh; do
+for file in $DOTFILES/zsh/{path,exports,aliases,functions,extra,local}.zsh; do
     [ -r "$file" ] && [ -f "$file" ] && source_if_exists "$file";
 done;
 unset file;

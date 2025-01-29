@@ -223,3 +223,20 @@ fzf_comprun() {
 	  *)			fzf --preview "--preview 'bat -n --color=always --line-range :500 {}'" "$@" ;;
 	esac
 }
+
+function gwctl_set_config() {
+  # Check if a file path is provided
+  if [[ -z "$1" ]]; then
+    echo "Error: No file path provided."
+    return 1
+  fi
+
+  # Check if the file path exists and is a file
+  if [[ -f "$1" ]]; then
+    export GWCTL_CONFIG="$1"
+    echo "GWCTL_CONFIG set to '$1'"
+  else
+    echo "Error: Invalid file path. '$1' does not exist or is not a file."
+    return 1
+  fi
+}
