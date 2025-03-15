@@ -1,0 +1,322 @@
+#compdef gwctl
+
+# zsh completion for gwctl
+# This file should be placed in a directory that's in your fpath, like:
+# ~/.zsh/completions/_gwctl
+
+# Enhanced completion menu display for gwctl only
+zstyle ':completion:*:*:gwctl:*:descriptions' format '%F{yellow}%B-- %d --%b%f'
+zstyle ':completion:*:*:gwctl:*:messages' format '%F{purple}%d%f'
+zstyle ':completion:*:*:gwctl:*:warnings' format '%F{red}No matches for:%f %d'
+zstyle ':completion:*:*:gwctl:*' group-name ''
+zstyle ':completion:*:*:gwctl:*' menu select=2
+zstyle ':completion:*:*:gwctl:*' verbose yes
+
+_gwctl() {
+  local -a commands subcmds
+
+  # Main commands with improved formatting
+  commands=(
+    'admin:Commands that require elevated permisions or additional security keys to use'
+    'cfg:Configuration commands submenu'
+    'clearsky:Clearsky specific commands'
+    'coapProxy:Send API requests directly to a driver'
+    'emmPower:Toggle an EMM power'
+    'gateway:Gateway specific commands'
+    'getHardwareVersions:List hardware version for all thread nodes'
+    'getMeshCredentials:Obtain mesh credentials for the site specified in the config'
+    'getSchedule:List gateway'"'"'s schedule'
+    'groups:Groups commands'
+    'help:Help about any command'
+    'listenEvents:Listen to events'
+    'ls:List all nodes for a device'
+    'node:Node related commands'
+    'nodes:Node related commands for a set of nodes'
+    'pushSlaacPrefix:Push the SLAAC prefix to the mesh without resetting the NCP'
+    'scenes:Scene commands'
+    'siteSummary:-- DEPRECATED -- Site summary is deprecated in favor of "ls -a"'
+    'skycamera:SkyCamera specific commands'
+    'sync:Ask the gateway to sync resources'
+    'thread:Thread commands'
+    'version:Print the application version'
+  )
+
+  # Subcommands for admin
+  local -a admin_subcmds
+  admin_subcmds=(
+    'ctlCfgGen:Generate a gwctl config'
+  )
+
+  # Subcommands for cfg
+  local -a cfg_subcmds
+  cfg_subcmds=(
+    'configDiff:Get node config file diffs'
+    'deleteNodeConfigFile:Delete a node configuration file'
+    'deployConfigSpec:Deploy a configuration specification to a site'
+    'deployNodeConfigAllDrivers:Deploys a configuration to the Gateway for all drivers'
+    'deployNodeConfiguration:Deploys a configuration to the Gateway for a node'
+    'getNodeConfigFile:Obtain the current node configuration'
+    'list:Obtain the name, modified time of a driver config'
+    'requestConfigPoll:Request a driver poll for config'
+    'requestConfigPollAll:Request all nodes poll configuration'
+  )
+
+  # Subcommands for clearsky
+  local -a clearsky_subcmds
+  clearsky_subcmds=(
+    'getDriverSchedule:Get all clearsky setpoint changes for a specific driver'
+    'getScheduleFilesStatus:Get all data related to clearsky schedule files'
+    'removeAll24HrQueueLocks:Remove 24Hr queue lock on all files'
+  )
+
+  # Subcommands for gateway
+  local -a gateway_subcmds
+  gateway_subcmds=(
+    'configureGcssRegion:Configure gcss for one of stage, na-prod'
+    'configureRegion:Configure gateway for one of stage, na-prod'
+    'configureResourceSpec:Configure a resource spec for coap'
+    'deleteCertAndKey:Delete a cert and key'
+    'deleteLastAutomationMapping:Delete the current last automation mapping from a gateway'
+    'deleteUpdateBlacklist:Delete update blacklist from the Gateway'
+    'deployIotRoot:Deploy an AWS IoT root certificate'
+    'deployMqttClientCerts:Deploy MQTT client certifiates to the Gateway'
+    'getCert:Get the certificate from a Gateway'
+    'getConfig:Get the configuration from a Gateway'
+    'getLastAutomationMapping:Get a current last automation mapping from a gateway'
+    'getManifest:Get the manifest from a Gateway'
+    'getResourceSpec:Get all resource specifications'
+    'getUpdateInfo:Get update information from the Gateway'
+    'listBindings:List gateway bindings'
+    'pushManifest:Push a manifest from a Gateway'
+    'queryNodeConfigFile:Query the node configuration to look for a new file in s3'
+    'reboot:Reboot the Gateway'
+    'restartGatewayApplication:Restart the Gateway application'
+    'setCertAndKey:Deploy a cert and key to a gateway'
+    'setConfig:Set a configuration value'
+    'ssh:Enable or disable ssh'
+    'update:Update the Gateway OS'
+    'updateCredentials:Request the Gateway update credentials'
+  )
+
+  # Subcommands for groups
+  local -a groups_subcmds
+  groups_subcmds=(
+    'list:List gateway'"'"'s groups'
+    'tint:Tint a gateway group'
+  )
+
+  # Subcommands for node
+  local -a node_subcmds
+  node_subcmds=(
+    'configDiff:Get node config file diffs'
+    'flushLogs:Flush logs for specified devices'
+    'getCfg:Get one or all config params'
+    'getDriverInfo:Query detailed information from a driver'
+    'identifyDriver:Identify a driver with specified mac address'
+    'info:List info for a node'
+    'remoteSerialCommand:Send a command to the node'"'"'s cmdline resource'
+    'requestFirmwareUpdate:Request a driver check its firmware version'
+    'reset:Reset a driver with specified mac address'
+    'sensorPrint:read the sensor readings and calibration settings of driver'
+    'setPostMs:Set the state post frequency for state posts'
+    'superbleach:Send a superbleach command to the node'"'"'s cmdline resource'
+    'unlock:Unlock a set of nodes'
+    'watch:Watch a specified device'
+  )
+
+  # Subcommands for nodes
+  local -a nodes_subcmds
+  nodes_subcmds=(
+    'bootInfo:List boot info for all nodes'
+    'flushLogsAll:flush driver logs from gateway'
+    'getMeshAddresses:Query mesh-address information from a driver'
+    'identify:LED identify a driver with specified mac address and repeat count'
+    'identifyLed:Turn the leds for all reporting nodes on'
+    'reset:Reset a driver with specified mac address'
+    'sensorPrintAll:Send a command to print sensor value and calibration to all drivers'
+    'serialCommandAll:Send a command to all'
+    'superbleachAll:Send a superbleach command to all node'"'"'s cmdline resource'
+    'unlock:Unlock a set of nodes'
+  )
+
+  # Subcommands for scenes
+  local -a scenes_subcmds
+  scenes_subcmds=(
+    'execute:Execute a gateway'"'"'s scene'
+    'list:List gateway'"'"'s scenes'
+  )
+
+  # Subcommands for skycamera
+  local -a skycamera_subcmds
+  skycamera_subcmds=(
+    'factoryReset:Factory Reset the Skycamera'
+    'getCalibration:Get the calibration from a Skycamera'
+    'queryState:Query state of apps'
+    'setCalibration:Set a calibration value'
+  )
+
+  # Subcommands for thread
+  local -a thread_subcmds
+  thread_subcmds=(
+    'clearUpdateFlag:Clear the update flag'
+    'config:Obtain the current mesh configuration'
+    'dbusOp:Manually execute a dbus operation for thread'
+    'getNetworkAddresses:Obtain the nid and meshAddress for each node'
+    'getPowerLevels:Get all the power levels via '"'"'thread status'"'"' from each node'
+    'getProp:Fetch a property from OpenThread'
+    'reset:Reset the thread coprocessor'
+    'setGatewayTxPower:Set the transmit power on the Gateway'
+    'setPowerLevels:Set the tx power level for one or more non Gateway nodes'
+    'setProp:Set a property'
+    'switchToOpenThread:Switch the thread stack to openthread'
+  )
+
+  # Global flags
+  local -a global_flags
+  global_flags=(
+    '--config:path to config file:_files'
+    '-h:help for gwctl'
+    '--help:help for gwctl'
+    '-r:flag to display raw output coming from the gateway'
+    '--raw:flag to display raw output coming from the gateway'
+  )
+
+  # Enhanced command description formatting
+  _arguments -C \
+    $global_flags \
+    "1: :{_describe -V 'gwctl command' commands}" \
+    "*::arg:->args"
+
+  case $state in
+    args)
+      case $line[1] in
+        admin)
+          _arguments "1: :{_describe -V 'admin subcommand' admin_subcmds}"
+          ;;
+        cfg)
+          _arguments "1: :{_describe -V 'configuration subcommand' cfg_subcmds}"
+          ;;
+        clearsky)
+          _arguments "1: :{_describe -V 'clearsky subcommand' clearsky_subcmds}"
+          ;;
+        gateway)
+          _arguments "1: :{_describe -V 'gateway subcommand' gateway_subcmds}"
+          ;;
+        groups)
+          _arguments "1: :{_describe -V 'groups subcommand' groups_subcmds}"
+          ;;
+        node)
+          _arguments "1: :{_describe -V 'node subcommand' node_subcmds}"
+          ;;
+        nodes)
+          _arguments "1: :{_describe -V 'nodes subcommand' nodes_subcmds}"
+          ;;
+        scenes)
+          _arguments "1: :{_describe -V 'scenes subcommand' scenes_subcmds}"
+          ;;
+        skycamera)
+          _arguments "1: :{_describe -V 'skycamera subcommand' skycamera_subcmds}"
+          ;;
+        thread)
+          _arguments "1: :{_describe -V 'thread subcommand' thread_subcmds}"
+          ;;
+        *)
+          # Handle specific subcommands that might need additional completion
+          case "$line[1] $line[2]" in
+            # Admin commands
+            "admin ctlCfgGen")
+              _arguments \
+                '--output=[Output file path]:file:_files' \
+                '--region=[Region to use]:region:(stage na-prod eu-prod)' \
+                '--site=[Site ID]:site ID'
+              ;;
+              
+            # Config commands
+            "cfg configDiff")
+              _arguments '*:node ID:_files'
+              ;;
+            "cfg deployConfigSpec")
+              _arguments \
+                '--file=[Config spec file]:file:_files' \
+                '--site=[Site ID]:site ID'
+              ;;
+            "cfg deployNodeConfiguration"|"cfg deployNodeConfigAllDrivers")
+              _arguments \
+                '--file=[Config file]:file:_files' \
+                '--force[Force deployment]'
+              ;;
+            "cfg getNodeConfigFile")
+              _arguments '*:node ID'
+              ;;
+              
+            # Gateway commands
+            "gateway setConfig")
+              _arguments \
+                '1:config key:(coapPort deviceInfo.siteName gatewaySettings.debug)' \
+                '2:config value'
+              ;;
+            "gateway ssh")
+              _arguments '1:state:(enable disable)'
+              ;;
+            "gateway update")
+              _arguments '--version=[Version to update to]:version'
+              ;;
+              
+            # Node commands
+            "node getCfg")
+              _arguments \
+                '1:node ID' \
+                '2::parameter name'
+              ;;
+            "node identifyDriver"|"node reset")
+              _arguments '1:node ID'
+              ;;
+            "node watch")
+              _arguments \
+                '1:node ID' \
+                '--interval=[Polling interval in ms]:interval'
+              ;;
+              
+            # Thread commands
+            "thread setPowerLevels")
+              _arguments \
+                '--level=[Power level (0-3)]:level:(0 1 2 3)' \
+                '--nodes=[Node IDs comma separated]:nodes'
+              ;;
+            "thread setGatewayTxPower")
+              _arguments '--level=[Power level (0-3)]:level:(0 1 2 3)'
+              ;;
+              
+            # Groups commands
+            "groups tint")
+              _arguments \
+                '1:group ID' \
+                '--brightness=[Brightness level]:brightness:(0 25 50 75 100)' \
+                '--hue=[Hue value]:hue' \
+                '--saturation=[Saturation value]:saturation'
+              ;;
+              
+            # Scenes commands
+            "scenes execute")
+              _arguments '1:scene ID'
+              ;;
+              
+            # Default completion for commands with a node ID parameter
+            "node "*|"nodes "*|"clearsky "*|"skycamera "*)
+              # Assume first argument is often a node ID
+              # This could be refined further with more specific patterns
+              _arguments '1:node ID'
+              ;;
+              
+            *)
+              # Default case for commands with no specific completion defined
+              _files
+              ;;
+          esac
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_gwctl "$@"

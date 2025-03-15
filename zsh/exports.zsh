@@ -4,6 +4,9 @@
 export XDG_CONFIG_HOME XDG_STATE_HOME XDG_CACHE_HOME XDG_DATA_HOME XDG_BIN_HOME XDG_LIB_HOME 
 
 export EDITOR=vim VISUAL=vim;
+export TERM="xterm-256color"
+export HOMEBREW_NO_ENV_HINTS=1
+
 
 DISABLE_UPDATE_PROMPT="true"
 
@@ -33,9 +36,6 @@ export GREP_OPTIONS='--color=auto';
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh --no-use"
 
-export TERM="xterm-256color"
-export VISUAL="vim"
-
 export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
 
@@ -51,3 +51,6 @@ export FZF_CTRL_T_OPTS="--preview '$show_file_or_dir_preview'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
 export BAT_THEME="Monokai Extended Bright"
+
+export LDFLAGS="-L/opt/homebrew/opt/mysql-client/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/mysql-client/include"

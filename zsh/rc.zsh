@@ -8,10 +8,20 @@ source_if_exists () {
     fi
 }
 
-for file in $DOTFILES/zsh/{path,exports,aliases,functions,extra,local}.zsh; do
-    [ -r "$file" ] && [ -f "$file" ] && source_if_exists "$file";
-done;
-unset file;
+fpath=($DOTFILES/zsh/completions $fpath)
+autoload -Uz compinit && compinit
+
+# Source either direct .zsh files or all .zsh files in directories
+for path in $DOTFILES/zsh/{path,exports,aliases,functions,extra,local}; do
+    if [[ -f "$path.zsh" ]]; then
+        source_if_exists "$path.zsh"
+    elif [[ -d "$path" ]]; then
+        for file in "$path"/*.zsh; do
+            source_if_exists "$file"
+        done
+    fi
+done
+unset path file
 
 # Per https://unix.stackexchange.com/a/654684
 # HISTFILE is used by interactive shells only. Plus, 
@@ -42,7 +52,6 @@ zstyle ':completion:*:*:docker-*:*' option-stacking yes
 autoload -U zmv
 autoload -U promptinit && promptinit
 autoload -U colors && colors
-autoload -Uz compinit && compinit
 
 if test -z ${ZSH_HIGHLIGHT_DIR+x}; then
 else
@@ -58,3 +67,4 @@ eval $(thefuck --alias)
 eval "$(zoxide init zsh)"
 
 source $DOTFILES/include/fzf-git.sh/fzf-git.sh
+

@@ -224,19 +224,43 @@ fzf_comprun() {
 	esac
 }
 
-function gwctl_set_config() {
-  # Check if a file path is provided
-  if [[ -z "$1" ]]; then
-    echo "Error: No file path provided."
-    return 1
-  fi
+gwctl() {
+  ~/.gwctl/gwctl --config $GWCTL_CONFIG "$@"
+}
 
-  # Check if the file path exists and is a file
-  if [[ -f "$1" ]]; then
-    export GWCTL_CONFIG="$1"
-    echo "GWCTL_CONFIG set to '$1'"
-  else
-    echo "Error: Invalid file path. '$1' does not exist or is not a file."
-    return 1
-  fi
+gwctl_set_config() {
+    local file="$1"
+    
+    # If the path is relative and doesn't start with ./ or ../
+    if [[ -n "$file" && ! "$file" =~ ^/ && ! "$file" =~ ^\.\.?/ ]]; then
+        # Use the GWCTL_CONFIG_DIR environment variable
+        if [[ -n "$GWCTL_CONFIG_DIR" && -f "$GWCTL_CONFIG_DIR/$file" ]]; then
+            # Use the file from the config directory
+            file="$GWCTL_CONFIG_DIR/$file"
+        fi
+    fi
+    
+    if [[ -z "$file" ]]; then
+        echo "Error: No file path provided."
+        return 1
+    fi
+    
+    if [[ -f "$file" ]]; then
+        export GWCTL_CONFIG="$file" 
+        echo "GWCTL_CONFIG set to '$file'"
+    else
+        echo "Error: Invalid file path. '$file' does not exist or is not a file."
+        return 1
+    fi
+}
+
+function whereami() {
+    # Try wired connection first, if not found use wireless
+    local private_ip=$(ipconfig getifaddr en1 || ipconfig getifaddr en0)
+    
+    # Get public IP
+    local public_ip=$(curl -s ifconfig.me)
+    
+    echo "Private IP: ${private_ip:-No private IP found}"
+    echo "Public IP: ${public_ip:-No public IP found}"
 }

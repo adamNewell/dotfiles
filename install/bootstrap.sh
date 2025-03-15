@@ -18,6 +18,7 @@ set -e
 echo ''
 
 # Source the shared output functions
+echo $(dirname "$0")/output_functions.sh
 source "$(dirname "$0")/output_functions.sh"
 
 link_file () {
@@ -155,7 +156,6 @@ echo ''
 echo 'Setting reasonable MacOS defaults...'
 source ./install/macos.sh
 
-yabai --start-service
 skhd --start-service
 
 success 'All installed!'

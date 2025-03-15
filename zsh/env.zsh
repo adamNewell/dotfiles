@@ -14,3 +14,8 @@
 # Set $ZDOTDIR here to be able to store your other Zsh dotfiles 
 # outside of $HOME. 
 ZDOTDIR=$XDG_CONFIG_HOME/zsh
+. "$HOME/.cargo/env"
+
+PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - zsh)"
