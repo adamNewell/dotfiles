@@ -1,0 +1,6 @@
+---
+package: brew
+stow:
+  target: ~
+  adopt:
+    - .config 
