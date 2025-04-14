@@ -74,6 +74,3 @@ ZSH_AUTOSUGGEST_COMPLETION_IGNORE="git *"
 
 # FZF options
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border"
-
-# Debug information
-print -P "%F{green}Zinit configuration loaded successfully%f"
