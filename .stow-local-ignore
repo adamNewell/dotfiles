@@ -1,0 +1,12 @@
+\.git
+\.gitignore
+\.gitmodules
+\.github
+^/install\.zsh
+^/restore\.zsh
+^/packages
+^/scripts
+^/mackup
+^/README\.md
+^/stow\.yaml
+^/\.stow-local-ignore 
