@@ -34,11 +34,22 @@ To restore your system from a previous backup:
 ```
 .
 ├── .config/           # XDG config directory
-├── .local/            # XDG data and state directories
-├── home/              # Files that belong in $HOME
-├── packages/          # Package-specific configurations
-└── scripts/           # Installation and utility scripts
-    └── lib/           # Shared shell functions
+│   ├── git/          # Git configuration
+│   ├── kitty/        # Kitty terminal configuration
+│   ├── nvim/         # Neovim configuration
+│   ├── skhd/         # SKHD key binding configuration
+│   └── zsh/          # Zsh configuration
+├── .local/           # XDG data and state directories
+├── docs/             # Documentation
+├── mackup/           # Mackup configuration files
+├── packages/         # Package-specific configurations
+│   ├── brew/        # Homebrew package management
+│   └── macos/       # macOS system configuration
+├── scripts/          # Installation and utility scripts
+│   └── lib/         # Shared shell functions
+├── install.zsh      # Main installation script
+├── restore.zsh      # Backup restoration script
+└── stow.yaml        # GNU Stow configuration
 ```
 
 ## Features
@@ -50,6 +61,12 @@ To restore your system from a previous backup:
 - GNU Stow for managing symlinks
 - macOS system preferences configuration
 - Backup and restore functionality
+- Zsh configuration with zinit plugin manager
+- Neovim configuration
+- Kitty terminal configuration
+- SKHD key binding management
+- Git configuration
+- Mackup for application settings backup
 
 ## Configuration
 
@@ -64,6 +81,32 @@ The installation process uses Homebrew to install packages defined in `packages/
 ### macOS Configuration
 
 System preferences are configured in `packages/macos/scripts/defaults.sh`.
+
+### Shell Configuration
+
+Zsh configuration is managed through zinit plugin manager, providing:
+- Command completion
+- Syntax highlighting
+- Autosuggestions
+- Git integration
+- Docker integration
+- FZF integration
+
+### Terminal Configuration
+
+Kitty terminal configuration includes:
+- Custom themes
+- Key bindings
+- Font settings
+- Window management
+
+### Editor Configuration
+
+Neovim configuration includes:
+- Plugin management
+- Language server support
+- Syntax highlighting
+- Code completion
 
 ## Backup and Restore
 
