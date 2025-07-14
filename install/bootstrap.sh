@@ -155,9 +155,6 @@ echo ''
 echo 'Setting reasonable MacOS defaults...'
 source ./install/macos.sh
 
-yabai --start-service
-skhd --start-service
-
 success 'All installed!'
 
 # Delete remaining artifacts of pre-configured machine

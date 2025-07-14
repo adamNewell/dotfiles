@@ -22,7 +22,7 @@ command -v pyenv >/dev/null 2>&1 && eval "$(pyenv virtualenv-init -)"
 source_if_exists() { [[ -f "$1" && -r "$1" ]] && source "$1" }
 
 # Source modular configurations
-for config_file in zinit path exports tools functions aliases extra local; do
+for config_file in plugins path exports tools functions aliases extra local; do
     if [[ -f "$ZDOTDIR/$config_file.zsh" ]]; then
         source_if_exists "$ZDOTDIR/$config_file.zsh"
     elif [[ -d "$ZDOTDIR/$config_file" ]]; then
