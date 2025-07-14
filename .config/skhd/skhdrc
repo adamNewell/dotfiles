@@ -1,0 +1,119 @@
+# Application shortcuts
+cmd - return : /Applications/kitty.app/Contents/MacOS/kitty --single-instance -d ~
+
+# Reload skhd configuration
+ctrl + alt - r : skhd --reload
+
+# Common Application Shortcuts
+cmd + shift - b : open -a "Arc"                    # Browser
+cmd + shift - s : open -a "Slack"                  # Communication
+cmd + shift - n : open -a "Notion"                 # Notes
+cmd + shift - v : open -a "Visual Studio Code"     # Code Editor
+cmd + shift - f : open -a "Finder"                 # File Manager
+cmd + shift - m : open -a "Messages"               # Messages
+cmd + shift - c : open -a "Calendar"               # Calendar
+
+# Quick System Actions
+cmd + shift - q : pmset displaysleepnow           # Sleep display
+alt + shift - q : osascript -e 'tell application "System Events" to keystroke "q" using {command down}'  # Quit current app
+cmd + shift - 4 : screencapture -i ~/Desktop/screenshot-$(date +%Y%m%d-%H%M%S).png  # Interactive screenshot
+
+# Audio Control
+fn + shift - f10 : osascript -e 'set volume output muted not (output muted of (get volume settings))'  # Toggle mute
+fn + shift - f11 : osascript -e 'set volume output volume ((output volume of (get volume settings)) - 5)'  # Volume down
+fn + shift - f12 : osascript -e 'set volume output volume ((output volume of (get volume settings)) + 5)'  # Volume up
+
+# Finder Quick Access
+cmd + shift - d : open ~/Desktop                   # Open Desktop
+cmd + shift - h : open ~                          # Open Home
+cmd + shift - p : open ~/Projects                 # Open Projects folder
+cmd + shift - w : open ~/Downloads                # Open Downloads
+
+# Advanced System Controls
+## Display
+cmd + alt - b : osascript -e 'tell application "System Events" to key code 145'  # Brightness up
+cmd + alt + shift - b : osascript -e 'tell application "System Events" to key code 144'  # Brightness down
+cmd + alt - n : osascript -e 'tell application "System Events" to key code 160'  # Night Shift toggle
+
+## Media Controls
+fn - f8 : osascript -e 'tell application "System Events" to key code 100'  # Previous track
+fn - f9 : osascript -e 'tell application "System Events" to key code 101'  # Next track
+fn - f7 : osascript -e 'tell application "System Events" to key code 97'   # Play/Pause
+
+# Window Management (without yabai)
+## Center window with reasonable size
+cmd + alt - c : osascript -e 'tell application "System Events" to tell (first application process whose frontmost is true) to set position of first window to {200, 100}' -e 'tell application "System Events" to tell (first application process whose frontmost is true) to set size of first window to {1200, 800}'
+
+## Quick window positions (using AppleScript)
+cmd + alt - left  : osascript -e 'tell application "System Events" to tell (first application process whose frontmost is true) to set position of first window to {0, 0}' -e 'tell application "System Events" to tell (first application process whose frontmost is true) to set size of first window to {960, 1080}'
+cmd + alt - right : osascript -e 'tell application "System Events" to tell (first application process whose frontmost is true) to set position of first window to {960, 0}' -e 'tell application "System Events" to tell (first application process whose frontmost is true) to set size of first window to {960, 1080}'
+
+# Advanced Scripting Examples
+## Toggle Do Not Disturb
+cmd + shift - 0 : osascript -e 'tell application "System Events" to tell process "Control Center" to click menu bar item "Control Center" of menu bar 1' -e 'delay 0.1' -e 'tell application "System Events" to click button "Focus" of window 1 of application process "Control Center"'
+
+## Quick note with date
+cmd + shift - t : osascript -e 'tell application "Notes" to activate' -e 'tell application "System Events" to keystroke "n" using command down' -e 'delay 0.1' -e 'tell application "System Events" to keystroke (current date as string)'
+
+## Custom Scripts (examples with hypothetical scripts)
+# Weather notification
+cmd + shift - w : ~/.local/bin/weather-notify
+
+# Toggle VPN
+cmd + shift - v : ~/.local/bin/toggle-vpn
+
+# Quick Timer
+:: timer @ : echo "Timer mode"
+timer < escape > ; default
+timer < 0x2F > : osascript -e 'display notification "5 minutes started" with title "Timer"' && sleep 300 && osascript -e 'display notification "Time is up!" with title "Timer"' ; default
+timer < 0x2B > : osascript -e 'display notification "10 minutes started" with title "Timer"' && sleep 600 && osascript -e 'display notification "Time is up!" with title "Timer"' ; default
+
+# Mode-based Shortcuts (like vim modes)
+:: default : echo "Default mode"
+:: resize @ : echo "Resize mode"
+:: launch @ : echo "Launch mode"
+
+# Enter different modes
+cmd - r ; resize
+cmd - a ; launch
+
+# Resize mode shortcuts
+resize < h > : osascript -e 'tell application "System Events" to tell (first application process whose frontmost is true) to set size of first window to {800, 600}'
+resize < j > : osascript -e 'tell application "System Events" to tell (first application process whose frontmost is true) to set size of first window to {1024, 768}'
+resize < k > : osascript -e 'tell application "System Events" to tell (first application process whose frontmost is true) to set size of first window to {1280, 800}'
+resize < l > : osascript -e 'tell application "System Events" to tell (first application process whose frontmost is true) to set size of first window to {1440, 900}'
+resize < escape > ; default
+
+# Launch mode shortcuts (quick app launch without modifiers)
+launch < b > : open -a "Arc"
+launch < s > : open -a "Slack"
+launch < v > : open -a "Visual Studio Code"
+launch < f > : open -a "Finder"
+launch < escape > ; default
+
+# Sequences (press keys in sequence, not together)
+a -> b : osascript -e 'display notification "You typed a then b!"'
+x -> y -> z : osascript -e 'display notification "XYZ sequence activated!"'
+
+# Complex window layouts (using AppleScript)
+cmd + alt - 1 : osascript ~/.config/skhd/layouts/coding.applescript
+cmd + alt - 2 : osascript ~/.config/skhd/layouts/writing.applescript
+cmd + alt - 3 : osascript ~/.config/skhd/layouts/communication.applescript
+
+# System Maintenance
+## Empty trash with confirmation
+shift + cmd - backspace : osascript -e 'tell application "Finder" to empty trash with security'
+
+## Rebuild Spotlight index
+cmd + shift + alt - i : sudo mdutil -E /
+
+## Flush DNS
+cmd + shift + alt - d : sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder
+
+# Fun Examples
+## Random wallpaper
+cmd + shift - 8 : osascript -e 'tell application "System Events" to tell current desktop to set picture to POSIX file "/Users/$USER/Pictures/Wallpapers/random.jpg"'
+
+## Text expansion
+cmd + shift - 1 : osascript -e 'tell application "System Events" to keystroke "Best regards,\n\nAdam"'
+
