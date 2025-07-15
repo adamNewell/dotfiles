@@ -18,3 +18,7 @@ export NODE_OPTIONS="--max-old-space-size=4096"  # Increase Node.js memory limit
 export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/npmrc"
 export NPM_CONFIG_CACHE="$XDG_CACHE_HOME/npm"
 export NPM_CONFIG_PREFIX="$HOME/.npm-global"
+export NODE_PATH="/opt/homebrew/lib/node_modules"
+
+# Yarn configuration
+command -v yarn >/dev/null 2>&1 && export YARN_PATH="$HOME/.yarn"

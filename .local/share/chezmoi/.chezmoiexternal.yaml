@@ -24,30 +24,11 @@
   executable: true
 {{- end }}
 
-# starship prompt (as fallback if not installed via cargo)
-{{- if and (or (eq $os "linux") (eq $os "darwin")) (not (lookPath "starship")) }}
-".local/bin/starship":
-  type: "file"
-  url: "https://github.com/starship/starship/releases/latest/download/starship-{{ $arch }}-unknown-{{ $os }}-gnu.tar.gz"
-  executable: true
-  filter:
-    command: "tar"
-    args: ["--extract", "--gzip", "--to-stdout", "starship"]
-{{- end }}
-
 # fzf (as fallback if not available)
 {{- if and (or (eq $os "linux") (eq $os "darwin")) (not (lookPath "fzf")) }}
 ".local/bin/fzf":
   type: "archive"
-  url: "https://github.com/junegunn/fzf/releases/download/0.44.1/fzf-0.44.1-{{ $os }}_{{ $arch }}.tar.gz"
-  executable: true
-{{- end }}
-
-# hadolint (Dockerfile linter)
-{{- if and (or (eq $os "linux") (eq $os "darwin")) (not (lookPath "hadolint")) }}
-".local/bin/hadolint":
-  type: "file"
-  url: "https://github.com/hadolint/hadolint/releases/latest/download/hadolint-{{ title $os }}-{{ $arch }}"
+  url: "https://github.com/junegunn/fzf/releases/download/v0.64.0/fzf-0.64.0-{{ $os }}_{{ $arch }}.tar.gz"
   executable: true
 {{- end }}
 

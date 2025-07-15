@@ -992,7 +992,6 @@ Configurations for ZSH, Tmux, Vim, and a few others are in dedicated sub-directo
 - [`.wgetrc`](https://github.com/Lissy93/dotfiles/blob/master/config/general/.wgetrc)
 - [`dnscrypt-proxy.toml`](https://github.com/Lissy93/dotfiles/blob/master/config/general/dnscrypt-proxy.toml)
 - [`gpg.conf`](https://github.com/Lissy93/dotfiles/blob/master/config/general/gpg.conf)
-- [`starship.toml`](https://github.com/Lissy93/dotfiles/blob/master/config/general/starship.toml)
 
 ---
 

@@ -58,13 +58,6 @@ cli_tools:
     brew: "sheldon"
     description: "Fast zsh plugin manager"
     
-  starship:
-    cargo: "starship"
-    brew: "starship"
-    apt: "starship"
-    scoop: "starship"
-    description: "Cross-shell prompt"
-    
   # Git utilities
   git-delta:
     cargo: "git-delta"

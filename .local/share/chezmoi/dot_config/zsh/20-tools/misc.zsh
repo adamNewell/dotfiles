@@ -17,6 +17,15 @@ command -v fzf >/dev/null 2>&1 && eval "$(fzf --zsh)"
 # ripgrep - use XDG config
 export RIPGREP_CONFIG_PATH="$XDG_CONFIG_HOME/ripgrep/config"
 
+# bat - syntax highlighting theme
+command -v bat >/dev/null 2>&1 && export BAT_THEME="Monokai Extended Bright"
+
+# Go programming language
+if command -v go >/dev/null 2>&1; then
+    export GOPATH="$HOME/go"
+    export GOROOT="/opt/homebrew/opt/go/libexec"
+fi
+
 # pyenv
 command -v pyenv >/dev/null 2>&1 && eval "$(pyenv init -)"
 command -v pyenv >/dev/null 2>&1 && eval "$(pyenv virtualenv-init -)"

@@ -36,9 +36,7 @@ golang 1.21.0
 Direct binary downloads for tools not available via package managers:
 - age (encryption)
 - chezmoi (bootstrapping)
-- starship (prompt)
 - fzf (fuzzy finder)
-- hadolint (Dockerfile linter)
 
 ### Platform-specific package lists
 - **macOS**: `packages/brew/Brewfile`
@@ -64,7 +62,6 @@ Direct binary downloads for tools not available via package managers:
 ### Shell Enhancement
 - Plugin management via sheldon
 - XDG-compliant configurations
-- Cross-platform prompt (oh-my-posh/starship)
 
 ## Usage
 

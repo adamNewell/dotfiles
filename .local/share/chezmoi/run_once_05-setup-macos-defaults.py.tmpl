@@ -153,7 +153,7 @@ def main():
     print("ℹ️  🍎 Setting up macOS defaults using YAML configuration...")
     
     # Load configuration
-    config_file = Path(__file__).parent / "macos-defaults.yaml"
+    config_file = Path("{{ .chezmoi.sourceDir }}") / "macos-defaults.yaml"
     with open(config_file, 'r') as f:
         config = yaml.safe_load(f)
     
