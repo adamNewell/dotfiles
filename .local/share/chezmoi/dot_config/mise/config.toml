@@ -1,0 +1,38 @@
+# mise configuration
+# https://mise.jdx.dev/configuration.html
+
+[settings]
+# Enable experimental features
+experimental = true
+
+# Auto-install tools when entering directories
+auto_install = true
+
+# Verbose output for debugging
+verbose = false
+
+# Use system SSL certificates
+ssl_verify = true
+
+# Plugin repositories
+[plugins]
+# Add custom plugin sources if needed
+
+# Environment variables
+[env]
+# Set environment variables for tools
+NODEJS_CHECK_SIGNATURES = "no"
+PYTHON_CONFIGURE_OPTS = "--enable-shared"
+
+# Tasks (optional - can define common development tasks)
+[tasks.install]
+description = "Install all tools from .tool-versions"
+run = "mise install"
+
+[tasks.update]
+description = "Update all tools to latest versions"
+run = "mise upgrade"
+
+[tasks.clean]
+description = "Clean up unused tool versions"
+run = "mise prune -y"

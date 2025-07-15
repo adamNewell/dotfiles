@@ -1,0 +1,19 @@
+# npm configuration
+# Location: $XDG_CONFIG_HOME/npm/npmrc
+
+# Cache and directories
+cache=${XDG_CACHE_HOME}/npm
+prefix=${HOME}/.npm-global
+
+# Security and behavior
+audit-level=moderate
+fund=false
+update-notifier=false
+
+# Performance
+prefer-offline=true
+progress=true
+
+# Package management
+save-exact=true
+engine-strict=true

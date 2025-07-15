@@ -1,0 +1,133 @@
+#!/bin/bash
+# Install universal CLI tools via cargo, npm, etc.
+# Cross-platform tool installation
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
+success() { echo -e "${GREEN}✅ $1${NC}"; }
+warn() { echo -e "${YELLOW}⚠️  $1${NC}"; }
+error() { echo -e "${RED}❌ $1${NC}" >&2; }
+
+# Install tools via mise (if available and .tool-versions exists)
+if command -v mise >/dev/null 2>&1 && [[ -f "$HOME/.tool-versions" ]]; then
+    info "🛠️  Installing tools via mise..."
+    mise install
+    success "mise tools installed"
+fi
+
+# Install Rust-based CLI tools via cargo
+if command -v cargo >/dev/null 2>&1; then
+    info "🦀 Installing Rust CLI tools via cargo..."
+    
+    # List of essential Rust CLI tools
+    RUST_TOOLS=(
+        "sheldon"         # Zsh plugin manager
+        "eza"            # Modern ls replacement
+        "zoxide"         # Smart cd replacement  
+        "ripgrep"        # Fast grep replacement
+        "fd-find"        # Modern find replacement
+        "bat"            # Cat with syntax highlighting
+        "git-delta"      # Better git diff viewer
+        "tealdeer"       # tldr client (Rust implementation)
+        "starship"       # Cross-shell prompt (optional)
+    )
+    
+    for tool in "${RUST_TOOLS[@]}"; do
+        # Extract binary name (remove package suffixes)
+        binary_name=$(echo "$tool" | sed 's/-find$//' | sed 's/tealdeer/tldr/')
+        
+        if ! command -v "$binary_name" >/dev/null 2>&1; then
+            info "Installing $tool..."
+            if cargo install "$tool"; then
+                success "$tool installed"
+            else
+                warn "Failed to install $tool"
+            fi
+        else
+            info "$binary_name already installed"
+        fi
+    done
+else
+    warn "cargo not found - skipping Rust tool installation"
+fi
+
+# Install Node.js-based tools via npm (if available)
+if command -v npm >/dev/null 2>&1; then
+    info "📦 Installing Node.js CLI tools via npm..."
+    
+    NODE_TOOLS=(
+        "tldr"           # Simplified man pages
+        "@antfu/ni"      # Universal package manager interface
+    )
+    
+    for tool in "${NODE_TOOLS[@]}"; do
+        # Extract binary name for checking
+        binary_name=$(echo "$tool" | sed 's/.*\///')
+        
+        if ! command -v "$binary_name" >/dev/null 2>&1; then
+            info "Installing $tool..."
+            if npm install -g "$tool"; then
+                success "$tool installed"
+            else
+                warn "Failed to install $tool"
+            fi
+        else
+            info "$binary_name already installed"
+        fi
+    done
+else
+    warn "npm not found - skipping Node.js tool installation"
+fi
+
+# Install Go-based tools (if go is available)
+if command -v go >/dev/null 2>&1; then
+    info "🐹 Installing Go CLI tools..."
+    
+    GO_TOOLS=(
+        "github.com/mikefarah/yq/v4@latest"     # YAML processor
+        "github.com/junegunn/fzf@latest"        # Fuzzy finder
+    )
+    
+    for tool in "${GO_TOOLS[@]}"; do
+        tool_name=$(basename "$(echo "$tool" | cut -d'@' -f1)")
+        
+        if ! command -v "$tool_name" >/dev/null 2>&1; then
+            info "Installing $tool_name..."
+            if go install "$tool"; then
+                success "$tool_name installed"
+            else
+                warn "Failed to install $tool_name"
+            fi
+        else
+            info "$tool_name already installed"
+        fi
+    done
+else
+    warn "go not found - skipping Go tool installation"
+fi
+
+# Post-installation setup
+info "🔧 Running post-installation setup..."
+
+# Initialize sheldon if it was installed
+if command -v sheldon >/dev/null 2>&1; then
+    info "Initializing sheldon..."
+    if sheldon init --shell zsh >/dev/null 2>&1; then
+        success "sheldon initialized"
+    fi
+fi
+
+# Initialize zoxide if it was installed  
+if command -v zoxide >/dev/null 2>&1; then
+    info "zoxide installed - will be initialized in shell config"
+fi
+
+success "Universal tools installation complete!"

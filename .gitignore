@@ -1,2 +1,39 @@
+# Package lock files
 **/*lock.json
-.DS_STORE
+**/package-lock.json
+**/yarn.lock
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Shell history and cache files
+.zsh_history
+.zcompdump*
+.zsh_sessions/
+.zshrc.zwc
+
+# Editor temporary files
+*.swp
+*.swo
+*~
+.viminfo
+
+# Local environment files
+.env.local
+.env.*.local
+
+# chezmoi state (not needed in repo)
+.local/share/chezmoi/chezmoistate.boltdb
+
+# Logs
+*.log
+
+# Temporary files
+.tmp/
+temp/

@@ -1,0 +1,75 @@
+# chezmoi external downloads
+# Direct binary downloads for tools that aren't easily available via package managers
+# https://www.chezmoi.io/reference/special-files-and-directories/chezmoiexternal-format/
+
+# Only download if we're on a supported platform and the tool isn't already installed
+{{- $os := .chezmoi.os -}}
+{{- $arch := .chezmoi.arch -}}
+
+# age encryption tool (if not available via package manager)
+{{- if and (or (eq $os "linux") (eq $os "darwin")) (not (lookPath "age")) }}
+".local/bin/age":
+  type: "archive"
+  url: "https://github.com/FiloSottile/age/releases/download/v1.1.1/age-v1.1.1-{{ $os }}-{{ $arch }}.tar.gz"
+  stripComponents: 1
+  include: ["age"]
+  executable: true
+{{- end }}
+
+# chezmoi itself (for bootstrapping on systems without package managers)
+{{- if not (lookPath "chezmoi") }}
+".local/bin/chezmoi":
+  type: "file" 
+  url: "https://github.com/twpayne/chezmoi/releases/latest/download/chezmoi-{{ $os }}-{{ $arch }}"
+  executable: true
+{{- end }}
+
+# starship prompt (as fallback if not installed via cargo)
+{{- if and (or (eq $os "linux") (eq $os "darwin")) (not (lookPath "starship")) }}
+".local/bin/starship":
+  type: "file"
+  url: "https://github.com/starship/starship/releases/latest/download/starship-{{ $arch }}-unknown-{{ $os }}-gnu.tar.gz"
+  executable: true
+  filter:
+    command: "tar"
+    args: ["--extract", "--gzip", "--to-stdout", "starship"]
+{{- end }}
+
+# fzf (as fallback if not available)
+{{- if and (or (eq $os "linux") (eq $os "darwin")) (not (lookPath "fzf")) }}
+".local/bin/fzf":
+  type: "archive"
+  url: "https://github.com/junegunn/fzf/releases/download/0.44.1/fzf-0.44.1-{{ $os }}_{{ $arch }}.tar.gz"
+  executable: true
+{{- end }}
+
+# hadolint (Dockerfile linter)
+{{- if and (or (eq $os "linux") (eq $os "darwin")) (not (lookPath "hadolint")) }}
+".local/bin/hadolint":
+  type: "file"
+  url: "https://github.com/hadolint/hadolint/releases/latest/download/hadolint-{{ title $os }}-{{ $arch }}"
+  executable: true
+{{- end }}
+
+# shellcheck (shell script linter) - if not available via package manager
+{{- if and (eq $os "linux") (not (lookPath "shellcheck")) }}
+".local/bin/shellcheck":
+  type: "archive"
+  url: "https://github.com/koalaman/shellcheck/releases/download/v0.9.0/shellcheck-v0.9.0.{{ $os }}.{{ $arch }}.tar.xz"
+  stripComponents: 1
+  include: ["shellcheck-v0.9.0/shellcheck"]
+  executable: true
+{{- end }}
+
+# Include platform-specific externals
+{{- if eq $os "windows" }}
+# Windows-specific tools that aren't available via winget/scoop
+{{- end }}
+
+{{- if eq $os "darwin" }}
+# macOS-specific tools that might not be in Homebrew
+{{- end }}
+
+{{- if eq $os "linux" }}
+# Linux-specific tools
+{{- end }}

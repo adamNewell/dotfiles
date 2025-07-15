@@ -1,0 +1,28 @@
+# Ripgrep configuration file
+# Location: $XDG_CONFIG_HOME/ripgrep/config
+
+# Search behavior
+--smart-case
+--hidden
+--follow
+--glob=!.git/*
+--glob=!node_modules/*
+--glob=!target/*
+--glob=!.DS_Store
+
+# Output formatting
+--colors=line:fg:yellow
+--colors=line:style:bold
+--colors=path:fg:green
+--colors=path:style:bold
+--colors=match:fg:red
+--colors=match:style:bold
+
+# Performance
+--max-columns=150
+--max-filesize=1M
+
+# File type associations
+--type-add=web:*.{html,css,js,jsx,ts,tsx,vue,svelte}
+--type-add=config:*.{json,yaml,yml,toml,ini,conf}
+--type-add=docs:*.{md,txt,rst,org}

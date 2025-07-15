@@ -1,0 +1,62 @@
+#!/bin/bash
+# Setup shell-specific tools and configurations
+# Runs when this script or shell configs change
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
+success() { echo -e "${GREEN}✅ $1${NC}"; }
+warn() { echo -e "${YELLOW}⚠️  $1${NC}"; }
+
+# Setup sheldon (Zsh plugin manager)
+if command -v sheldon >/dev/null 2>&1; then
+    info "🐚 Setting up sheldon plugins..."
+    
+    # Lock and install plugins
+    if sheldon lock 2>/dev/null; then
+        success "sheldon plugins locked and installed"
+    else
+        warn "Failed to install sheldon plugins"
+    fi
+else
+    warn "sheldon not found - install universal tools first"
+fi
+
+# Setup fzf integration (if available)
+if command -v fzf >/dev/null 2>&1; then
+    info "🔍 Setting up fzf integration..."
+    
+    # Source fzf shell integration if available
+    {{- if eq .chezmoi.os "darwin" }}
+    FZF_SHARE="/opt/homebrew/share/fzf"
+    {{- else if eq .chezmoi.os "linux" }}
+    FZF_SHARE="/usr/share/fzf"
+    {{- end }}
+    
+    if [[ -d "$FZF_SHARE" ]]; then
+        success "fzf shell integration available at $FZF_SHARE"
+    fi
+fi
+
+# Setup oh-my-posh theme (if available)
+if command -v oh-my-posh >/dev/null 2>&1; then
+    info "🎨 oh-my-posh is available"
+    
+    # Theme will be configured via zsh config
+    success "oh-my-posh ready"
+fi
+
+# Ensure necessary directories exist
+mkdir -p "$HOME/.local/bin"
+mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/zsh"
+mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/zsh"
+
+success "Shell tools setup complete!"

@@ -1,0 +1,53 @@
+# System-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Cache directories
+.cache/
+.npm/
+.yarn/
+node_modules/
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS-specific files
+{{- if eq .chezmoi.os "darwin" }}
+.CFUserTextEncoding
+{{- end }}
+
+{{- if eq .chezmoi.os "linux" }}
+.xsession-errors
+{{- end }}
+
+# Personal sensitive files
+.env
+.env.local
+.env.production
+.env.development
+*.key
+*.pem
+*.p12
+*.crt
+*.csr
+
+# Git files (managed separately)
+.gitconfig
+.gitignore_global
+
+# SSH keys (managed separately)
+.ssh/

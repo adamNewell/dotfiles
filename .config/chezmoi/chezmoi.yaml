@@ -1,0 +1,27 @@
+# chezmoi configuration
+# https://www.chezmoi.io/reference/configuration-file/
+
+sourceDir: "{{ .chezmoi.workingTree }}/.local/share/chezmoi"
+
+# Template settings
+template:
+  options: ["missingkey=error"]
+
+# Data for templates
+data:
+  name: "Adam Newell"
+  email: "{{ .email }}"
+  
+# Git configuration
+git:
+  autoCommit: false
+  autoPush: false
+
+# Diff settings  
+diff:
+  exclude: []
+  
+# Update settings
+update:
+  command: "git" 
+  args: ["pull", "--rebase"]

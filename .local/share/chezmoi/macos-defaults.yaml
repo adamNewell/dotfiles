@@ -1,0 +1,103 @@
+# macOS defaults configuration
+# Structured, readable, and maintainable
+
+general:
+  # UI/UX
+  sidebar_icon_size: 2
+  disable_focus_ring_animation: true
+  expand_save_panels: true
+  save_to_disk_not_icloud: true
+  
+  # Developer-friendly text settings
+  disable_smart_dashes: true
+  disable_smart_periods: true  
+  disable_smart_quotes: true
+  
+  # Scrollbars
+  show_scrollbars: "WhenScrolling"
+
+input:
+  # Trackpad
+  tap_to_click: true
+  
+  # Keyboard
+  full_keyboard_access: true
+
+display:
+  # Screenshots
+  screenshot_location: "~/Downloads"
+  screenshot_format: "png"
+  disable_screenshot_shadow: true
+  
+  # Security
+  require_password_immediately: true
+
+finder:
+  # Behavior
+  allow_quit_menu: true
+  disable_animations: true
+  default_location: "Downloads"
+  
+  # Visibility
+  show_hidden_files: true
+  show_all_extensions: true
+  show_status_bar: true
+  keep_folders_on_top: true
+  
+  # Warnings
+  disable_extension_change_warning: true
+  
+  # Network/USB
+  no_dsstore_on_network: true
+  no_dsstore_on_usb: true
+  
+  # View
+  default_view: "column"
+
+dock:
+  icon_size: 36
+  minimize_effect: "scale"
+  minimize_to_app_icon: true
+  show_app_indicators: true
+  disable_launch_animation: true
+  fast_mission_control: 0.1
+  disable_space_rearranging: true
+  translucent_hidden_apps: true
+  hide_recent_apps: true
+
+safari:
+  show_full_url: true
+  homepage: "about:blank"
+  disable_auto_open_safe_downloads: true
+  enable_develop_menu: true
+  disable_java: true
+  block_popups: true
+  enable_do_not_track: true
+
+activity_monitor:
+  show_main_window: true
+  dock_icon_cpu_usage: true
+  show_all_processes: true
+  sort_by_cpu: true
+
+text_edit:
+  plain_text_mode: true
+  utf8_encoding: true
+
+app_store:
+  automatic_updates: true
+  daily_update_check: true
+  auto_download_updates: true
+  critical_updates: true
+
+photos:
+  disable_auto_open: true
+
+system:
+  # Energy (requires sudo)
+  lid_wake: true
+  auto_restart_on_power_loss: true
+  display_sleep_minutes: 15
+  
+  # Timezone
+  timezone: "America/Denver"

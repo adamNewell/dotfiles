@@ -1,0 +1,277 @@
+# Universal package definitions for cross-platform installation
+# Used by chezmoi templates to generate platform-specific package lists
+
+# Core development languages (managed via mise/asdf)
+languages:
+  nodejs: "22.11.0"
+  python: "3.12.0" 
+  rust: "1.75.0"
+  golang: "1.21.0"
+
+# Essential CLI tools with cross-platform availability
+cli_tools:
+  # Modern file utilities
+  eza:
+    cargo: "eza"
+    brew: "eza"
+    apt: "eza"
+    description: "Modern ls replacement with colors and icons"
+    
+  fd:
+    cargo: "fd-find"
+    brew: "fd"
+    apt: "fd-find"
+    dnf: "fd-find"
+    pacman: "fd"
+    scoop: "fd"
+    description: "Modern find replacement"
+    
+  ripgrep:
+    cargo: "ripgrep"
+    brew: "ripgrep"
+    apt: "ripgrep"
+    dnf: "ripgrep"
+    pacman: "ripgrep"
+    scoop: "ripgrep"
+    description: "Fast grep replacement"
+    
+  bat:
+    cargo: "bat"
+    brew: "bat"
+    apt: "bat"
+    dnf: "bat"
+    pacman: "bat"
+    scoop: "bat"
+    description: "Cat with syntax highlighting"
+    
+  zoxide:
+    cargo: "zoxide"
+    brew: "zoxide"
+    apt: "zoxide"
+    dnf: "zoxide"
+    pacman: "zoxide"
+    description: "Smart cd replacement with frecency"
+
+  # Shell and terminal
+  sheldon:
+    cargo: "sheldon"
+    brew: "sheldon"
+    description: "Fast zsh plugin manager"
+    
+  starship:
+    cargo: "starship"
+    brew: "starship"
+    apt: "starship"
+    scoop: "starship"
+    description: "Cross-shell prompt"
+    
+  # Git utilities
+  git-delta:
+    cargo: "git-delta"
+    brew: "git-delta"
+    apt: "git-delta"
+    dnf: "git-delta"
+    scoop: "delta"
+    description: "Better git diff viewer"
+    
+  lazygit:
+    brew: "lazygit"
+    apt: "lazygit"
+    scoop: "lazygit"
+    description: "Terminal UI for git"
+    
+  # Data processing
+  jq:
+    brew: "jq"
+    apt: "jq"
+    dnf: "jq"
+    pacman: "jq"
+    scoop: "jq"
+    mise: "jq"
+    description: "JSON processor"
+    
+  yq:
+    brew: "yq"
+    go: "github.com/mikefarah/yq/v4@latest"
+    mise: "yq"
+    description: "YAML processor"
+    
+  # Documentation and help
+  tldr:
+    cargo: "tealdeer"
+    npm: "tldr"
+    brew: "tlrc"
+    apt: "tldr"
+    description: "Simplified man pages"
+
+  # Fuzzy finder and selection
+  fzf:
+    brew: "fzf"
+    apt: "fzf"
+    dnf: "fzf"
+    pacman: "fzf"
+    go: "github.com/junegunn/fzf@latest"
+    description: "Fuzzy finder for command line"
+
+# Platform-specific system packages
+platform_packages:
+  # macOS via Homebrew
+  darwin:
+    # Core system utilities
+    system:
+      - curl
+      - wget
+      - tree
+      - parallel
+      - pigz
+      - zopfli
+      - p7zip
+      - screen
+      - ssh-copy-id
+      - thefuck
+      - trash
+      - pv
+      - openssh
+      - mas
+      - mackup
+      - btop
+      
+    # Development tools
+    development:
+      - git
+      - git-extras
+      - git-flow
+      - git-lfs
+      - hub
+      - tmux
+      - neovim
+      - docker
+      - node
+      
+    # Enhanced shell tools
+    shell:
+      - bash
+      - bash-completion@2
+      - zsh
+      - zsh-completions
+      - oh-my-posh
+      - findutils
+      - gnu-sed
+      - grep
+      - gawk
+      
+    # Applications
+    applications:
+      - kitty
+      - firefox@developer-edition
+      - obsidian
+      - angry-ip-scanner
+      - bazecor
+      - discord
+      - sublime-text
+      - visual-studio-code
+      - drawio
+      - webex
+      - zoom
+      
+    # Fonts
+    fonts:
+      - font-hack-nerd-font
+      - font-meslo-lg-nerd-font
+      
+    # Mac App Store apps
+    mas:
+      Serial: 877615577
+
+  # Linux distributions
+  linux:
+    # Debian/Ubuntu packages
+    debian:
+      essential:
+        - build-essential
+        - curl
+        - wget
+        - git
+        - zsh
+        - tmux
+        - neovim
+        - tree
+        - unzip
+        - software-properties-common
+        - ca-certificates
+        - gnupg
+        - lsb-release
+        - apt-transport-https
+        
+    # Fedora/RHEL packages  
+    fedora:
+      essential:
+        - gcc
+        - gcc-c++
+        - curl
+        - wget
+        - git
+        - zsh
+        - tmux
+        - neovim
+        - tree
+        - unzip
+        - dnf-plugins-core
+        - ca-certificates
+        
+    # Arch Linux packages
+    arch:
+      essential:
+        - base-devel
+        - curl
+        - wget
+        - git
+        - zsh
+        - tmux
+        - neovim
+        - tree
+        - unzip
+        - ca-certificates
+
+  # Windows packages
+  windows:
+    # Windows Package Manager (winget)
+    winget:
+      - Git.Git
+      - Neovim.Neovim
+      - Microsoft.WindowsTerminal
+      - JanDeDobbeleer.OhMyPosh
+      - Kitty.Kitty
+      - Docker.DockerDesktop
+      - Mozilla.Firefox.DeveloperEdition
+      - Obsidian.Obsidian
+      - Microsoft.VisualStudioCode
+      
+    # Scoop packages (alternative)
+    scoop:
+      - git
+      - neovim
+      - fzf
+      - ripgrep
+      - fd
+      - bat
+      - delta
+      - jq
+      - curl
+      - wget
+      - oh-my-posh
+
+# Package manager priority order
+# First available manager in this list will be used
+package_manager_priority:
+  - mise      # Version managers and some CLI tools
+  - cargo     # Rust-based CLI tools (fast, reliable)
+  - brew      # macOS primary
+  - apt       # Debian/Ubuntu
+  - dnf       # Fedora/RHEL
+  - pacman    # Arch Linux
+  - winget    # Windows (modern)
+  - scoop     # Windows (community)
+  - npm       # Node.js ecosystem tools
+  - pip       # Python ecosystem tools
+  - go        # Go ecosystem tools
