@@ -34,7 +34,7 @@ node_modules/
 .xsession-errors
 {{- end }}
 
-# Personal sensitive files
+# Personal sensitive files (should use encryption instead)
 .env
 .env.local
 .env.production
@@ -44,10 +44,31 @@ node_modules/
 *.p12
 *.crt
 *.csr
+*.token
+*_token
+*_key
+*secret*
 
-# Git files (managed separately)
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files  
+*.log
+
+# Backup files
+*.backup
+*.bak
+
+# Git files (managed separately or encrypted)
 .gitconfig
 .gitignore_global
 
-# SSH keys (managed separately)
+# SSH keys (should be encrypted with age)
 .ssh/
+
+# Examples of encrypted file naming:
+# Instead of: .ssh/config → Use: private_encrypted_dot_ssh/config.age
+# Instead of: .aws/credentials → Use: private_encrypted_dot_aws/credentials.age 
+# Instead of: .env → Use: private_encrypted_env.age

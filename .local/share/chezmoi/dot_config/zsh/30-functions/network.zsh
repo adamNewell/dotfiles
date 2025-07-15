@@ -3,10 +3,34 @@
 # Start an HTTP server from a directory, optionally specifying the port
 function server() {
     local port="${1:-8000}";
+    
+    # Check if Python 3 is available
+    if ! command -v python3 >/dev/null 2>&1; then
+        echo "ERROR: Python 3 is required but not installed." >&2
+        return 1
+    fi
+    
     sleep 1 && open "http://localhost:${port}/" &
+    # Use Python 3's http.server module instead of deprecated Python 2 SimpleHTTPServer
     # Set the default Content-Type to `text/plain` instead of `application/octet-stream`
-    # And serve everything as UTF-8 (although not technically correct, this doesn't break anything for binary files)
-    python -c $'import SimpleHTTPServer;\nmap = SimpleHTTPServer.SimpleHTTPRequestHandler.extensions_map;\nmap[""] = "text/plain";\nfor key, value in map.items():\n\tmap[key] = value + ";charset=UTF-8";\nSimpleHTTPServer.test();' "$port";
+    # And serve everything as UTF-8
+    python3 -c "
+import http.server
+import socketserver
+import mimetypes
+
+class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+    def guess_type(self, path):
+        mimetype, encoding = mimetypes.guess_type(path)
+        if mimetype:
+            return mimetype + ';charset=UTF-8'
+        else:
+            return 'text/plain;charset=UTF-8'
+
+with socketserver.TCPServer(('', ${port}), CustomHTTPRequestHandler) as httpd:
+    print(f'Serving HTTP on 0.0.0.0 port ${port} (http://0.0.0.0:${port}/) ...')
+    httpd.serve_forever()
+"
 }
 
 # Show all the names (CNs and SANs) listed in the SSL certificate
@@ -21,11 +45,13 @@ function getcertnames() {
     echo "Testing ${domain}…";
     echo ""; # newline
 
-    local tmp=$(echo -e "GET / HTTP/1.0\nEOT" \
+    local tmp
+    tmp=$(echo -e "GET / HTTP/1.0\nEOT" \
         | openssl s_client -connect "${domain}:443" -servername "${domain}" 2>&1);
 
     if [[ "${tmp}" = *"-----BEGIN CERTIFICATE-----"* ]]; then
-        local certText=$(echo "${tmp}" \
+        local certText
+        certText=$(echo "${tmp}" \
             | openssl x509 -text -certopt "no_aux, no_header, no_issuer, no_pubkey, \
             no_serial, no_sigdump, no_signame, no_validity, no_version");
         echo "Common Name:";
@@ -50,10 +76,12 @@ function digga() {
 
 function whereami() {
     # Try wired connection first, if not found use wireless
-    local private_ip=$(ipconfig getifaddr en1 || ipconfig getifaddr en0)
+    local private_ip
+    private_ip=$(ipconfig getifaddr en1 || ipconfig getifaddr en0)
     
-    # Get public IP
-    local public_ip=$(curl -s ifconfig.me)
+    # Get public IP using HTTPS and with timeout
+    local public_ip
+    public_ip=$(curl -s --max-time 5 https://ifconfig.me 2>/dev/null || echo "Failed to fetch")
     
     echo "Private IP: ${private_ip:-No private IP found}"
     echo "Public IP: ${public_ip:-No public IP found}"

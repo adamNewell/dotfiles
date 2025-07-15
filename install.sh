@@ -5,11 +5,11 @@
 set -e
 
 # Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly NC='\033[0m' # No Color
 
 info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
 success() { echo -e "${GREEN}✅ $1${NC}"; }
@@ -40,7 +40,25 @@ if ! command -v chezmoi >/dev/null 2>&1; then
     else
         # Install Homebrew first
         info "Installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        warn "This will download and execute the Homebrew installer."
+        warn "Please review the script at: https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
+        
+        # Download, verify, and execute Homebrew installer
+        local homebrew_installer="/tmp/homebrew_install_$$.sh"
+        if curl -fsSL "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh" -o "${homebrew_installer}"; then
+            # Basic sanity check - ensure it's a shell script
+            if head -n1 "${homebrew_installer}" | grep -q '^#!/bin/bash'; then
+                /bin/bash "${homebrew_installer}"
+                rm -f "${homebrew_installer}"
+            else
+                error "Downloaded file does not appear to be a valid shell script"
+                rm -f "${homebrew_installer}"
+                exit 1
+            fi
+        else
+            error "Failed to download Homebrew installer"
+            exit 1
+        fi
         
         # Add to PATH for this session
         if [[ -f "/opt/homebrew/bin/brew" ]]; then

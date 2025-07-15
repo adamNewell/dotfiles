@@ -9,11 +9,13 @@ PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 # Local user binaries (highest priority)
 [[ -d "$HOME/.local/bin" ]] && PATH="$HOME/.local/bin:$PATH"
 
-# Homebrew (macOS)
-if [[ -d "/opt/homebrew" ]]; then
-    PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
-elif [[ -d "/usr/local/Homebrew" ]]; then
-    PATH="/usr/local/bin:$PATH"
+# Homebrew - use dynamic detection instead of hardcoded paths
+if command -v brew >/dev/null 2>&1; then
+    # Get Homebrew's actual path and add to PATH if not already there
+    local brew_prefix="$(brew --prefix)"
+    if [[ -d "${brew_prefix}/bin" ]] && [[ ":$PATH:" != *":${brew_prefix}/bin:"* ]]; then
+        PATH="${brew_prefix}/bin:${brew_prefix}/sbin:$PATH"
+    fi
 fi
 
 # Development tools (will be overridden by tool-specific configs if needed)

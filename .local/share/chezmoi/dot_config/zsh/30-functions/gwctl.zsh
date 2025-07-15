@@ -1,7 +1,7 @@
 # GWCTL related functions
 
 gwctl() {
-  ~/.gwctl/gwctl --config $GWCTL_CONFIG "$@"
+  ~/.gwctl/gwctl --config "$GWCTL_CONFIG" "$@"
 }
 
 gwctl_set_config() {

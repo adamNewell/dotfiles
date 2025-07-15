@@ -33,15 +33,19 @@ fi
 if command -v fzf >/dev/null 2>&1; then
     info "🔍 Setting up fzf integration..."
     
-    # Source fzf shell integration if available
-    {{- if eq .chezmoi.os "darwin" }}
-    FZF_SHARE="/opt/homebrew/share/fzf"
-    {{- else if eq .chezmoi.os "linux" }}
-    FZF_SHARE="/usr/share/fzf"
-    {{- end }}
+    # Find fzf share directory dynamically
+    FZF_SHARE=""
+    for path in "/opt/homebrew/share/fzf" "/usr/local/share/fzf" "/usr/share/fzf" "$HOME/.fzf"; do
+        if [[ -d "$path" ]]; then
+            FZF_SHARE="$path"
+            break
+        fi
+    done
     
-    if [[ -d "$FZF_SHARE" ]]; then
+    if [[ -n "$FZF_SHARE" ]]; then
         success "fzf shell integration available at $FZF_SHARE"
+    else
+        warn "fzf shell integration not found"
     fi
 fi
 

@@ -23,7 +23,8 @@ command -v bat >/dev/null 2>&1 && export BAT_THEME="Monokai Extended Bright"
 # Go programming language
 if command -v go >/dev/null 2>&1; then
     export GOPATH="$HOME/go"
-    export GOROOT="/opt/homebrew/opt/go/libexec"
+    # Use go's built-in detection rather than hardcoded path
+    export GOROOT="${GOROOT:-$(go env GOROOT)}"
 fi
 
 # pyenv
