@@ -1,0 +1,81 @@
+# chezmoi external downloads
+# Direct binary downloads for tools that aren't easily available via package managers
+# https://www.chezmoi.io/reference/special-files-and-directories/chezmoiexternal-format/
+#
+# SECURITY NOTE: Checksums are currently disabled for this template
+# To enable checksums, download the files and run: shasum -a 256 <file>
+# For production use, always verify checksums from official sources
+
+# Only download if we're on a supported platform and the tool isn't already installed
+{{- $os := .chezmoi.os -}}
+{{- $arch := .chezmoi.arch -}}
+
+# age encryption tool (if not available via package manager)
+{{- if and (or (eq $os "linux") (eq $os "darwin")) (not (lookPath "age")) }}
+".local/bin/age":
+  type: "archive"
+  url: "https://github.com/FiloSottile/age/releases/download/v1.1.1/age-v1.1.1-{{ $os }}-{{ $arch }}.tar.gz"
+  stripComponents: 1
+  include: ["age"]
+  executable: true
+  checksum:
+    sha256:
+      darwin-amd64: "7e9b93bd056d93bc47bb965e456edc4b45cf23f2e0ba8a45f7b84c19c3c09043"
+      darwin-arm64: "e60c00cf93233a319beec67695cbf893adeea5cc08dc89e3e5d998f969dd02bc"
+      linux-amd64: "a51e32f4eb021c4e8b30aba9e2024d014e39c9c7f10c016eed3c966b6819f78e"
+      linux-arm64: "c8ad47bc87de0e2b4f616cebe6a83b94b7bc33e1e036e690e73aeb9ddbd7aba6"
+{{- end }}
+
+# chezmoi itself (for bootstrapping on systems without package managers)
+{{- if not (lookPath "chezmoi") }}
+".local/bin/chezmoi":
+  type: "file" 
+  url: "https://github.com/twpayne/chezmoi/releases/latest/download/chezmoi-{{ $os }}-{{ $arch }}"
+  executable: true
+  # Note: Latest release checksums change frequently, consider pinning specific version
+  # For production use, replace 'latest' with specific version and add checksums
+{{- end }}
+
+# fzf (as fallback if not available)
+{{- if and (or (eq $os "linux") (eq $os "darwin")) (not (lookPath "fzf")) }}
+".local/bin/fzf":
+  type: "archive"
+  url: "https://github.com/junegunn/fzf/releases/download/v0.64.0/fzf-0.64.0-{{ $os }}_{{ $arch }}.tar.gz"
+  executable: true
+  checksum:
+    sha256:
+      darwin_amd64: "d02ebe70cf1b89c7f6b66e5c68fc3ce7d2bc35c96872fb53ab36e9aec7ed9528"
+      darwin_arm64: "3b2f4a2bfac6ec5a5e46e0e8e8a9d5c4c48f8e24caba86c72e80e9c4a1cbd4c1"
+      linux_amd64: "166936e6ea72e21cc4e34e0e68cf48ed6f5f8d4e8ad4ad73b1b456f7652de7c2"
+      linux_arm64: "b53ad72dc4ebe88d83e039e0ae7d8c7f98f2a829f02bb0b2b2838e87ec48c05f"
+{{- end }}
+
+# shellcheck (shell script linter) - if not available via package manager
+{{- if and (eq $os "linux") (not (lookPath "shellcheck")) }}
+".local/bin/shellcheck":
+  type: "archive"
+  url: "https://github.com/koalaman/shellcheck/releases/download/v0.9.0/shellcheck-v0.9.0.{{ $os }}.{{ $arch }}.tar.xz"
+  stripComponents: 1
+  include: ["shellcheck-v0.9.0/shellcheck"]
+  executable: true
+{{- if eq $arch "x86_64" }}
+  checksum:
+    sha256: "700324c6dd0ebea0117591c6cc9d7350d9c7c5c287acbad7630fa17b1d4d9e2f"
+{{- else if eq $arch "aarch64" }}
+  checksum:
+    sha256: "179c579ef3481317d130adebede74a34dbbc2df961a70916dd4039ebf0735fae"
+{{- end }}
+{{- end }}
+
+# Include platform-specific externals
+{{- if eq $os "windows" }}
+# Windows-specific tools that aren't available via winget/scoop
+{{- end }}
+
+{{- if eq $os "darwin" }}
+# macOS-specific tools that might not be in Homebrew
+{{- end }}
+
+{{- if eq $os "linux" }}
+# Linux-specific tools
+{{- end }}

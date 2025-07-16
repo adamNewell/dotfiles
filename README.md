@@ -1,224 +1,197 @@
-# Personal Dotfiles
+# Adam Newell's Dotfiles
 
-My personal dotfiles for macOS, managed with GNU Stow.
+Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/), featuring automated setup, cross-platform package management, and organized shell configuration.
 
-## Prerequisites
+## 🚀 Installation
 
-- macOS 11 (Big Sur) or later
-- Apple Silicon Mac
+### Complete Setup
 
-## Installation
+```bash
+# Full environment setup (recommended)
+curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash
 
-### Direct Installation
+# Minimal installation (essential tools only)
+curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash -s -- --minimal
 
-```zsh
-/bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/install.zsh)"
+# Configuration only (skip packages)
+curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash -s -- --skip-packages
 ```
 
-Or if you've already cloned the repository:
+### Alternative Methods
 
-```zsh
-./install.zsh
+```bash
+# Direct chezmoi installation
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply adamNewell/dotfiles
+
+# Update existing setup
+chezmoi update
 ```
 
-### Restore from Backup
+## ✨ Components
 
-To restore your system from a previous backup:
+- **🏠 chezmoi Management**: Templated dotfile management with cross-platform support
+- **📦 Package Management**: Platform-aware package installation (Homebrew, apt, dnf, winget/scoop)
+- **⚡ Shell Configuration**: Organized Zsh setup with Sheldon plugin manager
+- **🎨 macOS Preferences**: YAML-driven system preference automation
+- **🔧 XDG Compliance**: Modern file organization following XDG Base Directory specification
+- **🌍 Platform Support**: macOS, Linux, and Windows with automatic platform detection
 
-```zsh
-./restore.zsh ~/.dotfiles_backup/YYYYMMDD_HHMMSS
+## 📁 Repository Structure
+
+```
+.dotfiles/
+├── .local/share/chezmoi/           # chezmoi source directory
+│   ├── dot_config/                 # ~/.config configurations
+│   │   ├── git/                    # Git configuration with templates
+│   │   ├── kitty/                  # Kitty terminal emulator
+│   │   ├── nvim/                   # Neovim editor configuration
+│   │   ├── sheldon/                # Sheldon Zsh plugin manager
+│   │   ├── tmux/                   # tmux terminal multiplexer
+│   │   └── zsh/                    # Organized Zsh configuration
+│   │       ├── 01-environment.zsh  # Environment variables
+│   │       ├── 02-path.zsh         # PATH configuration
+│   │       ├── 03-plugins.zsh      # Plugin loading
+│   │       ├── 10-completions.zsh  # Shell completions
+│   │       ├── 20-tools/           # Tool-specific configs
+│   │       └── 30-functions/       # Custom functions
+│   ├── packages/                   # Package management
+│   │   ├── package-definitions.yaml# Cross-platform package definitions
+│   │   └── Brewfile.tmpl          # Templated Homebrew packages
+│   ├── macos-defaults.yaml         # macOS system preferences
+│   ├── run_once_*.sh.tmpl          # Automated setup scripts
+│   ├── run_onchange_*.sh.tmpl      # Change-triggered scripts
+│   └── .chezmoiexternal.yaml       # Direct binary downloads
+├── .config/chezmoi/                # chezmoi configuration
+└── docs/                           # Documentation
 ```
 
-## Directory Structure
+## 🛠️ Automated Setup Scripts
 
-```
-.
-├── .config/           # XDG config directory
-│   ├── git/          # Git configuration
-│   ├── kitty/        # Kitty terminal configuration
-│   ├── nvim/         # Neovim configuration
-│   ├── skhd/         # SKHD key binding configuration
-│   └── zsh/          # Zsh configuration
-├── .local/           # XDG data and state directories
-├── docs/             # Documentation
-├── mackup/           # Mackup configuration files
-├── packages/         # Package-specific configurations
-│   ├── brew/        # Homebrew package management
-│   └── macos/       # macOS system configuration
-├── scripts/          # Installation and utility scripts
-│   └── lib/         # Shared shell functions
-├── install.zsh      # Main installation script
-├── restore.zsh      # Backup restoration script
-└── stow.yaml        # GNU Stow configuration
-```
+The repository uses chezmoi's run scripts for automated setup:
 
-## Features
+1. **`run_once_01-install-mise.sh.tmpl`** - Install mise version manager
+2. **`run_once_02-install-platform-packages.sh.tmpl`** - Platform-specific package installation
+3. **`run_once_03-install-universal-tools.sh.tmpl`** - Cross-platform CLI tools (cargo/npm/go)
+4. **`run_onchange_04-setup-shell-tools.sh.tmpl`** - Shell configuration and plugin setup
+5. **`run_once_99-validate-setup.sh.tmpl`** - Final validation and system check
 
-- System compatibility check (macOS version and architecture)
-- Installation of Xcode Command Line Tools
-- Homebrew package management
-- Automatic backup of existing configuration files
-- GNU Stow for managing symlinks
-- macOS system preferences configuration
-- Backup and restore functionality
-- Zsh configuration with zinit plugin manager
-- Neovim configuration
-- Kitty terminal configuration
-- SKHD key binding management
-- Git configuration
-- Mackup for application settings backup
+## 📦 Package Management
 
-## Configuration
+### Package Sources
 
-### Package Management
+- **mise**: Version management for programming languages (Node.js, Python, Go, Rust)
+- **Cargo**: Rust-based CLI tools (ripgrep, fd, bat, eza, zoxide, sheldon)
+- **Platform-specific**: Homebrew (macOS), native package managers (Linux), winget/scoop (Windows)
+- **Direct downloads**: Binary downloads via chezmoi externals
 
-The installation process uses Homebrew to install packages defined in `packages/brew/Brewfile`. This includes:
+### Configuration Files
 
-- Command line tools
-- GUI applications (via Homebrew Cask)
-- Mac App Store applications (via mas)
+- **`packages/package-definitions.yaml`** - Cross-platform package definitions
+- **`packages/Brewfile.tmpl`** - macOS Homebrew packages
+- **`.chezmoiexternal.yaml`** - Direct binary downloads
 
-### macOS Configuration
+### Example Package Definition
 
-System preferences are configured in `packages/macos/scripts/defaults.sh`.
-
-### Shell Configuration
-
-Zsh configuration is managed through zinit plugin manager, providing:
-- Command completion
-- Syntax highlighting
-- Autosuggestions
-- Git integration
-- Docker integration
-- FZF integration
-
-### Terminal Configuration
-
-Kitty terminal configuration includes:
-- Custom themes
-- Key bindings
-- Font settings
-- Window management
-
-### Editor Configuration
-
-Neovim configuration includes:
-- Plugin management
-- Language server support
-- Syntax highlighting
-- Code completion
-
-## Backup and Restore
-
-### Automatic Backup
-
-During installation, your existing configuration files are automatically backed up to `~/.dotfiles_backup/TIMESTAMP/`. This includes:
-
-- Configuration files
-- Shell history
-- Application settings
-- List of installed Homebrew packages
-
-### Manual Restore
-
-To restore your system from a backup:
-
-1. Run the restore script with the backup directory:
-   ```zsh
-   ./restore.zsh ~/.dotfiles_backup/YYYYMMDD_HHMMSS
-   ```
-2. The script will:
-   - Restore your configuration files
-   - Show you which Homebrew packages were installed
-   - Optionally remove any packages that were installed during the original setup
-
-### Restore Script
-
-```zsh
-./restore.zsh [options] BACKUP_DIR
-
-Options:
-    -h, --help                Show help message
-    --no-homebrew-cleanup     Skip Homebrew package cleanup prompt
-    --force                   Skip all confirmation prompts
-    --dry-run                 Show what would be restored without making changes
-
-Arguments:
-    BACKUP_DIR    Path to the backup directory
-                  (e.g., ~/.dotfiles_backup/20240321_123456)
-
-Examples:
-    ./restore.zsh ~/.dotfiles_backup/20240321_123456            # Normal restore
-    ./restore.zsh --force ~/.dotfiles_backup/20240321_123456    # Restore without prompts
-    ./restore.zsh --dry-run ~/.dotfiles_backup/20240321_123456  # Preview restore
+```yaml
+cli_tools:
+  ripgrep:
+    cargo: "ripgrep"
+    brew: "ripgrep"
+    apt: "ripgrep"
+    description: "Fast grep replacement"
 ```
 
-## Customization
+## ⚡ Shell Configuration
 
-To customize the installation:
+### File Organization
 
-1. Fork this repository
-2. Modify the Brewfile to add/remove packages
-3. Update the macOS defaults in `packages/macos/scripts/defaults.sh`
-4. Add your own configuration files to the appropriate directories
+Zsh configuration uses numbered prefixes for predictable loading order:
 
-## Updating
+- **01-03**: Foundation (environment, PATH, plugins)
+- **10-13**: Shell initialization (completions, history, options, keybindings)
+- **20-29**: Tool configurations (language-specific settings)
+- **30-39**: User interface (functions, aliases)
+- **90+**: Local overrides
 
-To update your dotfiles:
+### Plugin Management
 
-1. Pull the latest changes:
-   ```zsh
-   cd ~/.dotfiles
-   git pull
-   ```
-2. Run the install script again:
-   ```zsh
-   ./install.zsh
-   ```
+[Sheldon](https://github.com/rossmacarthur/sheldon) manages Zsh plugins with TOML configuration:
 
-## Command Line Options
+```toml
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
 
-### Install Script
-
-```zsh
-./install.zsh [options]
-
-Options:
-    -h, --help               Show help message
-    --no-homebrew            Skip Homebrew installation and package management
-    --no-macos-defaults      Skip setting macOS defaults
-    --no-backup              Skip backing up existing files
-    --no-services            Skip starting services (e.g., skhd)
-
-Examples:
-    ./install.zsh                 # Full installation
-    ./install.zsh --no-backup     # Install without backing up existing files
-    ./install.zsh --no-homebrew --no-macos-defaults   # Minimal installation
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
 ```
 
-### Restore Script
+## 🍎 macOS System Preferences
 
-```zsh
-./restore.zsh [options] BACKUP_DIR
+YAML-driven system configuration:
 
-Options:
-    -h, --help                 Show help message
-    --no-homebrew-cleanup      Skip Homebrew package cleanup prompt
-    --force                    Skip all confirmation prompts
-    --dry-run                  Show what would be restored without making changes
+```yaml
+# macos-defaults.yaml
+finder:
+  show_hidden_files: true
+  show_all_extensions: true
+  default_view: "column"
 
-Arguments:
-    BACKUP_DIR     Path to the backup directory
-                   (e.g., ~/.dotfiles_backup/20240321_123456)
-
-Examples:
-    ./restore.zsh ~/.dotfiles_backup/20240321_123456           # Normal restore
-    ./restore.zsh --force ~/.dotfiles_backup/20240321_123456   # Restore without prompts
-    ./restore.zsh --dry-run ~/.dotfiles_backup/20240321_123456 # Preview restore
+dock:
+  icon_size: 36
+  minimize_effect: "scale"
+  hide_recent_apps: true
 ```
 
-## Credits
+## 🔧 Common Commands
 
-- [GNU Stow](https://www.gnu.org/software/stow/) for symlink management
-- [Homebrew](https://brew.sh/) for package management
-- [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html)
+### Dotfile Management
+
+```bash
+chezmoi update                                    # Update from repository
+chezmoi diff                                      # Preview changes
+chezmoi edit ~/.config/zsh/01-environment.zsh    # Edit managed file
+chezmoi add ~/.config/newapp/config.yaml         # Start managing new file
+chezmoi apply --force                             # Force apply changes
+```
+
+### Package Updates
+
+```bash
+mise upgrade                    # Update language versions
+brew upgrade                    # Update macOS packages
+sudo apt upgrade               # Update Ubuntu/Debian packages
+cargo install-update -a       # Update Rust tools
+```
+
+### Shell Management
+
+```bash
+sheldon lock                   # Update plugin cache
+exec zsh                       # Reload shell configuration
+chezmoi edit ~/.config/sheldon/plugins.toml  # Edit plugins
+```
+
+## 🌍 Platform Support
+
+| Platform | Status  | Package Manager         | System Preferences |
+|----------|---------|-------------------------|--------------------|
+| macOS    | ✅ Full  | Homebrew                | ✅ Full            |
+| Linux    | ✅ Full  | Native (apt/dnf/pacman) | ⚠️ Limited         |
+| Windows  | ✅ Basic | winget/scoop            | ⚠️ Limited         |
+
+## 📚 Documentation
+
+Detailed component documentation:
+
+- [Package Management](docs/PACKAGE_MANAGEMENT.md) - Package definitions and platform handling
+- [Shell Configuration](docs/SHELL_CONFIGURATION.md) - Zsh organization and customization
+- [chezmoi Operations](docs/CHEZMOI_USAGE.md) - Dotfile management commands
+- [macOS Preferences](docs/MACOS_SETUP.md) - System preference automation
+
+## 📄 License
+
+MIT License - Personal dotfiles repository, feel free to fork and adapt.
+
+---
+
+*These dotfiles are designed for efficiency, elegance, and cross-platform compatibility. They represent a modern approach to dotfile management using industry-standard tools and best practices.*

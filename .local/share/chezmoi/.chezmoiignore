@@ -1,0 +1,74 @@
+# System-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Cache directories
+.cache/
+.npm/
+.yarn/
+node_modules/
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS-specific files
+{{- if eq .chezmoi.os "darwin" }}
+.CFUserTextEncoding
+{{- end }}
+
+{{- if eq .chezmoi.os "linux" }}
+.xsession-errors
+{{- end }}
+
+# Personal sensitive files (should use encryption instead)
+.env
+.env.local
+.env.production
+.env.development
+*.key
+*.pem
+*.p12
+*.crt
+*.csr
+*.token
+*_token
+*_key
+*secret*
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files  
+*.log
+
+# Backup files
+*.backup
+*.bak
+
+# Git files (managed separately or encrypted)
+.gitconfig
+.gitignore_global
+
+# SSH keys (should be encrypted with age)
+.ssh/
+
+# Examples of encrypted file naming:
+# Instead of: .ssh/config → Use: private_encrypted_dot_ssh/config.age
+# Instead of: .aws/credentials → Use: private_encrypted_dot_aws/credentials.age 
+# Instead of: .env → Use: private_encrypted_env.age

@@ -1,0 +1,44 @@
+{{- /* Templated Brewfile for macOS package installation */ -}}
+{{- if eq .chezmoi.os "darwin" -}}
+# Generated Brewfile for macOS
+# This file is managed by chezmoi - do not edit directly
+
+# Taps
+tap 'buo/cask-upgrade'          # Upgrade cask packages
+tap 'koekeishiya/formulae'      # Window management (yabai/skhd)
+tap 'noahgorstein/tap'          # Additional tools
+
+# Core system utilities
+{{- range $pkg := (index .platform_packages.darwin "system") }}
+brew '{{ $pkg }}'
+{{- end }}
+
+# Development tools  
+{{- range $pkg := (index .platform_packages.darwin "development") }}
+brew '{{ $pkg }}'
+{{- end }}
+
+# Enhanced shell tools
+{{- range $pkg := (index .platform_packages.darwin "shell") }}
+brew '{{ $pkg }}'
+{{- end }}
+
+# CLI tools (from universal definitions)
+{{- range $name, $def := .cli_tools }}
+{{- if $def.brew }}
+brew '{{ $def.brew }}'  # {{ $def.description }}
+{{- end }}
+{{- end }}
+
+# GUI Applications
+{{- range $pkg := (index .platform_packages.darwin "applications") }}
+cask '{{ $pkg }}'
+{{- end }}
+
+# Fonts
+{{- range $pkg := (index .platform_packages.darwin "fonts") }}
+cask '{{ $pkg }}'
+{{- end }}
+
+
+{{- end -}}

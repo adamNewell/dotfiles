@@ -1,0 +1,20 @@
+# mise/asdf tool versions
+# Cross-platform language and tool version management
+# https://mise.jdx.dev/
+
+# Programming languages
+nodejs 22.11.0
+python 3.12.0
+rust 1.75.0
+golang 1.21.0
+
+# CLI tools that mise can manage
+jq 1.7.1
+yq 4.40.5
+ripgrep 14.0.3
+fd 8.7.1
+bat 0.24.0
+fzf 0.44.1
+
+# Development tools
+shellcheck 0.9.0

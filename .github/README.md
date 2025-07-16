@@ -1,91 +1,112 @@
-# ~/.dotfiles
+# Adam Newell's Dotfiles
 
-My personal dotfiles for macOS, managed with GNU Stow.
+<p align="center">
+  <i>Personal dotfiles managed with chezmoi, featuring automated setup and cross-platform compatibility</i>
+</p>
 
-## Overview
+## 🚀 Quick Start
 
-This repository contains my personal dotfiles, with a focus on a well-organized and modular Zsh configuration. The setup is designed to be maintainable, performant, and secure.
-
-## Structure
-
-The Zsh configuration is organized into modular files under `.config/zsh/`:
-
-```
-.config/zsh/
-├── .zshrc              # Main Zsh configuration
-├── .zshenv             # Environment variables (loaded first)
-├── .zprofile          # Login shell settings
-├── path.zsh           # PATH configuration
-├── exports.zsh        # Environment exports
-├── tools.zsh          # Development tool configurations
-├── aliases.zsh        # Custom aliases
-├── functions.zsh      # Custom functions
-├── extra.zsh          # Additional configurations
-└── local.zsh          # Machine-specific settings (optional)
-```
-
-### Configuration Loading Order
-
-1. `.zshenv` - Sets up essential environment variables and XDG paths
-2. `.zprofile` - Configures login shell settings
-3. `.zshrc` - Main configuration file that sources other modules in this order:
-   - `path.zsh` - PATH configuration
-   - `exports.zsh` - Environment variables
-   - `tools.zsh` - Development tool configurations (Node.js, Python, Rust, Go)
-   - `aliases.zsh` - Custom aliases
-   - `functions.zsh` - Custom functions
-   - `extra.zsh` - Additional configurations
-   - `local.zsh` - Machine-specific settings
-
-## Features
-
-- **Oh My Zsh Integration**: Uses Oh My Zsh as the base framework with carefully selected plugins
-- **Development Tools**: Organized configuration for:
-  - Node.js/nvm
-  - Python/pyenv
-  - Rust/Cargo
-  - Go
-- **Performance Optimizations**:
-  - Efficient plugin loading
-  - Cached Homebrew prefix
-  - Daily completion regeneration
-- **Security Features**:
-  - Secure umask settings
-  - SSH agent management
-  - Auto-logout after inactivity
-- **Modern Shell Experience**:
-  - Syntax highlighting
-  - Auto-suggestions
-  - History substring search
-  - Fuzzy finding (FZF)
-
-## Installation
-
-1. Clone this repository:
 ```bash
-git clone https://github.com/adamnewell/dotfiles.git ~/.dotfiles
+# Full environment setup (recommended)
+curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash
+
+# Alternative: Direct chezmoi installation
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply adamNewell/dotfiles
 ```
 
-2. Run the installation script:
+## ✨ Features
+
+- **🏠 chezmoi Management**: Templated dotfile management with cross-platform support
+- **📦 Smart Package Management**: Platform-aware installation (Homebrew, apt, dnf, winget/scoop)
+- **⚡ Modern Shell Setup**: Organized Zsh configuration with Sheldon plugin manager
+- **🎨 macOS Preferences**: YAML-driven system preference automation
+- **🔧 XDG Compliance**: Modern file organization following XDG Base Directory specification
+- **🌍 Cross-Platform**: Full support for macOS, Linux, and Windows
+
+## 📚 What Are Dotfiles?
+
+Dotfiles are configuration files that customize your development environment. They're called "dotfiles" because they typically start with a dot (`.gitconfig`, `.zshrc`, `.vimrc`) and are stored in your home directory or `~/.config`.
+
+This repository uses [chezmoi](https://www.chezmoi.io/) to manage dotfiles across multiple machines, providing templating, cross-platform support, and automated setup scripts.
+
+### Why Use a Dotfile System?
+
+By using a dotfile system, you can:
+- **⚡ Set up new machines in minutes** - One command gets you from zero to fully configured
+- **🔄 Keep settings synced** across multiple environments (work laptop, personal machine, servers)
+- **⏪ Easily roll back changes** with Git version control
+- **🛡️ Never lose configurations** - everything is backed up and versioned
+
+Once set up, you can SSH into a fresh system, run the install script, and be productive within minutes.
+
+## 🏗️ Repository Structure
+
+```
+.dotfiles/
+├── .local/share/chezmoi/           # chezmoi source directory
+│   ├── dot_config/                 # ~/.config configurations
+│   │   ├── git/                    # Git configuration
+│   │   ├── kitty/                  # Kitty terminal emulator
+│   │   ├── nvim/                   # Neovim editor
+│   │   ├── sheldon/                # Sheldon plugin manager
+│   │   ├── tmux/                   # tmux multiplexer
+│   │   └── zsh/                    # Organized Zsh configuration
+│   ├── packages/                   # Package management
+│   │   ├── package-definitions.yaml# Cross-platform packages
+│   │   └── Brewfile.tmpl          # Homebrew packages
+│   ├── macos-defaults.yaml         # macOS system preferences
+│   ├── run_once_*.sh.tmpl          # Setup scripts
+│   └── .chezmoiexternal.yaml       # Binary downloads
+├── .config/chezmoi/                # chezmoi configuration
+└── docs/                           # Documentation
+```
+
+## 🔧 Package Management
+
+### Automated Setup Scripts
+
+The repository uses chezmoi's run scripts for automated setup:
+
+1. **`run_once_01-install-mise.sh.tmpl`** - Install mise version manager
+2. **`run_once_02-install-platform-packages.sh.tmpl`** - Platform-specific packages
+3. **`run_once_03-install-universal-tools.sh.tmpl`** - Cross-platform CLI tools
+4. **`run_onchange_04-setup-shell-tools.sh.tmpl`** - Shell configuration
+5. **`run_once_99-validate-setup.sh.tmpl`** - Final validation
+
+### Package Sources
+
+- **mise**: Version management for programming languages
+- **Cargo**: Rust-based CLI tools (ripgrep, fd, bat, eza, zoxide)
+- **Platform managers**: Homebrew (macOS), apt/dnf (Linux), winget/scoop (Windows)
+- **Direct downloads**: Binary downloads via chezmoi externals
+
+### Platform Support
+
+| Platform | Status   | Package Manager         | System Preferences |
+|----------|----------|-------------------------|--------------------|
+| macOS    | ✅ Full   | Homebrew                | ✅ Full            |
+| Linux    | ✅ Full   | Native (apt/dnf/pacman) | ⚠️ Limited         |
+| Windows  | ✅ Basic  | winget/scoop            | ⚠️ Limited         |
+
+## 🔧 Common Commands
+
+### Dotfile Management
+
 ```bash
-cd ~/.dotfiles
-./install.zsh
+chezmoi update                                    # Update from repository
+chezmoi diff                                      # Preview changes
+chezmoi edit ~/.config/zsh/01-environment.zsh    # Edit managed file
+chezmoi add ~/.config/newapp/config.yaml         # Start managing new file
+chezmoi apply --force                             # Force apply changes
 ```
 
-## Customization
+### Package Updates
 
-- Machine-specific configurations can be added to `local.zsh`
-- Additional aliases can be added to `aliases.zsh`
-- New development tool configurations should go in `tools.zsh`
+```bash
+mise upgrade                    # Update language versions
+brew upgrade                    # Update macOS packages
+sudo apt upgrade               # Update Ubuntu/Debian packages
+cargo install-update -a       # Update Rust tools
+```
 
-## Dependencies
-
-- Zsh
-- Git
-- GNU Stow
-- Oh My Zsh
-- Homebrew (for macOS)
-
-## License
-
-MIT
+</details>

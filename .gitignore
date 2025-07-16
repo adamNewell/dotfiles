@@ -1,51 +1,43 @@
-# Backup directories
-.dotfiles_backup/
+# Package lock files
+**/*lock.json
+**/package-lock.json
+**/yarn.lock
 
-# macOS system files
+# macOS
 .DS_Store
-.AppleDouble
-.LSOverride
-Icon
+.DS_Store?
 ._*
-
-# Thumbnails
-._*
-
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
 .Spotlight-V100
-.TemporaryItems
 .Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
+ehthumbs.db
+Thumbs.db
 
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-# Vim
-[._]*.s[a-v][a-z]
-[._]*.sw[a-p]
-[._]s[a-rt-v][a-z]
-[._]ss[a-gi-z]
-[._]sw[a-p]
-Session.vim
-Sessionx.vim
-.netrwhist
-*~
-
-# Zsh
-.zcompdump*
+# Shell history and cache files
 .zsh_history
-.zsh_sessions
+**/.zsh_history
+**/zsh_history
+.zcompdump*
+.zsh_sessions/
+.zshrc.zwc
+**/.zshrc.zwc
+**/zcompdump*
 
-# Homebrew
-Brewfile.lock.json
+# Editor temporary files
+*.swp
+*.swo
+*~
+.viminfo
 
-# Logs and databases
+# Local environment files
+.env.local
+.env.*.local
+
+# chezmoi state (not needed in repo)
+.local/share/chezmoi/chezmoistate.boltdb
+
+# Logs
 *.log
-*.sqlite
+
+# Temporary files
+.tmp/
+temp/

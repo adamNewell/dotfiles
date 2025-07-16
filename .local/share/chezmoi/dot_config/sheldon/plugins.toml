@@ -1,0 +1,46 @@
+shell = "zsh"
+
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+
+[plugins.ohmyzsh-lib-git]
+github = "ohmyzsh/ohmyzsh"
+dir = "lib"
+use = ["git.zsh"]
+
+[plugins.ohmyzsh-plugin-git]
+github = "ohmyzsh/ohmyzsh"
+dir = "plugins/git"
+
+[plugins.ohmyzsh-lib-history]
+github = "ohmyzsh/ohmyzsh"
+dir = "lib"
+use = ["history.zsh"]
+
+[plugins.ohmyzsh-lib-key-bindings]
+github = "ohmyzsh/ohmyzsh"
+dir = "lib"
+use = ["key-bindings.zsh"]
+
+[plugins.ohmyzsh-lib-completion]
+github = "ohmyzsh/ohmyzsh"
+dir = "lib"
+use = ["completion.zsh"]
+
+# Docker plugins temporarily disabled due to completion generation issues
+# [plugins.ohmyzsh-plugin-docker]
+# github = "ohmyzsh/ohmyzsh"
+# dir = "plugins/docker"
+
+# [plugins.ohmyzsh-plugin-docker-compose]
+# github = "ohmyzsh/ohmyzsh"
+# dir = "plugins/docker-compose"
+
+[plugins.thefuck]
+github = "laggardkernel/zsh-thefuck"
+
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"

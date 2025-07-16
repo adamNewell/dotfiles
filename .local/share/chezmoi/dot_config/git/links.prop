@@ -1,0 +1,3 @@
+$DOTFILES/git/gitignore=$XDG_CONFIG_HOME/git/.gitignore
+$DOTFILES/git/config=$XDG_CONFIG_HOME/git/config
+$DOTFILES/git/gitcommit=$XDG_CONFIG_HOME/git/gitcommit.tmpl

@@ -1,0 +1,7 @@
+{{- $hostname := .chezmoi.hostname -}}
+{{- $username := .chezmoi.username -}}
+
+data:
+  name: "{{ $username }}"
+  hostname: "{{ $hostname }}"
+  email: "{{ if eq $hostname "work-machine" }}work@company.com{{ else }}adam.newell@me.com{{ end }}"
