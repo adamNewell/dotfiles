@@ -1,13 +1,13 @@
 # Adam Newell's Dotfiles
 
-Modern, cross-platform dotfiles managed with [chezmoi](https://www.chezmoi.io/), featuring automated setup, elegant package management, and intelligent shell configuration.
+Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/), featuring automated setup, cross-platform package management, and organized shell configuration.
 
-## 🚀 Quick Start
+## 🚀 Installation
 
-### One-Command Installation
+### Complete Setup
 
 ```bash
-# Complete environment setup (recommended)
+# Full environment setup (recommended)
 curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash
 
 # Minimal installation (essential tools only)
@@ -17,31 +17,24 @@ curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh 
 curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash -s -- --skip-packages
 ```
 
-### Alternative Installation
+### Alternative Methods
 
 ```bash
-# Install chezmoi and apply dotfiles in one command
+# Direct chezmoi installation
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply adamNewell/dotfiles
-```
 
-### Existing Setup
-
-```bash
-# Update dotfiles from repository
+# Update existing setup
 chezmoi update
-
-# Apply any pending changes
-chezmoi apply
 ```
 
-## ✨ Features
+## ✨ Components
 
-- **🏠 chezmoi Management**: Intelligent dotfile management with templating and cross-platform support
-- **📦 Smart Package Management**: Cross-platform package installation with platform detection
-- **⚡ Fast Shell Setup**: Optimized Zsh configuration with Sheldon plugin manager
-- **🎨 Elegant macOS Defaults**: YAML-driven macOS system preferences configuration
-- **🔧 XDG Compliant**: Modern file organization following XDG Base Directory specification
-- **🌍 Cross-Platform**: Supports macOS, Linux, and Windows with intelligent platform detection
+- **🏠 chezmoi Management**: Templated dotfile management with cross-platform support
+- **📦 Package Management**: Platform-aware package installation (Homebrew, apt, dnf, winget/scoop)
+- **⚡ Shell Configuration**: Organized Zsh setup with Sheldon plugin manager
+- **🎨 macOS Preferences**: YAML-driven system preference automation
+- **🔧 XDG Compliance**: Modern file organization following XDG Base Directory specification
+- **🌍 Platform Support**: macOS, Linux, and Windows with automatic platform detection
 
 ## 📁 Repository Structure
 
@@ -72,31 +65,32 @@ chezmoi apply
 └── docs/                           # Documentation
 ```
 
-## 🛠️ Automated Setup Process
+## 🛠️ Automated Setup Scripts
 
-The dotfiles automatically handle complete machine setup through chezmoi's run scripts:
+The repository uses chezmoi's run scripts for automated setup:
 
-1. **`run_once_01-install-mise.sh.tmpl`** - Universal version manager for programming languages
+1. **`run_once_01-install-mise.sh.tmpl`** - Install mise version manager
 2. **`run_once_02-install-platform-packages.sh.tmpl`** - Platform-specific package installation
-3. **`run_once_03-install-universal-tools.sh.tmpl`** - Cross-platform CLI tools via cargo/npm/go
-4. **`run_onchange_04-setup-shell-tools.sh.tmpl`** - Shell tool configuration and plugin setup
-5. **`run_once_05-setup-macos-defaults.py.tmpl`** - Elegant macOS system preference configuration
-6. **`run_once_99-validate-setup.sh.tmpl`** - Final validation and system check
+3. **`run_once_03-install-universal-tools.sh.tmpl`** - Cross-platform CLI tools (cargo/npm/go)
+4. **`run_onchange_04-setup-shell-tools.sh.tmpl`** - Shell configuration and plugin setup
+5. **`run_once_99-validate-setup.sh.tmpl`** - Final validation and system check
 
 ## 📦 Package Management
 
-### Cross-Platform Philosophy
+### Package Sources
 
-The dotfiles use a hybrid package management approach for optimal tool availability:
-
-- **mise/asdf**: Version management for programming languages (Node.js, Python, Go, Rust)
+- **mise**: Version management for programming languages (Node.js, Python, Go, Rust)
 - **Cargo**: Rust-based CLI tools (ripgrep, fd, bat, eza, zoxide, sheldon)
-- **Platform-specific**: Homebrew (macOS), apt/dnf/pacman (Linux), winget/scoop (Windows)
-- **Direct downloads**: chezmoi externals for tools not available via package managers
+- **Platform-specific**: Homebrew (macOS), native package managers (Linux), winget/scoop (Windows)
+- **Direct downloads**: Binary downloads via chezmoi externals
 
-### Package Definitions
+### Configuration Files
 
-All packages are defined in `packages/package-definitions.yaml` using a structured format:
+- **`packages/package-definitions.yaml`** - Cross-platform package definitions
+- **`packages/Brewfile.tmpl`** - macOS Homebrew packages
+- **`.chezmoiexternal.yaml`** - Direct binary downloads
+
+### Example Package Definition
 
 ```yaml
 cli_tools:
@@ -107,33 +101,21 @@ cli_tools:
     description: "Fast grep replacement"
 ```
 
-### Platform Detection
-
-Templates automatically detect your platform and install appropriate packages:
-
-```bash
-{{- if eq .chezmoi.os "darwin" }}
-# macOS-specific packages
-{{- else if eq .chezmoi.os "linux" }}
-# Linux-specific packages
-{{- end }}
-```
-
 ## ⚡ Shell Configuration
 
-### Organized Loading Order
+### File Organization
 
-Zsh configuration uses numbered prefixes for predictable, optimized loading:
+Zsh configuration uses numbered prefixes for predictable loading order:
 
-- **01-03**: Foundation layer (environment, PATH, plugins)
+- **01-03**: Foundation (environment, PATH, plugins)
 - **10-13**: Shell initialization (completions, history, options, keybindings)
 - **20-29**: Tool configurations (language-specific settings)
 - **30-39**: User interface (functions, aliases)
-- **90+**: Local machine overrides
+- **90+**: Local overrides
 
 ### Plugin Management
 
-Uses [Sheldon](https://github.com/rossmacarthur/sheldon) for fast, reliable Zsh plugin management:
+[Sheldon](https://github.com/rossmacarthur/sheldon) manages Zsh plugins with TOML configuration:
 
 ```toml
 [plugins.zsh-autosuggestions]
@@ -145,7 +127,7 @@ github = "zsh-users/zsh-syntax-highlighting"
 
 ## 🍎 macOS System Preferences
 
-Elegant system configuration using Python and YAML:
+YAML-driven system configuration:
 
 ```yaml
 # macos-defaults.yaml
@@ -160,96 +142,56 @@ dock:
   hide_recent_apps: true
 ```
 
-The Python script automatically maps YAML configuration to macOS defaults commands with proper type conversion and error handling.
+## 🔧 Common Commands
 
-## 🔧 Maintenance & Usage
-
-### Common Operations
+### Dotfile Management
 
 ```bash
-# Update dotfiles from repository
-chezmoi update
-
-# See what would change before applying
-chezmoi diff
-
-# Edit a configuration file
-chezmoi edit ~/.config/zsh/01-environment.zsh
-
-# Add a new file to management
-chezmoi add ~/.config/newapp/config.yaml
-
-# Re-run setup scripts
-chezmoi apply --force
-
-# Check system validation
-~/.local/share/run_once_99-validate-setup.sh
+chezmoi update                                    # Update from repository
+chezmoi diff                                      # Preview changes
+chezmoi edit ~/.config/zsh/01-environment.zsh    # Edit managed file
+chezmoi add ~/.config/newapp/config.yaml         # Start managing new file
+chezmoi apply --force                             # Force apply changes
 ```
 
-### Package Management
+### Package Updates
 
 ```bash
-# Update programming language versions
-mise upgrade
-
-# Update platform packages
-brew upgrade                    # macOS
-sudo apt upgrade               # Ubuntu/Debian
-sudo dnf upgrade               # Fedora
-
-# Update CLI tools
-cargo install-update -a       # Rust tools
-npm update -g                  # Node.js tools
+mise upgrade                    # Update language versions
+brew upgrade                    # Update macOS packages
+sudo apt upgrade               # Update Ubuntu/Debian packages
+cargo install-update -a       # Update Rust tools
 ```
 
-### Shell Plugin Management
+### Shell Management
 
 ```bash
-# Update plugin definitions
-chezmoi edit ~/.config/sheldon/plugins.toml
-
-# Rebuild plugin cache
-sheldon lock
-
-# Source updated configuration
-exec zsh
+sheldon lock                   # Update plugin cache
+exec zsh                       # Reload shell configuration
+chezmoi edit ~/.config/sheldon/plugins.toml  # Edit plugins
 ```
 
-## 🌍 Cross-Platform Support
+## 🌍 Platform Support
 
-### Supported Platforms
-
-- **macOS**: Full support with Homebrew, system preferences, and app installation
-- **Linux**: Support for major distributions (Ubuntu, Fedora, Arch) with automatic package manager detection
-- **Windows**: Basic support via winget/scoop with PowerShell compatibility
-
-### Platform-Specific Features
-
-- **macOS**: System preferences, Homebrew casks, Mac App Store integration
-- **Linux**: Distribution detection, package manager selection, XDG compliance
-- **Windows**: Package installation via winget/scoop, PowerShell configuration
+| Platform | Status | Package Manager | System Preferences |
+|----------|--------|-----------------|-------------------|
+| macOS | ✅ Full | Homebrew | ✅ Full |
+| Linux | ✅ Full | Native (apt/dnf/pacman) | ⚠️ Limited |
+| Windows | ✅ Basic | winget/scoop | ⚠️ Limited |
 
 ## 📚 Documentation
 
-For detailed information about specific components:
+Detailed component documentation:
 
-- [Package Management](docs/PACKAGE_MANAGEMENT.md) - Cross-platform package installation
-- [Shell Configuration](docs/SHELL_CONFIGURATION.md) - Zsh setup and organization
-- [chezmoi Usage](docs/CHEZMOI_USAGE.md) - Dotfile management with chezmoi
-- [macOS Setup](docs/MACOS_SETUP.md) - System preference configuration
-
-## 🤝 Contributing
-
-This is a personal dotfiles repository, but you're welcome to:
-
-- Fork and adapt for your own use
-- Submit issues for bugs or suggestions
-- Contribute improvements via pull requests
+- [Package Management](docs/PACKAGE_MANAGEMENT.md) - Package definitions and platform handling
+- [Shell Configuration](docs/SHELL_CONFIGURATION.md) - Zsh organization and customization
+- [chezmoi Operations](docs/CHEZMOI_USAGE.md) - Dotfile management commands
+- [macOS Preferences](docs/MACOS_SETUP.md) - System preference automation
 
 ## 📄 License
 
-MIT License - feel free to use and modify as needed.
+MIT License - Personal dotfiles repository, feel free to fork and adapt.
 
 ---
 
-*These dotfiles are designed for efficiency, elegance, and cross-platform compatibility. They represent a modern approach to dotfile management using industry-standard tools and best practices.*
+*Personal dotfiles focused on cross-platform compatibility and automated setup.*

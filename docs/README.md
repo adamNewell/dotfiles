@@ -1,85 +1,108 @@
-# Documentation Index
+# Documentation Reference
 
-This directory contains comprehensive documentation for Adam Newell's dotfiles repository.
+Personal reference documentation for Adam Newell's dotfiles repository. This serves as a quick lookup for commands, configuration structure, and troubleshooting.
 
-## 📚 Main Documentation
+## 📚 Configuration Reference
 
-### Core Guides
+### Core Components
 
-- **[Package Management](PACKAGE_MANAGEMENT.md)** - Cross-platform package installation and management
-- **[Shell Configuration](SHELL_CONFIGURATION.md)** - Zsh setup, plugin management, and customization  
-- **[chezmoi Usage](CHEZMOI_USAGE.md)** - Complete guide to using chezmoi for dotfile management
-- **[macOS Setup](MACOS_SETUP.md)** - macOS-specific configuration and system preferences
-
-## 🛠️ Component Documentation
+- **[Package Management](PACKAGE_MANAGEMENT.md)** - Package definitions, platform detection, and update commands
+- **[Shell Configuration](SHELL_CONFIGURATION.md)** - Zsh file organization, plugin management, and customization patterns
+- **[chezmoi Operations](CHEZMOI_USAGE.md)** - Dotfile management commands and template usage
+- **[macOS Preferences](MACOS_SETUP.md)** - System preference automation and troubleshooting
 
 ### Editor Configuration
 
-The `vim/` directory contains detailed documentation for Neovim configuration:
+The `vim/` directory contains Neovim configuration documentation:
 
-- **[Neovim Overview](vim/README.md)** - Main Neovim configuration guide
-- **[Plugin Documentation](vim/plugins/)** - Individual plugin configurations and usage
+- **[Neovim Setup](vim/README.md)** - Configuration structure and key mappings
+- **[Plugin Reference](vim/plugins/)** - Individual plugin configurations and commands
 
 ### Key Neovim Plugins
 
 Essential plugins with dedicated documentation:
 
-- **[Mason](vim/plugins/mason.md)** - LSP server, DAP server, linter, and formatter installer
+- **[Mason](vim/plugins/mason.md)** - LSP/DAP/linter/formatter installer
 - **[Telescope](vim/plugins/telescope.md)** - Fuzzy finder and picker
-- **[Treesitter](vim/plugins/treesitter.md)** - Advanced syntax highlighting and text objects
+- **[Treesitter](vim/plugins/treesitter.md)** - Syntax highlighting and text objects
 - **[LSP Configuration](vim/plugins/nvim-lspconfig.md)** - Language Server Protocol setup
 - **[Completion](vim/plugins/nvim-cmp.md)** - Autocompletion engine
 - **[Git Integration](vim/plugins/gitsigns.md)** - Git status in editor
 
-## 🚀 Quick Start Guides
+## 🚀 Quick Setup Reference
 
-### New User Setup
+### Initial Setup
 
-1. **[Installation](#installation)** - Get started with a single command
-2. **[Package Management](PACKAGE_MANAGEMENT.md#quick-start)** - Understand the package system
-3. **[Shell Configuration](SHELL_CONFIGURATION.md#overview)** - Learn the shell setup
-4. **[chezmoi Basics](CHEZMOI_USAGE.md#quick-reference)** - Essential chezmoi commands
+```bash
+# Complete environment setup
+curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash
 
-### Daily Usage
+# Minimal installation (essential tools only)
+curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash -s -- --minimal
 
-- **[Maintenance Commands](CHEZMOI_USAGE.md#common-operations)** - Regular maintenance tasks
+# Alternative: chezmoi direct installation
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply adamNewell/dotfiles
+```
+
+### Daily Operations
+
+- **[Maintenance Commands](CHEZMOI_USAGE.md#common-workflows)** - Regular maintenance tasks
 - **[Package Updates](PACKAGE_MANAGEMENT.md#updating-tools)** - Keep everything current
 - **[Shell Customization](SHELL_CONFIGURATION.md#customization)** - Personalizing your environment
 
-## 🔧 Advanced Topics
+## 🔧 System Information
 
-### System Administration
-
-- **[macOS System Preferences](MACOS_SETUP.md#system-preferences)** - Automated system configuration
-- **[Cross-Platform Support](PACKAGE_MANAGEMENT.md#platform-differences)** - Multi-OS compatibility
-- **[Security Configuration](MACOS_SETUP.md#security-privacy)** - Security best practices
-
-### Development Workflow
-
-- **[Version Management](PACKAGE_MANAGEMENT.md#programming-languages)** - Managing language versions with mise
-- **[Git Configuration](CHEZMOI_USAGE.md#templates)** - Templated git setup
-- **[Editor Integration](vim/README.md)** - Complete development environment
-
-### Customization & Extension
-
-- **[Adding New Tools](SHELL_CONFIGURATION.md#adding-new-tools)** - Extending the configuration
-- **[Template Usage](CHEZMOI_USAGE.md#templates)** - Advanced chezmoi templating
-- **[Package Definitions](PACKAGE_MANAGEMENT.md#adding-new-tools)** - Adding new packages
-
-## 🔍 Reference
-
-### Command Reference
+### Current Repository State
 
 ```bash
-# Core chezmoi commands
-chezmoi init --apply adamNewell/dotfiles  # Initial setup
-chezmoi update                            # Update from repository
-chezmoi diff                              # See pending changes
-chezmoi edit <file>                       # Edit managed file
+# Repository structure
+.dotfiles/
+├── .local/share/chezmoi/           # Source directory (managed by chezmoi)
+│   ├── dot_config/zsh/             # Zsh configuration (numbered loading order)
+│   ├── packages/                   # Package definitions and Brewfile
+│   ├── macos-defaults.yaml         # macOS system preferences
+│   ├── run_once_*.sh.tmpl          # One-time setup scripts
+│   └── run_onchange_*.sh.tmpl      # Change-triggered scripts
+├── setup.sh                       # Universal installer script
+└── docs/                          # This documentation
+```
+
+### Active Setup Scripts
+
+These scripts run automatically during chezmoi installation:
+
+- **`run_once_01-install-mise.sh.tmpl`** - Install mise version manager
+- **`run_once_02-install-platform-packages.sh.tmpl`** - Platform-specific packages
+- **`run_once_03-install-universal-tools.sh.tmpl`** - Cross-platform CLI tools
+- **`run_onchange_04-setup-shell-tools.sh.tmpl`** - Shell configuration and plugins
+- **`run_once_99-validate-setup.sh.tmpl`** - Final validation
+
+### Platform Detection
+
+The system automatically detects your platform and configures accordingly:
+
+- **macOS**: Homebrew, system preferences, App Store apps
+- **Linux**: Native package managers (apt, dnf, pacman, etc.)
+- **Windows**: winget/scoop with PowerShell support
+
+## 🔍 Command Reference
+
+### Daily Operations
+
+```bash
+# Update and apply dotfiles
+chezmoi update                            # Pull latest changes and apply
+chezmoi diff                              # Preview changes before applying
+chezmoi apply                             # Apply pending changes
+
+# File management
+chezmoi edit ~/.config/zsh/01-environment.zsh  # Edit managed file
+chezmoi add ~/.config/newapp/config.yaml       # Start managing new file
+chezmoi remove ~/.config/oldapp/config.yaml    # Stop managing file
 
 # Package management
-mise list                                 # Show installed language versions
-brew upgrade                              # Update macOS packages (macOS)
+mise upgrade                              # Update language versions
+brew upgrade                              # Update macOS packages
 sheldon lock                             # Update shell plugins
 
 # Shell management
@@ -87,51 +110,124 @@ exec zsh                                  # Reload shell configuration
 source ~/.config/zsh/01-environment.zsh  # Reload specific config
 ```
 
+### Troubleshooting Commands
+
+```bash
+# Debugging
+chezmoi doctor                            # Check chezmoi configuration
+chezmoi data                              # View template data
+chezmoi execute-template                  # Test template syntax
+
+# Validation
+~/.local/share/chezmoi/run_once_99-validate-setup.sh  # Run setup validation
+mise doctor                               # Check mise configuration
+sheldon info                              # Check plugin status
+
+# Reset/repair
+chezmoi init --apply --force adamNewell/dotfiles      # Force re-initialization
+chezmoi apply --force                     # Force apply all changes
+rm -rf ~/.cache/sheldon && sheldon lock   # Rebuild plugin cache
+```
+
 ### File Structure Reference
 
 ```
-.dotfiles/
-├── .local/share/chezmoi/          # chezmoi source directory
-│   ├── dot_config/                # Configuration files
-│   ├── packages/                  # Package definitions
-│   ├── run_once_*.sh.tmpl         # Setup scripts
-│   └── macos-defaults.yaml        # macOS preferences
-├── .config/chezmoi/               # chezmoi configuration
-└── docs/                          # This documentation
-    ├── README.md                  # This file
-    ├── *.md                       # Main guides
-    └── vim/                       # Neovim documentation
+~/.dotfiles/                        # Repository root
+├── .local/share/chezmoi/            # chezmoi source directory
+│   ├── dot_config/zsh/              # Zsh configuration (numbered loading)
+│   │   ├── 01-environment.zsh       # Environment variables
+│   │   ├── 02-path.zsh              # PATH configuration
+│   │   ├── 03-plugins.zsh           # Plugin loading
+│   │   ├── 10-completions.zsh       # Shell completions
+│   │   ├── 20-tools/                # Tool-specific configurations
+│   │   └── 30-functions/            # Custom functions
+│   ├── packages/                    # Package management
+│   │   ├── package-definitions.yaml # Cross-platform packages
+│   │   └── Brewfile.tmpl            # Homebrew packages
+│   ├── macos-defaults.yaml          # macOS system preferences
+│   └── run_*.sh.tmpl                # Setup and maintenance scripts
+├── setup.sh                        # Universal installer
+└── docs/                           # This documentation
 ```
 
-### Platform Support
+### Platform Support Status
 
-| Feature | macOS | Linux | Windows |
-|---------|-------|-------|---------|
+| Component | macOS | Linux | Windows |
+|-----------|-------|-------|---------|
 | Core dotfiles | ✅ Full | ✅ Full | ✅ Basic |
 | Package management | ✅ Homebrew | ✅ Native | ✅ winget/scoop |
 | System preferences | ✅ Full | ⚠️ Limited | ⚠️ Limited |
 | Shell configuration | ✅ Full | ✅ Full | ✅ Basic |
 | Development tools | ✅ Full | ✅ Full | ✅ Good |
 
-## 🤔 FAQ
+## 🔧 Common Operations
 
-### Common Questions
+### Adding New Configuration
 
-**Q: How do I add a new configuration file?**
-A: Use `chezmoi add <file>` to start managing it. See [chezmoi Usage](CHEZMOI_USAGE.md#adding-new-configuration).
+```bash
+# Start managing a new file
+chezmoi add ~/.config/newapp/config.yaml
 
-**Q: How do I install additional packages?**
-A: Edit the package definitions in `packages/package-definitions.yaml`. See [Package Management](PACKAGE_MANAGEMENT.md#adding-new-tools).
+# Edit it through chezmoi
+chezmoi edit ~/.config/newapp/config.yaml
 
-**Q: How do I customize the shell configuration?**
-A: Create local overrides in `~/.config/zsh/90-local.zsh`. See [Shell Configuration](SHELL_CONFIGURATION.md#local-overrides).
+# Apply changes
+chezmoi apply
+```
 
-**Q: How do I update everything?**
-A: Run `chezmoi update` for dotfiles, `mise upgrade` for languages, and platform-specific update commands for packages.
+### Customizing Shell Configuration
 
-### Troubleshooting
+```bash
+# Create local overrides (not managed by chezmoi)
+echo 'export MY_VAR="value"' >> ~/.config/zsh/90-local.zsh
 
-For troubleshooting guides, see:
+# Add custom functions
+chezmoi edit ~/.config/zsh/30-functions/my-functions.zsh
+```
+
+### Package Management
+
+```bash
+# Add new packages to definitions
+chezmoi edit ~/.local/share/chezmoi/packages/package-definitions.yaml
+
+# Update specific tool versions
+mise use python@3.12
+mise use node@20
+
+# Install new Homebrew packages (macOS)
+chezmoi edit ~/.local/share/chezmoi/packages/Brewfile.tmpl
+```
+
+## 🚨 Troubleshooting
+
+### Common Issues and Solutions
+
+**Shell not loading correctly:**
+```bash
+# Check zsh configuration
+zsh -n ~/.config/zsh/*.zsh              # Syntax check
+exec zsh                                # Reload shell
+```
+
+**Packages not installing:**
+```bash
+# Check platform detection
+echo $DOTFILES_OS $DOTFILES_PLATFORM    # Should show your platform
+chezmoi data | grep -E "(os|platform)"  # Check template data
+```
+
+**chezmoi errors:**
+```bash
+# Common fixes
+chezmoi doctor                          # Check configuration
+chezmoi apply --force                   # Force apply changes
+rm -rf ~/.cache/chezmoi && chezmoi apply # Clear cache
+```
+
+### Detailed Troubleshooting
+
+For comprehensive troubleshooting guides, see:
 - [chezmoi Troubleshooting](CHEZMOI_USAGE.md#troubleshooting)
 - [Shell Troubleshooting](SHELL_CONFIGURATION.md#troubleshooting)
 - [macOS Troubleshooting](MACOS_SETUP.md#troubleshooting)
@@ -141,17 +237,17 @@ For troubleshooting guides, see:
 
 ### Official Documentation
 
-- [chezmoi Documentation](https://www.chezmoi.io/)
-- [Sheldon Documentation](https://sheldon.cli.rs/)
-- [mise Documentation](https://mise.jdx.dev/)
-- [Neovim Documentation](https://neovim.io/doc/)
+- [chezmoi Documentation](https://www.chezmoi.io/) - Dotfile management
+- [Sheldon Documentation](https://sheldon.cli.rs/) - Zsh plugin manager
+- [mise Documentation](https://mise.jdx.dev/) - Version manager
+- [Neovim Documentation](https://neovim.io/doc/) - Editor configuration
 
 ### Community Resources
 
-- [chezmoi Community](https://github.com/twpayne/chezmoi/discussions)
-- [Awesome dotfiles](https://github.com/webpro/awesome-dotfiles)
-- [Zsh Documentation](https://zsh.sourceforge.io/Doc/)
+- [chezmoi Community](https://github.com/twpayne/chezmoi/discussions) - Support and tips
+- [Awesome dotfiles](https://github.com/webpro/awesome-dotfiles) - Inspiration
+- [Zsh Documentation](https://zsh.sourceforge.io/Doc/) - Shell reference
 
 ---
 
-This documentation is maintained alongside the dotfiles repository. For questions, issues, or contributions, please see the main [README](../README.md).
+*This documentation serves as a personal reference for Adam Newell's dotfiles. For questions, issues, or contributions, see the main [README](../README.md).*
