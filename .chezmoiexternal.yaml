@@ -1,0 +1,12 @@
+# chezmoi external downloads
+# Direct binary downloads for tools that aren't easily available via package managers
+# https://www.chezmoi.io/reference/special-files-and-directories/chezmoiexternal-format/
+#
+# Currently disabled for setup script compatibility
+# External downloads can be added here when needed
+
+# Example format:
+# ".local/bin/tool":
+#   type: "file"
+#   url: "https://example.com/tool"
+#   executable: true

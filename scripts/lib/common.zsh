@@ -50,7 +50,7 @@ setup_env() {
     export SCRIPT_TMPDIR=$(mktemp -d)
     debug 2 "Created temporary directory: $SCRIPT_TMPDIR"
     
-    export DOTFILES=${DOTFILES:-$HOME/.dotfiles}
+    export DOTFILES=${DOTFILES:-$HOME/dotfiles}
     export STOW_DIR=${STOW_DIR:-$DOTFILES}
     debug 2 "Environment variables set: DOTFILES=$DOTFILES, STOW_DIR=$STOW_DIR"
 }

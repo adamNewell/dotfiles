@@ -35,10 +35,10 @@ Essential plugins with dedicated documentation:
 
 ```bash
 # Complete environment setup
-curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/setup.sh | bash
 
 # Minimal installation (essential tools only)
-curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash -s -- --minimal
+curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/setup.sh | bash -s -- --minimal
 
 # Alternative: chezmoi direct installation
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply adamNewell/dotfiles
@@ -56,7 +56,7 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply adamNewell/dotfiles
 
 ```bash
 # Repository structure
-.dotfiles/
+dotfiles/
 ├── .local/share/chezmoi/           # Source directory (managed by chezmoi)
 │   ├── dot_config/zsh/             # Zsh configuration (numbered loading order)
 │   ├── packages/                   # Package definitions and Brewfile
@@ -132,7 +132,7 @@ rm -rf ~/.cache/sheldon && sheldon lock   # Rebuild plugin cache
 ### File Structure Reference
 
 ```
-~/.dotfiles/                        # Repository root
+~/dotfiles/                        # Repository root
 ├── .local/share/chezmoi/            # chezmoi source directory
 │   ├── dot_config/zsh/              # Zsh configuration (numbered loading)
 │   │   ├── 01-environment.zsh       # Environment variables

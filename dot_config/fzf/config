@@ -1,0 +1,14 @@
+--height 60%
+--layout reverse
+--border rounded
+--inline-info
+--preview-window right:60%:hidden
+--bind ctrl-p:toggle-preview
+--bind ctrl-a:select-all
+--bind ?:toggle-preview
+--color bg+:#3c3836,bg:#32302f,spinner:#fb4934,hl:#928374
+--color fg:#ebdbb2,header:#928374,info:#8ec07c,pointer:#fb4934
+--color marker:#fb4934,fg+:#ebdbb2,prompt:#fb4934,hl+:#fb4934
+--prompt "> "
+--pointer ">"
+--marker "+"

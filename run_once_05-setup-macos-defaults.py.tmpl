@@ -1,0 +1,231 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/usr/bin/env python3
+"""
+Elegant macOS defaults management using YAML configuration
+This approach separates configuration from implementation
+"""
+
+import subprocess
+import os
+import sys
+from pathlib import Path
+
+# Check if PyYAML is available, skip if not
+try:
+    import yaml
+except ImportError:
+    print("PyYAML not available. Skipping macOS defaults setup.")
+    print("To enable macOS defaults, install PyYAML: pip3 install --user PyYAML")
+    sys.exit(0)
+
+# Configuration mapping: YAML key -> (domain, defaults_key, type, transform)
+CONFIG_MAP = {
+    # General UI/UX
+    'general.sidebar_icon_size': ('NSGlobalDomain', 'NSTableViewDefaultSizeMode', 'int'),
+    'general.disable_focus_ring_animation': ('NSGlobalDomain', 'NSUseAnimatedFocusRing', 'bool', lambda x: not x),
+    'general.expand_save_panels': ('NSGlobalDomain', 'NSNavPanelExpandedStateForSaveMode', 'bool'),
+    'general.save_to_disk_not_icloud': ('NSGlobalDomain', 'NSDocumentSaveNewDocumentsToCloud', 'bool', lambda x: not x),
+    'general.disable_smart_dashes': ('NSGlobalDomain', 'NSAutomaticDashSubstitutionEnabled', 'bool', lambda x: not x),
+    'general.disable_smart_periods': ('NSGlobalDomain', 'NSAutomaticPeriodSubstitutionEnabled', 'bool', lambda x: not x),
+    'general.disable_smart_quotes': ('NSGlobalDomain', 'NSAutomaticQuoteSubstitutionEnabled', 'bool', lambda x: not x),
+    'general.show_scrollbars': ('NSGlobalDomain', 'AppleShowScrollBars', 'string'),
+    
+    # Input
+    'input.tap_to_click': ('com.apple.driver.AppleBluetoothMultitouch.trackpad', 'Clicking', 'bool'),
+    'input.full_keyboard_access': ('NSGlobalDomain', 'AppleKeyboardUIMode', 'int', lambda x: 3 if x else 0),
+    
+    # Display
+    'display.screenshot_format': ('com.apple.screencapture', 'type', 'string'),
+    'display.disable_screenshot_shadow': ('com.apple.screencapture', 'disable-shadow', 'bool'),
+    'display.require_password_immediately': ('com.apple.screensaver', 'askForPassword', 'int', lambda x: 1 if x else 0),
+    
+    # Finder
+    'finder.allow_quit_menu': ('com.apple.finder', 'QuitMenuItem', 'bool'),
+    'finder.disable_animations': ('com.apple.finder', 'DisableAllAnimations', 'bool'),
+    'finder.show_hidden_files': ('com.apple.finder', 'AppleShowAllFiles', 'bool'),
+    'finder.show_all_extensions': ('NSGlobalDomain', 'AppleShowAllExtensions', 'bool'),
+    'finder.show_status_bar': ('com.apple.finder', 'ShowStatusBar', 'bool'),
+    'finder.keep_folders_on_top': ('com.apple.finder', '_FXSortFoldersFirst', 'bool'),
+    'finder.disable_extension_change_warning': ('com.apple.finder', 'FXEnableExtensionChangeWarning', 'bool', lambda x: not x),
+    'finder.no_dsstore_on_network': ('com.apple.desktopservices', 'DSDontWriteNetworkStores', 'bool'),
+    'finder.no_dsstore_on_usb': ('com.apple.desktopservices', 'DSDontWriteUSBStores', 'bool'),
+    'finder.default_view': ('com.apple.finder', 'FXPreferredViewStyle', 'string', lambda x: {'column': 'clmv', 'icon': 'icnv', 'list': 'Nlsv', 'gallery': 'glyv'}.get(x, 'clmv')),
+    
+    # Dock
+    'dock.icon_size': ('com.apple.dock', 'tilesize', 'int'),
+    'dock.minimize_effect': ('com.apple.dock', 'mineffect', 'string'),
+    'dock.minimize_to_app_icon': ('com.apple.dock', 'minimize-to-application', 'bool'),
+    'dock.show_app_indicators': ('com.apple.dock', 'show-process-indicators', 'bool'),
+    'dock.disable_launch_animation': ('com.apple.dock', 'launchanim', 'bool', lambda x: not x),
+    'dock.fast_mission_control': ('com.apple.dock', 'expose-animation-duration', 'float'),
+    'dock.disable_space_rearranging': ('com.apple.dock', 'mru-spaces', 'bool', lambda x: not x),
+    'dock.translucent_hidden_apps': ('com.apple.dock', 'showhidden', 'bool'),
+    'dock.hide_recent_apps': ('com.apple.dock', 'show-recents', 'bool', lambda x: not x),
+    
+    # Safari
+    'safari.show_full_url': ('com.apple.Safari', 'ShowFullURLInSmartSearchField', 'bool'),
+    'safari.homepage': ('com.apple.Safari', 'HomePage', 'string'),
+    'safari.disable_auto_open_safe_downloads': ('com.apple.Safari', 'AutoOpenSafeDownloads', 'bool', lambda x: not x),
+    'safari.enable_develop_menu': ('com.apple.Safari', 'IncludeDevelopMenu', 'bool'),
+    'safari.disable_java': ('com.apple.Safari', 'WebKitJavaEnabled', 'bool', lambda x: not x),
+    'safari.block_popups': ('com.apple.Safari', 'WebKitJavaScriptCanOpenWindowsAutomatically', 'bool', lambda x: not x),
+    'safari.enable_do_not_track': ('com.apple.Safari', 'SendDoNotTrackHTTPHeader', 'bool'),
+    
+    # Activity Monitor
+    'activity_monitor.show_main_window': ('com.apple.ActivityMonitor', 'OpenMainWindow', 'bool'),
+    'activity_monitor.dock_icon_cpu_usage': ('com.apple.ActivityMonitor', 'IconType', 'int', lambda x: 5 if x else 0),
+    'activity_monitor.show_all_processes': ('com.apple.ActivityMonitor', 'ShowCategory', 'int', lambda x: 0 if x else 1),
+    'activity_monitor.sort_by_cpu': ('com.apple.ActivityMonitor', 'SortColumn', 'string', lambda x: 'CPUUsage' if x else 'Name'),
+    
+    # TextEdit
+    'text_edit.plain_text_mode': ('com.apple.TextEdit', 'RichText', 'int', lambda x: 0 if x else 1),
+    'text_edit.utf8_encoding': ('com.apple.TextEdit', 'PlainTextEncoding', 'int', lambda x: 4 if x else 1),
+    
+    # App Store
+    'app_store.automatic_updates': ('com.apple.commerce', 'AutoUpdate', 'bool'),
+    'app_store.daily_update_check': ('com.apple.SoftwareUpdate', 'ScheduleFrequency', 'int', lambda x: 1 if x else 7),
+    'app_store.auto_download_updates': ('com.apple.SoftwareUpdate', 'AutomaticDownload', 'int', lambda x: 1 if x else 0),
+    'app_store.critical_updates': ('com.apple.SoftwareUpdate', 'CriticalUpdateInstall', 'int', lambda x: 1 if x else 0),
+    
+    # Photos
+    'photos.disable_auto_open': ('com.apple.ImageCapture', 'disableHotPlug', 'bool'),
+}
+
+def get_nested_value(data, key_path):
+    """Get a nested value from a dictionary using dot notation"""
+    keys = key_path.split('.')
+    value = data
+    for key in keys:
+        if isinstance(value, dict) and key in value:
+            value = value[key]
+        else:
+            return None
+    return value
+
+def set_default(domain, key, value, value_type):
+    """Set a default value using the defaults command"""
+    cmd = ["defaults", "write", domain, key, f"-{value_type}", str(value)]
+    
+    try:
+        subprocess.run(cmd, check=True, capture_output=True)
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Failed to set {domain}.{key}: {e}")
+        return False
+
+def apply_system_settings(config):
+    """Apply system-level settings that require sudo"""
+    system_config = config.get('system', {})
+    
+    commands = []
+    
+    if system_config.get('lid_wake'):
+        commands.append(['sudo', 'pmset', '-a', 'lidwake', '1'])
+    
+    if system_config.get('auto_restart_on_power_loss'):
+        commands.append(['sudo', 'pmset', '-a', 'autorestart', '1'])
+    
+    if system_config.get('display_sleep_minutes'):
+        minutes = str(system_config['display_sleep_minutes'])
+        commands.append(['sudo', 'pmset', '-a', 'displaysleep', minutes])
+    
+    if system_config.get('timezone'):
+        tz = system_config['timezone']
+        commands.append(['sudo', 'systemsetup', '-settimezone', tz])
+    
+    for cmd in commands:
+        try:
+            subprocess.run(cmd, check=True, capture_output=True)
+        except subprocess.CalledProcessError:
+            pass  # Some commands may fail
+
+def apply_special_settings(config):
+    """Apply settings that need special handling"""
+    
+    # Screenshot location
+    if config.get('display', {}).get('screenshot_location'):
+        location = config['display']['screenshot_location']
+        if location.startswith('~'):
+            location = os.path.expanduser(location)
+        set_default('com.apple.screencapture', 'location', location, 'string')
+    
+    # Finder default location
+    if config.get('finder', {}).get('default_location'):
+        location = config['finder']['default_location']
+        if location == "Downloads":
+            set_default('com.apple.finder', 'NewWindowTarget', 'PfLo', 'string')
+            downloads_path = f"file://{os.path.expanduser('~')}/Downloads/"
+            set_default('com.apple.finder', 'NewWindowTargetPath', downloads_path, 'string')
+
+def main():
+    print("ℹ️  🍎 Setting up macOS defaults using YAML configuration...")
+    
+    # Load configuration
+    config_file = Path("{{ .chezmoi.sourceDir }}") / "os" / "macos" / "macos-defaults.yaml"
+    with open(config_file, 'r') as f:
+        config = yaml.safe_load(f)
+    
+    # Ask for administrator password upfront (skip if in non-interactive mode)
+    try:
+        subprocess.run(["sudo", "-v"], check=True, timeout=5)
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        print("⚠️  Could not authenticate with sudo. Skipping system-level settings.")
+        print("ℹ️  Re-run this script interactively to apply all settings.")
+        return
+    
+    # Close System Preferences
+    subprocess.run([
+        "osascript", "-e", 
+        'tell application "System Preferences" to quit'
+    ], capture_output=True)
+    
+    success_count = 0
+    total_count = 0
+    
+    # Apply mapped configurations
+    for yaml_key, mapping in CONFIG_MAP.items():
+        value = get_nested_value(config, yaml_key)
+        if value is None:
+            continue
+            
+        total_count += 1
+        domain, defaults_key, value_type = mapping[:3]
+        transform = mapping[3] if len(mapping) > 3 else None
+        
+        # Apply transformation if provided
+        if transform:
+            value = transform(value)
+        
+        if set_default(domain, defaults_key, value, value_type):
+            success_count += 1
+    
+    # Apply special settings
+    apply_special_settings(config)
+    apply_system_settings(config)
+    
+    # Show ~/Library folder
+    library_path = Path.home() / "Library"
+    try:
+        subprocess.run(["chflags", "nohidden", str(library_path)], check=True)
+        subprocess.run(["xattr", "-d", "com.apple.FinderInfo", str(library_path)], 
+                      capture_output=True)
+    except subprocess.CalledProcessError:
+        pass
+    
+    # Restart affected applications
+    print("ℹ️  Restarting affected applications...")
+    apps_to_restart = [
+        "Activity Monitor", "cfprefsd", "Dock", "Finder", 
+        "Safari", "SystemUIServer"
+    ]
+    
+    for app in apps_to_restart:
+        subprocess.run(["killall", app], capture_output=True)
+    
+    print(f"✅ Applied {success_count}/{total_count} macOS defaults successfully!")
+    print("✅ Some changes may require a logout/restart to take effect.")
+
+if __name__ == "__main__":
+    main()
+
+{{- end -}}

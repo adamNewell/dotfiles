@@ -8,13 +8,13 @@ Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/), featuring aut
 
 ```bash
 # Full environment setup (recommended)
-curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/setup.sh | bash
 
 # Minimal installation (essential tools only)
-curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash -s -- --minimal
+curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/setup.sh | bash -s -- --minimal
 
 # Configuration only (skip packages)
-curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash -s -- --skip-packages
+curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/setup.sh | bash -s -- --skip-packages
 ```
 
 ### Alternative Methods
@@ -39,7 +39,7 @@ chezmoi update
 ## 📁 Repository Structure
 
 ```
-.dotfiles/
+dotfiles/
 ├── .local/share/chezmoi/           # chezmoi source directory
 │   ├── dot_config/                 # ~/.config configurations
 │   │   ├── git/                    # Git configuration with templates

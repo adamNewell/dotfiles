@@ -8,7 +8,7 @@
 
 ```bash
 # Full environment setup (recommended)
-curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/setup.sh | bash
 
 # Alternative: Direct chezmoi installation
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply adamNewell/dotfiles
@@ -42,7 +42,7 @@ Once set up, you can SSH into a fresh system, run the install script, and be pro
 ## 🏗️ Repository Structure
 
 ```
-.dotfiles/
+dotfiles/
 ├── .local/share/chezmoi/           # chezmoi source directory
 │   ├── dot_config/                 # ~/.config configurations
 │   │   ├── git/                    # Git configuration

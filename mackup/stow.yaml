@@ -1,7 +1,0 @@
----
-package: mackup
-stow:
-  target: ~
-  adopt:
-    - .mackup.cfg
-    - .mackup 

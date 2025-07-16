@@ -1,4 +1,0 @@
-package: dotfiles
-adopt:
-  - .config
-  - .local 
