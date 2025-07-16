@@ -14,9 +14,13 @@ Thumbs.db
 
 # Shell history and cache files
 .zsh_history
+**/.zsh_history
+**/zsh_history
 .zcompdump*
 .zsh_sessions/
 .zshrc.zwc
+**/.zshrc.zwc
+**/zcompdump*
 
 # Editor temporary files
 *.swp

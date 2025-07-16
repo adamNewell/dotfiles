@@ -1,9 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Requires bash 4.0+ for associative arrays
 # Advanced package management with dependency resolution and rollback
 # This script provides utilities for managing the simplified package system
 
 set -e
 set -o pipefail
+
+# Check bash version (requires 4.0+ for associative arrays)
+if [[ ${BASH_VERSION%%.*} -lt 4 ]]; then
+    echo "Error: This script requires bash 4.0 or later. Current version: $BASH_VERSION" >&2
+    echo "On macOS, install with: brew install bash" >&2
+    exit 1
+fi
 
 # Colors
 readonly RED='\033[0;31m'
@@ -122,7 +130,7 @@ resolve_dependencies() {
         to_process=("${to_process[@]:1}")  # Remove first element
         
         # Skip if already resolved
-        if [[ " ${resolved[*]} " =~ " ${current} " ]]; then
+        if [[ " ${resolved[*]} " == *" ${current} "* ]]; then
             continue
         fi
         
@@ -134,7 +142,7 @@ resolve_dependencies() {
         if [[ -n "${deps}" ]]; then
             read -ra dep_array <<< "${deps}"
             for dep in "${dep_array[@]}"; do
-                if [[ ! " ${resolved[*]} " =~ " ${dep} " ]]; then
+                if [[ ! " ${resolved[*]} " == *" ${dep} "* ]]; then
                     to_process+=("${dep}")
                 fi
             done
@@ -216,7 +224,8 @@ list_backups() {
     
     for backup in "${BACKUP_DIR}"/*; do
         if [[ -d "${backup}" ]]; then
-            local backup_name=$(basename "${backup}")
+            local backup_name
+            backup_name=$(basename "${backup}")
             local manifest="${backup}/manifest.txt"
             
             echo "  📦 ${backup_name}"

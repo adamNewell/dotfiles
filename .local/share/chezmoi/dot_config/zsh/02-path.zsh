@@ -9,12 +9,22 @@ PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 # Local user binaries (highest priority)
 [[ -d "$HOME/.local/bin" ]] && PATH="$HOME/.local/bin:$PATH"
 
-# Homebrew - use dynamic detection instead of hardcoded paths
+# Homebrew - add common paths first, then use dynamic detection
+# Add common Homebrew paths so we can find brew command
+if [[ -d "/opt/homebrew/bin" ]]; then
+    PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+elif [[ -f "/usr/local/bin/brew" ]]; then
+    PATH="/usr/local/bin:$PATH"
+fi
+
+# Now use dynamic detection to get the correct prefix
 if command -v brew >/dev/null 2>&1; then
-    # Get Homebrew's actual path and add to PATH if not already there
     local brew_prefix="$(brew --prefix)"
-    if [[ -d "${brew_prefix}/bin" ]] && [[ ":$PATH:" != *":${brew_prefix}/bin:"* ]]; then
-        PATH="${brew_prefix}/bin:${brew_prefix}/sbin:$PATH"
+    # Only add if it's different from what we already added
+    if [[ "${brew_prefix}" != "/opt/homebrew" ]] && [[ "${brew_prefix}" != "/usr/local" ]]; then
+        if [[ -d "${brew_prefix}/bin" ]] && [[ ":$PATH:" != *":${brew_prefix}/bin:"* ]]; then
+            PATH="${brew_prefix}/bin:${brew_prefix}/sbin:$PATH"
+        fi
     fi
 fi
 

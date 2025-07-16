@@ -63,4 +63,12 @@ mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
 mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/zsh"
 mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}/zsh"
 
+# Ensure zsh completions directory exists
+ZDOTDIR="${XDG_CONFIG_HOME:-$HOME/.config}/zsh"
+mkdir -p "$ZDOTDIR/completions"
+mkdir -p "$ZDOTDIR/functions"
+
+# Set proper permissions for completion directories
+chmod 755 "$ZDOTDIR/completions" "$ZDOTDIR/functions" 2>/dev/null || true
+
 success "Shell tools setup complete!"

@@ -33,6 +33,20 @@ zstyle ':completion:*' special-dirs true
 zstyle ':completion:*' list-separator '-->'
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01'
 
+# Generate Docker completions if Docker is available and completion doesn't exist
+if command -v docker >/dev/null 2>&1 && [[ ! -f "$ZDOTDIR/completions/_docker" ]]; then
+    # Ensure completions directory exists
+    [[ -d "$ZDOTDIR/completions" ]] || mkdir -p "$ZDOTDIR/completions"
+    
+    # Generate Docker completion file safely
+    if docker completion zsh > "$ZDOTDIR/completions/_docker" 2>/dev/null; then
+        # Also handle docker-compose if available
+        if command -v docker-compose >/dev/null 2>&1; then
+            docker-compose completion zsh > "$ZDOTDIR/completions/_docker-compose" 2>/dev/null || true
+        fi
+    fi
+fi
+
 # Completion options
 setopt COMPLETE_IN_WORD          # Complete from both ends of a word
 setopt ALWAYS_TO_END             # Move cursor to the end of a completed word

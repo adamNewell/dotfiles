@@ -22,3 +22,6 @@ export TMPDIR="${TMPDIR:-/tmp}"
 
 # Shell behavior
 export WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
+
+# Homebrew
+export HOMEBREW_NO_ENV_HINTS=1

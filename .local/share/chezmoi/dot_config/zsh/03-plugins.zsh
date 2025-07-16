@@ -6,8 +6,12 @@
 autoload -Uz compinit
 compinit -d "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-$ZSH_VERSION"
 
-# Load plugins via sheldon
-eval "$(sheldon source)"
+# Load plugins via sheldon (only if available)
+if command -v sheldon >/dev/null 2>&1; then
+    eval "$(sheldon source)"
+else
+    echo "Warning: sheldon not found - plugins not loaded" >&2
+fi
 
 # =============================================================================
 #                               Plugin Settings
@@ -25,5 +29,7 @@ ZSH_AUTOSUGGEST_COMPLETION_IGNORE="git *"
 # FZF options
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border"
 
-# thefuck initialization (loaded via plugin)
-eval $(thefuck --alias)
+# thefuck initialization (only if available)
+if command -v thefuck >/dev/null 2>&1; then
+    eval $(thefuck --alias)
+fi

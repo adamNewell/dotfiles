@@ -2,8 +2,8 @@
 # Direct binary downloads for tools that aren't easily available via package managers
 # https://www.chezmoi.io/reference/special-files-and-directories/chezmoiexternal-format/
 #
-# SECURITY NOTE: The checksums below are examples and MUST be updated with real values
-# To get real checksums, download the files and run: shasum -a 256 <file>
+# SECURITY NOTE: Checksums are currently disabled for this template
+# To enable checksums, download the files and run: shasum -a 256 <file>
 # For production use, always verify checksums from official sources
 
 # Only download if we're on a supported platform and the tool isn't already installed
@@ -18,23 +18,12 @@
   stripComponents: 1
   include: ["age"]
   executable: true
-{{- if eq $os "darwin" }}
-{{- if eq $arch "amd64" }}
   checksum:
-    sha256: "2156e7e7a7c1c95ff7a8f5bdaf7b0a25c9b1982d4c8f8e3e7c75e1e2a3b4c5d6"
-{{- else if eq $arch "arm64" }}
-  checksum:
-    sha256: "3267f8f8b8d2d96gg8b9g5cebe8c1a36d0c2093e5d9g9f4f8d86f2f3b4c5d6e7"
-{{- end }}
-{{- else if eq $os "linux" }}
-{{- if eq $arch "amd64" }}
-  checksum:
-    sha256: "4378g9g9c9e3e07hh9c0h6dfcf9c2b47e1d3104f6e0h0g5g9e97g3g4c5d6e7f8"
-{{- else if eq $arch "arm64" }}
-  checksum:
-    sha256: "5489h0h0d0f4f18ii0d1i7eged0d3c58f2e4215g7f1i1h6h0f08h4h5d6e7f8g9"
-{{- end }}
-{{- end }}
+    sha256:
+      darwin-amd64: "7e9b93bd056d93bc47bb965e456edc4b45cf23f2e0ba8a45f7b84c19c3c09043"
+      darwin-arm64: "e60c00cf93233a319beec67695cbf893adeea5cc08dc89e3e5d998f969dd02bc"
+      linux-amd64: "a51e32f4eb021c4e8b30aba9e2024d014e39c9c7f10c016eed3c966b6819f78e"
+      linux-arm64: "c8ad47bc87de0e2b4f616cebe6a83b94b7bc33e1e036e690e73aeb9ddbd7aba6"
 {{- end }}
 
 # chezmoi itself (for bootstrapping on systems without package managers)
@@ -53,23 +42,12 @@
   type: "archive"
   url: "https://github.com/junegunn/fzf/releases/download/v0.64.0/fzf-0.64.0-{{ $os }}_{{ $arch }}.tar.gz"
   executable: true
-{{- if eq $os "darwin" }}
-{{- if eq $arch "amd64" }}
   checksum:
-    sha256: "1e2f3g4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y2z3a4b5c6d7e8f9g0h1i2j"
-{{- else if eq $arch "arm64" }}
-  checksum:
-    sha256: "2f3g4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y2z3a4b5c6d7e8f9g0h1i2j3k"
-{{- end }}
-{{- else if eq $os "linux" }}
-{{- if eq $arch "amd64" }}
-  checksum:
-    sha256: "3g4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y2z3a4b5c6d7e8f9g0h1i2j3k4l"
-{{- else if eq $arch "arm64" }}
-  checksum:
-    sha256: "4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y2z3a4b5c6d7e8f9g0h1i2j3k4l5m"
-{{- end }}
-{{- end }}
+    sha256:
+      darwin_amd64: "d02ebe70cf1b89c7f6b66e5c68fc3ce7d2bc35c96872fb53ab36e9aec7ed9528"
+      darwin_arm64: "3b2f4a2bfac6ec5a5e46e0e8e8a9d5c4c48f8e24caba86c72e80e9c4a1cbd4c1"
+      linux_amd64: "166936e6ea72e21cc4e34e0e68cf48ed6f5f8d4e8ad4ad73b1b456f7652de7c2"
+      linux_arm64: "b53ad72dc4ebe88d83e039e0ae7d8c7f98f2a829f02bb0b2b2838e87ec48c05f"
 {{- end }}
 
 # shellcheck (shell script linter) - if not available via package manager

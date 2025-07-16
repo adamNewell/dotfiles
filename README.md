@@ -4,7 +4,20 @@ Modern, cross-platform dotfiles managed with [chezmoi](https://www.chezmoi.io/),
 
 ## 🚀 Quick Start
 
-### New Machine Setup
+### One-Command Installation
+
+```bash
+# Complete environment setup (recommended)
+curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash
+
+# Minimal installation (essential tools only)
+curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash -s -- --minimal
+
+# Configuration only (skip packages)
+curl -fsSL https://raw.githubusercontent.com/adamNewell/.dotfiles/main/setup.sh | bash -s -- --skip-packages
+```
+
+### Alternative Installation
 
 ```bash
 # Install chezmoi and apply dotfiles in one command

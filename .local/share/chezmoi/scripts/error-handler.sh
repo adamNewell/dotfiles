@@ -24,7 +24,8 @@ log_error() {
     local function_name="${4:-main}"
     local script="${5:-${BASH_SOURCE[1]##*/}}"
     
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     local log_entry="${timestamp} [${level}] ${script}:${function_name}:${line} - ${message}"
     
     # Log to file

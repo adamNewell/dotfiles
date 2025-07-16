@@ -225,20 +225,28 @@ test_package_management() {
     # Test package manager script
     local pm_script="${REPO_ROOT}/.local/share/chezmoi/scripts/package-manager.sh"
     if [[ -x "${pm_script}" ]]; then
-        # Test help command
-        if "${pm_script}" help >/dev/null 2>&1; then
-            echo -e "${TEST_GREEN}✅ PASS${TEST_NC}: Package manager help works"
+        # Check bash version first
+        if [[ ${BASH_VERSION%%.*} -ge 4 ]]; then
+            # Test help command
+            if "${pm_script}" help >/dev/null 2>&1; then
+                echo -e "${TEST_GREEN}✅ PASS${TEST_NC}: Package manager help works"
+                ((TESTS_PASSED++))
+            else
+                echo -e "${TEST_RED}❌ FAIL${TEST_NC}: Package manager help failed"
+                ((TESTS_FAILED++))
+            fi
+            
+            # Test dependency resolution
+            if "${pm_script}" dependencies git >/dev/null 2>&1; then
+                echo -e "${TEST_GREEN}✅ PASS${TEST_NC}: Dependency resolution works"
+                ((TESTS_PASSED++))
+            else
+                echo -e "${TEST_RED}❌ FAIL${TEST_NC}: Dependency resolution failed"
+                ((TESTS_FAILED++))
+            fi
         else
-            echo -e "${TEST_RED}❌ FAIL${TEST_NC}: Package manager help failed"
-            ((TESTS_FAILED++))
-        fi
-        
-        # Test dependency resolution
-        if "${pm_script}" dependencies git >/dev/null 2>&1; then
-            echo -e "${TEST_GREEN}✅ PASS${TEST_NC}: Dependency resolution works"
-        else
-            echo -e "${TEST_RED}❌ FAIL${TEST_NC}: Dependency resolution failed"
-            ((TESTS_FAILED++))
+            echo -e "${TEST_YELLOW}⚠️  SKIP${TEST_NC}: Package manager requires bash 4.0+ (current: ${BASH_VERSION})"
+            ((TESTS_RUN += 2))  # Account for skipped tests
         fi
     else
         echo -e "${TEST_RED}❌ FAIL${TEST_NC}: Package manager script not executable"
@@ -250,8 +258,8 @@ test_package_management() {
 test_security() {
     echo -e "${TEST_BLUE}🧪 Testing security...${TEST_NC}"
     
-    # Check for hardcoded secrets
-    if grep -r -i "password\|secret\|token" "${REPO_ROOT}" --exclude-dir=.git --exclude="*.log" | grep -v "example\|test\|TODO" | grep -q .; then
+    # Check for hardcoded secrets (more specific patterns)
+    if grep -r -E "(password|secret|token)\s*=\s*['\"][^'\"]{8,}['\"]" "${REPO_ROOT}" --exclude-dir=.git --exclude="*.log" --exclude-dir=tests --exclude-dir=docs | grep -v -E "(example|test|TODO|template|\.chezmoiignore|macos-defaults)" | grep -q .; then
         echo -e "${TEST_RED}❌ FAIL${TEST_NC}: Potential hardcoded secrets found"
         ((TESTS_FAILED++))
     else

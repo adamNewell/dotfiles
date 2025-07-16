@@ -30,13 +30,14 @@ github = "ohmyzsh/ohmyzsh"
 dir = "lib"
 use = ["completion.zsh"]
 
-[plugins.ohmyzsh-plugin-docker]
-github = "ohmyzsh/ohmyzsh"
-dir = "plugins/docker"
+# Docker plugins temporarily disabled due to completion generation issues
+# [plugins.ohmyzsh-plugin-docker]
+# github = "ohmyzsh/ohmyzsh"
+# dir = "plugins/docker"
 
-[plugins.ohmyzsh-plugin-docker-compose]
-github = "ohmyzsh/ohmyzsh"
-dir = "plugins/docker-compose"
+# [plugins.ohmyzsh-plugin-docker-compose]
+# github = "ohmyzsh/ohmyzsh"
+# dir = "plugins/docker-compose"
 
 [plugins.thefuck]
 github = "laggardkernel/zsh-thefuck"
