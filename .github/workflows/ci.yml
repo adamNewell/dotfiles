@@ -158,8 +158,6 @@ jobs:
         # Check for required files
         required_files=(
           "README.md"
-          "REFACTOR_PLAN.md" 
-          ".local/share/chezmoi/ENCRYPTION.md"
           ".local/share/chezmoi/dot_config/zsh/README.md"
         )
         

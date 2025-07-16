@@ -173,11 +173,11 @@ chezmoi edit ~/.config/sheldon/plugins.toml  # Edit plugins
 
 ## 🌍 Platform Support
 
-| Platform | Status | Package Manager | System Preferences |
-|----------|--------|-----------------|-------------------|
-| macOS | ✅ Full | Homebrew | ✅ Full |
-| Linux | ✅ Full | Native (apt/dnf/pacman) | ⚠️ Limited |
-| Windows | ✅ Basic | winget/scoop | ⚠️ Limited |
+| Platform | Status  | Package Manager         | System Preferences |
+|----------|---------|-------------------------|--------------------|
+| macOS    | ✅ Full  | Homebrew                | ✅ Full            |
+| Linux    | ✅ Full  | Native (apt/dnf/pacman) | ⚠️ Limited         |
+| Windows  | ✅ Basic | winget/scoop            | ⚠️ Limited         |
 
 ## 📚 Documentation
 
@@ -194,4 +194,4 @@ MIT License - Personal dotfiles repository, feel free to fork and adapt.
 
 ---
 
-*Personal dotfiles focused on cross-platform compatibility and automated setup.*
+*These dotfiles are designed for efficiency, elegance, and cross-platform compatibility. They represent a modern approach to dotfile management using industry-standard tools and best practices.*

@@ -82,11 +82,11 @@ The repository uses chezmoi's run scripts for automated setup:
 
 ### Platform Support
 
-| Platform | Status | Package Manager | System Preferences |
-|----------|--------|-----------------|-------------------|
-| macOS | ✅ Full | Homebrew | ✅ Full |
-| Linux | ✅ Full | Native (apt/dnf/pacman) | ⚠️ Limited |
-| Windows | ✅ Basic | winget/scoop | ⚠️ Limited |
+| Platform | Status   | Package Manager         | System Preferences |
+|----------|----------|-------------------------|--------------------|
+| macOS    | ✅ Full   | Homebrew                | ✅ Full            |
+| Linux    | ✅ Full   | Native (apt/dnf/pacman) | ⚠️ Limited         |
+| Windows  | ✅ Basic  | winget/scoop            | ⚠️ Limited         |
 
 ## 🔧 Common Commands
 
@@ -109,55 +109,4 @@ sudo apt upgrade               # Update Ubuntu/Debian packages
 cargo install-update -a       # Update Rust tools
 ```
 
-### Shell Management
-
-```bash
-sheldon lock                   # Update plugin cache
-exec zsh                       # Reload shell configuration
-chezmoi edit ~/.config/sheldon/plugins.toml  # Edit plugins
-```
-
-## 🔐 Security
-
-This repository follows security best practices:
-
-- **🔒 No sensitive data** - API keys, passwords, and private keys are never committed
-- **📝 `.gitignore` protection** - Sensitive files are automatically excluded
-- **🛡️ Template-based configs** - chezmoi templates allow for secure, machine-specific values
-- **🔐 GPG support** - chezmoi supports GPG encryption for truly sensitive data when needed
-
-Always review configurations before committing to ensure no sensitive information is included.
-
-## 📚 Documentation
-
-For detailed component documentation, see:
-
-- [Package Management](docs/PACKAGE_MANAGEMENT.md) - Package definitions and platform handling
-- [Shell Configuration](docs/SHELL_CONFIGURATION.md) - Zsh organization and customization
-- [chezmoi Operations](docs/CHEZMOI_USAGE.md) - Dotfile management commands
-- [macOS Preferences](docs/MACOS_SETUP.md) - System preference automation
-
-## 🎯 Forking & Customization
-
-While you're welcome to fork this repository as a starting point, dotfiles are highly personal configurations. What works for one developer may not suit another's workflow.
-
-### Recommendations:
-
-- **📖 Read before using** - Understand what each configuration does before applying it
-- **🛠️ Customize gradually** - Start with basic configs and add features as needed
-- **✅ Test thoroughly** - Always test configurations in a safe environment first
-- **📝 Document changes** - Keep track of your customizations for future reference
-
-### Inspiration Sources:
-
-- [webpro/awesome-dotfiles](https://github.com/webpro/awesome-dotfiles) - Curated dotfile resources
-- [dotfiles.github.io](https://dotfiles.github.io/) - Dotfile gallery and tutorials
-- [r/unixporn](https://www.reddit.com/r/unixporn/) - Community showcases
-
-## 📄 License
-
-MIT License - Personal dotfiles repository, feel free to fork and adapt.
-
----
-
-*Personal dotfiles focused on cross-platform compatibility and automated setup.*
+</details>
