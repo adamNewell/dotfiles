@@ -71,6 +71,9 @@ node_modules/
 # Tool version files (using mise config.toml instead)
 .tool-versions
 
+# Zsh session files (stored in XDG state directory)
+.zsh_sessions
+
 # SSH keys (should be encrypted with age)
 .ssh/
 

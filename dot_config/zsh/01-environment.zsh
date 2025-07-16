@@ -23,5 +23,9 @@ export TMPDIR="${TMPDIR:-/tmp}"
 # Shell behavior
 export WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
+# Zsh session directory (use XDG state directory)
+export SHELL_SESSION_DIR="$XDG_STATE_HOME/zsh/sessions"
+[[ ! -d "$SHELL_SESSION_DIR" ]] && mkdir -p "$SHELL_SESSION_DIR"
+
 # Homebrew
 export HOMEBREW_NO_ENV_HINTS=1
