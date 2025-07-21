@@ -105,14 +105,15 @@ install_tool() {
         "macos:brew:jq") package_name="jq" ;;
         "macos:brew:delta") package_name="git-delta" ;;
         "macos:brew:sheldon") package_name="sheldon" ;;
-        "linux:apt:eza") package_name="eza" ;;
+        "linux:apt:eza") package_name="" ;;
         "linux:apt:fd") package_name="fd-find" ;;
         "linux:apt:ripgrep") package_name="ripgrep" ;;
         "linux:apt:bat") package_name="bat" ;;
-        "linux:apt:zoxide") package_name="zoxide" ;;
+        "linux:apt:zoxide") package_name="" ;;
         "linux:apt:fzf") package_name="fzf" ;;
         "linux:apt:jq") package_name="jq" ;;
-        "linux:apt:delta") package_name="git-delta" ;;
+        "linux:apt:delta") package_name="" ;;
+        "linux:apt:sheldon") package_name="" ;;
         "linux:dnf:"*|"linux:pacman:"*) 
             # Similar mapping for dnf/pacman
             package_name="${tool_name}"
@@ -152,6 +153,32 @@ install_tool() {
         esac
     fi
     
+    # Try cargo for Rust-based tools
+    if command -v cargo >/dev/null 2>&1; then
+        # Source cargo env in case it was just installed
+        [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
+        
+        local cargo_package=""
+        case "${tool_name}" in
+            "eza") cargo_package="eza" ;;
+            "fd") cargo_package="fd-find" ;;
+            "ripgrep") cargo_package="ripgrep" ;;
+            "bat") cargo_package="bat" ;;
+            "zoxide") cargo_package="zoxide" ;;
+            "delta") cargo_package="git-delta" ;;
+            "sheldon") cargo_package="sheldon" ;;
+        esac
+        
+        if [[ -n "${cargo_package}" ]]; then
+            info "Attempting to install ${tool_name} via cargo..."
+            if cargo install "${cargo_package}" 2>/dev/null; then
+                success "${tool_name} installed via cargo"
+                INSTALLED_TOOLS+=("${tool_name}")
+                return 0
+            fi
+        fi
+    fi
+    
     # If all else fails, rely on chezmoi external downloads
     warn "${tool_name} will be installed via external download (if configured)"
     FAILED_TOOLS+=("${tool_name}")
@@ -188,6 +215,20 @@ install_system_packages() {
             sudo pacman -S --noconfirm "${packages[@]}" || warn "Some packages failed to install"
             ;;
     esac
+    
+    # Install Rust/Cargo as a core system package
+    if ! command -v cargo >/dev/null 2>&1; then
+        info "Installing Rust via rustup..."
+        if curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path; then
+            # Source cargo env for current session
+            source "$HOME/.cargo/env"
+            success "Rust installed successfully"
+        else
+            warn "Failed to install Rust"
+        fi
+    else
+        success "Rust/Cargo already installed"
+    fi
     
     success "System packages installation completed"
 }
@@ -239,7 +280,7 @@ main() {
     local essential_tools=(eza fd ripgrep bat zoxide fzf jq delta sheldon)
     
     for tool in "${essential_tools[@]}"; do
-        install_tool "${tool}" "${os_type}" "${package_manager}"
+        install_tool "${tool}" "${os_type}" "${package_manager}" || true
     done
     
     # Stage 4: Development tools (optional, only if not in minimal mode)
