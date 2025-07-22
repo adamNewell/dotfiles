@@ -1,10 +1,35 @@
 #!/bin/bash
 # Universal dotfiles installer and environment setup
 # Supports macOS, Linux, and Windows (WSL)
+# This script will automatically switch to zsh if not already running in it
+
+# Early check for zsh - if we're in bash and being piped, save and re-execute
+if [[ -n "${BASH_VERSION:-}" ]] && [[ -z "${ZSH_VERSION:-}" ]] && [[ ! -f "$0" ]]; then
+    # We're being piped and running in bash
+    temp_script="/tmp/dotfiles_setup_$$.sh"
+    cat > "$temp_script"
+    chmod +x "$temp_script"
+    # Re-execute with zsh (will install if needed)
+    exec bash -c "
+        if ! command -v zsh >/dev/null 2>&1; then
+            echo 'Installing zsh first...'
+            if command -v apt-get >/dev/null 2>&1; then
+                sudo apt-get update -qq && sudo apt-get install -y zsh
+            elif command -v dnf >/dev/null 2>&1; then
+                sudo dnf install -y zsh
+            elif command -v pacman >/dev/null 2>&1; then
+                sudo pacman -S --noconfirm zsh
+            elif command -v brew >/dev/null 2>&1; then
+                brew install zsh
+            fi
+        fi
+        exec zsh '$temp_script' $*
+    " -- "$@"
+fi
 # 
 # Features:
 # - Automatic platform detection and package manager selection
-# - Modern bash installation (if needed for compatibility)
+# - ZSH-only configuration (no bash support)
 # - Homebrew installation and management
 # - Essential tool installation (git, curl, zsh, stow, etc.)
 # - Modern CLI tools (ripgrep, fd, bat, eza, fzf, etc.)
@@ -20,7 +45,6 @@ set -o pipefail
 # Configuration
 readonly REPO_URL="https://github.com/adamNewell/dotfiles.git"
 readonly SCRIPT_VERSION="2.0.0"
-readonly MIN_BASH_VERSION=4
 
 # Colors for output
 readonly RED='\033[0;31m'
@@ -212,9 +236,79 @@ detect_package_manager() {
     # echo "Successfully detected package manager: ${PACKAGE_MANAGER}"
 }
 
+# Ensure zsh is installed and set as default shell
+ensure_zsh() {
+    step "Ensuring zsh is installed and configured as default shell..."
+    
+    # Check if zsh is installed
+    if ! command -v zsh >/dev/null 2>&1; then
+        info "Installing zsh..."
+        case "${PACKAGE_MANAGER}" in
+            brew)
+                brew install zsh
+                ;;
+            apt)
+                sudo apt-get update -qq
+                sudo apt-get install -y zsh
+                ;;
+            dnf)
+                sudo dnf install -y zsh
+                ;;
+            pacman)
+                sudo pacman -S --noconfirm zsh
+                ;;
+            *)
+                error "Cannot install zsh with package manager: ${PACKAGE_MANAGER}"
+                exit 1
+                ;;
+        esac
+    fi
+    
+    # Verify zsh installation
+    if ! command -v zsh >/dev/null 2>&1; then
+        error "Failed to install zsh. Cannot proceed."
+        exit 1
+    fi
+    
+    local zsh_path
+    zsh_path="$(command -v zsh)"
+    
+    # Add zsh to /etc/shells if not present
+    if ! grep -q "^${zsh_path}$" /etc/shells 2>/dev/null; then
+        info "Adding zsh to /etc/shells..."
+        echo "${zsh_path}" | sudo tee -a /etc/shells >/dev/null
+    fi
+    
+    # Check current shell
+    local current_shell
+    current_shell=$(getent passwd "$USER" | cut -d: -f7 || echo "$SHELL")
+    
+    if [[ "$current_shell" != "$zsh_path" ]]; then
+        info "Setting zsh as default shell..."
+        if command -v chsh >/dev/null 2>&1; then
+            chsh -s "${zsh_path}"
+        else
+            sudo usermod -s "${zsh_path}" "$USER"
+        fi
+        warn "Shell changed to zsh. You'll need to log out and back in for the change to take effect."
+        warn "Or run: exec zsh"
+    else
+        success "zsh is already the default shell"
+    fi
+    
+    # At this point we should already be in zsh due to early re-execution
+    if [[ -n "${BASH_VERSION:-}" ]]; then
+        error "Still running in bash after re-execution attempt. Something went wrong."
+        exit 1
+    fi
+}
+
 # Install prerequisites
 install_prerequisites() {
     step "Installing prerequisites..."
+    
+    # FIRST: Ensure we're using zsh
+    ensure_zsh
     
     case "${DETECTED_OS}" in
         macos)
@@ -325,6 +419,9 @@ install_homebrew() {
 
 # Install chezmoi
 install_chezmoi() {
+    # Ensure PATH includes common installation directories
+    export PATH="$HOME/.local/bin:/usr/local/bin:${PATH}"
+    
     if command -v chezmoi >/dev/null 2>&1; then
         info "chezmoi already installed: $(chezmoi --version | head -n1)"
         return 0
@@ -358,116 +455,21 @@ install_chezmoi() {
             ;;
     esac
     
+    # Refresh PATH and verify installation
+    export PATH="$HOME/.local/bin:/usr/local/bin:${PATH}"
     if ! command -v chezmoi >/dev/null 2>&1; then
         error "Failed to install chezmoi"
+        info "Please ensure $HOME/.local/bin is in your PATH"
         exit 1
     fi
     
     success "chezmoi installed: $(chezmoi --version | head -n1)"
 }
 
-# Install modern bash if needed
-install_modern_bash_if_needed() {
-    local current_bash_version
-    local required_version=${MIN_BASH_VERSION}
-    
-    # Check current bash version
-    if command -v bash >/dev/null 2>&1; then
-        current_bash_version=$(bash --version | head -n1 | grep -o '[0-9]\+\.[0-9]\+' | head -n1)
-        current_bash_major=${current_bash_version%%.*}
-        
-        if [[ ${current_bash_major} -ge ${required_version} ]]; then
-            debug "Current bash version ${current_bash_version} is sufficient"
-            return 0
-        fi
-    else
-        warn "No bash found in PATH"
-    fi
-    
-    info "Installing modern bash (current: ${current_bash_version:-none}, required: ${required_version}.x)..."
-    
-    case "${DETECTED_OS}" in
-        macos)
-            if [[ "${PACKAGE_MANAGER}" == "brew" ]]; then
-                # Install modern bash via Homebrew
-                brew install bash
-                
-                # Add new bash to /etc/shells
-                local new_bash_path="/opt/homebrew/bin/bash"
-                if [[ ! -f "$new_bash_path" ]]; then
-                    new_bash_path="/usr/local/bin/bash"
-                fi
-                
-                if [[ -f "$new_bash_path" ]] && ! grep -q "$new_bash_path" /etc/shells 2>/dev/null; then
-                    info "Adding new bash to /etc/shells..."
-                    echo "$new_bash_path" | sudo tee -a /etc/shells >/dev/null
-                fi
-                
-                success "Modern bash installed: $(${new_bash_path} --version | head -n1)"
-            fi
-            ;;
-        linux)
-            case "${PACKAGE_MANAGER}" in
-                apt)
-                    # Ubuntu/Debian usually have modern bash, but ensure latest
-                    sudo apt-get install -y bash
-                    ;;
-                dnf)
-                    # Fedora usually has modern bash
-                    sudo dnf install -y bash
-                    ;;
-                pacman)
-                    # Arch usually has modern bash
-                    sudo pacman -S --noconfirm bash
-                    ;;
-            esac
-            ;;
-        windows)
-            # WSL distributions should have modern bash
-            if [[ -f /etc/os-release ]]; then
-                . /etc/os-release
-                case "$ID" in
-                    ubuntu|debian)
-                        sudo apt-get install -y bash
-                        ;;
-                    fedora)
-                        sudo dnf install -y bash
-                        ;;
-                    arch)
-                        sudo pacman -S --noconfirm bash
-                        ;;
-                esac
-            fi
-            ;;
-    esac
-    
-    # Verify installation
-    if command -v bash >/dev/null 2>&1; then
-        local new_version
-        new_version=$(bash --version 2>/dev/null | head -n1 | grep -o '[0-9]\+\.[0-9]\+' | head -n1)
-        local new_major=${new_version%%.*}
-        
-        if [[ -n "$new_major" ]] && [[ ${new_major} -ge ${required_version} ]]; then
-            success "Modern bash ${new_version} is now available"
-            return 0
-        else
-            warn "Bash version ${new_version:-unknown} may still be insufficient for some features"
-            warn "Continuing with available bash installation"
-            return 1
-        fi
-    else
-        warn "Failed to install modern bash, continuing with system bash"
-        warn "Some advanced features may not work properly"
-        return 1
-    fi
-}
 
 # Install essential macOS tools
 install_essential_macos_tools() {
     step "Installing essential macOS tools..."
-    
-    # Skip bash installation since it's already handled in the main function
-    # install_modern_bash_if_needed
     
     # Install Zsh if not already installed
     if ! command -v zsh >/dev/null 2>&1; then
@@ -511,9 +513,6 @@ install_essential_macos_tools() {
 # Install essential Linux tools
 install_essential_linux_tools() {
     step "Installing essential Linux tools..."
-    
-    # Skip bash installation since it's already handled in the main function
-    # install_modern_bash_if_needed
     
     # Install Zsh if not already installed
     if ! command -v zsh >/dev/null 2>&1; then
@@ -567,22 +566,19 @@ install_essential_linux_tools() {
 install_essential_wsl_tools() {
     step "Installing essential WSL tools..."
     
-    # Skip bash installation since it's already handled in the main function
-    # install_modern_bash_if_needed
-    
     # Detect WSL distribution
     if [[ -f /etc/os-release ]]; then
         . /etc/os-release
         case "$ID" in
             ubuntu|debian)
                 sudo apt-get update -qq
-                sudo apt-get install -y bash zsh stow tree jq htop neofetch
+                sudo apt-get install -y zsh stow tree jq htop neofetch
                 ;;
             fedora)
-                sudo dnf install -y bash zsh stow tree jq htop neofetch
+                sudo dnf install -y zsh stow tree jq htop neofetch
                 ;;
             arch)
-                sudo pacman -Sy --noconfirm bash zsh stow tree jq htop neofetch
+                sudo pacman -Sy --noconfirm zsh stow tree jq htop neofetch
                 ;;
         esac
     fi
@@ -707,10 +703,21 @@ install_chezmoi_binary() {
     local install_dir="$HOME/.local/bin"
     mkdir -p "${install_dir}"
     
+    # Ensure PATH includes install directory BEFORE installation
+    export PATH="${install_dir}:${PATH}"
+    
     # Download and install chezmoi
     if curl -fsSL "https://get.chezmoi.io" | sh -s -- -b "${install_dir}"; then
-        export PATH="${install_dir}:${PATH}"
-        success "chezmoi binary installed"
+        success "chezmoi binary installed to ${install_dir}"
+        
+        # Verify chezmoi is accessible
+        if ! command -v chezmoi >/dev/null 2>&1; then
+            error "chezmoi was installed but is not accessible in PATH"
+            info "Current PATH: ${PATH}"
+            exit 1
+        fi
+        
+        # No bash configuration - we only support zsh
     else
         error "Failed to install chezmoi binary"
         exit 1
@@ -898,6 +905,25 @@ show_completion() {
 
 # Main installation function
 main() {
+    # If we're running from a file in bash, re-execute in zsh
+    if [[ -n "${BASH_VERSION:-}" ]] && [[ -z "${ZSH_VERSION:-}" ]] && [[ -f "$0" ]]; then
+        # Ensure zsh is installed first
+        if ! command -v zsh >/dev/null 2>&1; then
+            info "Installing zsh first..."
+            if command -v apt-get >/dev/null 2>&1; then
+                sudo apt-get update -qq && sudo apt-get install -y zsh
+            elif command -v dnf >/dev/null 2>&1; then
+                sudo dnf install -y zsh
+            elif command -v pacman >/dev/null 2>&1; then
+                sudo pacman -S --noconfirm zsh
+            elif command -v brew >/dev/null 2>&1; then
+                brew install zsh
+            fi
+        fi
+        info "Re-executing in zsh..."
+        exec zsh "$0" "$@"
+    fi
+    
     # Show banner
     cat << 'EOF'
 ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -929,86 +955,7 @@ EOF
     detect_package_manager
     set -e
     
-    info "Package manager detection completed, proceeding to bash version check..."
-    
-    # Verify bash version for associative arrays (if needed)
-    local current_bash_major
-    current_bash_major=${BASH_VERSION%%.*}
-    
-    # Handle cases where BASH_VERSION might be empty or malformed
-    if [[ -z "$current_bash_major" ]] || ! [[ "$current_bash_major" =~ ^[0-9]+$ ]]; then
-        warn "Could not determine bash version, assuming compatibility issues"
-        current_bash_major=0
-    fi
-    
-    debug "Current bash major version: $current_bash_major, required: $MIN_BASH_VERSION"
-    
-    if [[ ${current_bash_major} -lt ${MIN_BASH_VERSION} ]]; then
-        warn "Old bash version detected (${BASH_VERSION})"
-        warn "Installing modern bash to ensure compatibility..."
-        
-        # Pre-install modern bash if needed
-        case "${DETECTED_OS}" in
-            macos)
-                # On macOS, we need Homebrew first
-                if [[ "${PACKAGE_MANAGER}" == "homebrew_install_needed" ]]; then
-                    install_homebrew
-                    PACKAGE_MANAGER="brew"
-                fi
-                ;;
-        esac
-        
-        # Install modern bash (with error handling)
-        if ! install_modern_bash_if_needed; then
-            warn "Modern bash installation encountered issues, continuing with current bash"
-        fi
-        
-        # Find the best bash available
-        local new_bash_path
-        case "${DETECTED_OS}" in
-            macos)
-                # Try Homebrew locations
-                if [[ -f "/opt/homebrew/bin/bash" ]]; then
-                    new_bash_path="/opt/homebrew/bin/bash"
-                elif [[ -f "/usr/local/bin/bash" ]]; then
-                    new_bash_path="/usr/local/bin/bash"
-                else
-                    new_bash_path="$(command -v bash)"
-                fi
-                ;;
-            *)
-                new_bash_path="$(command -v bash)"
-                ;;
-        esac
-        
-        if [[ -f "$new_bash_path" ]]; then
-            local new_version
-            new_version=$("$new_bash_path" --version 2>/dev/null | head -n1 | grep -o '[0-9]\+\.[0-9]\+' | head -n1)
-            local new_major=${new_version%%.*}
-            
-            if [[ -n "$new_major" ]] && [[ ${new_major} -ge ${MIN_BASH_VERSION} ]]; then
-                info "Modern bash ${new_version} is now available at: $new_bash_path"
-                # Check if script is being run from a file or piped
-                if [[ -f "$0" && -x "$new_bash_path" ]]; then
-                    info "Rerunning script with modern bash for optimal compatibility..."
-                    exec "$new_bash_path" "$0" "$@"
-                else
-                    info "Script is being run via pipe, continuing with current bash"
-                    info "Modern bash ${new_version} is available for future use"
-                fi
-            else
-                warn "Modern bash installation may have failed, continuing with current bash"
-                warn "Some advanced features may not work properly"
-            fi
-        else
-            warn "Could not find suitable bash installation, continuing with current bash"
-            warn "Some advanced features may not work properly"
-        fi
-    else
-        debug "Bash version ${BASH_VERSION} is sufficient"
-    fi
-    
-    info "Bash version check completed, continuing with installation..."
+    info "Package manager detection completed, proceeding with installation..."
     
     echo
     info "Installation mode: ${INSTALL_MODE}"

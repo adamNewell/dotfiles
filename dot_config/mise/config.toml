@@ -6,7 +6,6 @@
 # Programming languages
 nodejs = "22.11.0"
 python = "3.12.0"
-rust = "1.75.0"
 golang = "1.21.0"
 
 # CLI tools that mise can manage

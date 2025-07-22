@@ -19,8 +19,15 @@ error() { echo -e "${RED}❌ $1${NC}" >&2; }
 # Activate mise for this script to have access to installed tools
 if command -v mise >/dev/null 2>&1; then
     eval "$(mise activate bash)"
-    export PATH="$HOME/.local/bin:$PATH"
 fi
+
+# Ensure we have access to cargo from rustup
+if [[ -f "$HOME/.cargo/env" ]]; then
+    source "$HOME/.cargo/env"
+fi
+
+# Update PATH to include all necessary directories
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 
 # Install tools via mise (if available and .tool-versions exists)
 if command -v mise >/dev/null 2>&1 && [[ -f "$HOME/.tool-versions" ]]; then

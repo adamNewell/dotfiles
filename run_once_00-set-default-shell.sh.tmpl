@@ -1,0 +1,94 @@
+#!/bin/bash
+set -eufo pipefail
+
+# =============================================================================
+# CRITICAL: Set ZSH as the default shell
+# This MUST run before any other setup to ensure proper environment
+# =============================================================================
+
+echo "🚀 Setting up zsh as default shell..."
+
+# Check if zsh is installed, if not install it
+if ! command -v zsh >/dev/null 2>&1; then
+    echo "📦 zsh not found. Installing zsh..."
+    
+    # Detect OS and install zsh
+    if [[ "$(uname)" == "Darwin" ]]; then
+        # macOS
+        if command -v brew >/dev/null 2>&1; then
+            brew install zsh
+        else
+            echo "❌ Homebrew not found. Please install Homebrew first."
+            exit 1
+        fi
+    elif [[ "$(uname)" == "Linux" ]]; then
+        # Linux - detect package manager
+        if command -v apt-get >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y zsh
+        elif command -v dnf >/dev/null 2>&1; then
+            sudo dnf install -y zsh
+        elif command -v pacman >/dev/null 2>&1; then
+            sudo pacman -S --noconfirm zsh
+        elif command -v zypper >/dev/null 2>&1; then
+            sudo zypper install -y zsh
+        elif command -v apk >/dev/null 2>&1; then
+            sudo apk add zsh
+        else
+            echo "❌ No supported package manager found"
+            exit 1
+        fi
+    else
+        echo "❌ Unsupported operating system"
+        exit 1
+    fi
+    
+    # Verify installation
+    if ! command -v zsh >/dev/null 2>&1; then
+        echo "❌ Failed to install zsh"
+        exit 1
+    fi
+    
+    echo "✅ zsh installed successfully"
+fi
+
+ZSH_PATH=$(which zsh)
+
+# Check current shell
+CURRENT_SHELL=$(getent passwd "$USER" | cut -d: -f7)
+if [ "$CURRENT_SHELL" = "$ZSH_PATH" ]; then
+    echo "✅ Already using zsh as default shell"
+    
+    # If we're in bash but zsh is the default, prompt to switch
+    if [ -n "${BASH_VERSION:-}" ]; then
+        echo "⚠️  You're currently in bash but zsh is your default shell."
+        echo "📌 Please run: exec zsh"
+    fi
+    exit 0
+fi
+
+# Check if zsh is in /etc/shells
+if ! grep -q "^${ZSH_PATH}$" /etc/shells; then
+    echo "ℹ️  Adding ${ZSH_PATH} to /etc/shells..."
+    echo "${ZSH_PATH}" | sudo tee -a /etc/shells >/dev/null
+fi
+
+# Change the default shell
+echo "ℹ️  Changing default shell to zsh..."
+if command -v chsh >/dev/null 2>&1; then
+    chsh -s "${ZSH_PATH}"
+    echo "✅ Default shell changed to zsh"
+else
+    # Fallback for systems without chsh
+    echo "⚠️  chsh not available. Using usermod..."
+    sudo usermod -s "${ZSH_PATH}" "$USER"
+    echo "✅ Default shell changed to zsh via usermod"
+fi
+
+echo ""
+echo "🎉 Shell configuration complete!"
+echo "📌 IMPORTANT: You need to either:"
+echo "   1. Log out and log back in (recommended)"
+echo "   2. Run: exec zsh (to switch immediately)"
+echo ""
+echo "⚠️  The dotfiles setup is optimized for zsh and may not work correctly in bash"
