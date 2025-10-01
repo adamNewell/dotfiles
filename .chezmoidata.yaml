@@ -8,6 +8,7 @@ languages:
   nodejs: "latest"
   python: "latest"
   golang: "latest"
+  rust: "latest"
 
 # Essential CLI tools with cross-platform availability
 cli_tools:

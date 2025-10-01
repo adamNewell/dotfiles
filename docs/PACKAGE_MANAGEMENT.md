@@ -36,7 +36,7 @@ languages:
   nodejs: "22.11.0"
   python: "3.12.0"
   golang: "1.21.0"
-  rustup: "latest"
+  rust: "latest"  # mise uses rustup under the hood
 
 # CLI tools with package manager options
 cli_tools:
@@ -54,13 +54,14 @@ To update language versions:
 2. Run `chezmoi apply` to regenerate the mise config
 3. Run `mise install` to install/update languages
 
-**Note on Rust:** Rust is managed separately via `rustup` and not managed by mise. This provides better control over:
-- Multiple toolchains (stable, beta, nightly)
-- Cross-compilation targets
-- Component management (clippy, rustfmt, etc.)
+**Note on Rust:** Rust is managed by mise, which uses `rustup` under the hood. Mise automatically:
+- Installs rustup if not present
+- Sets the `RUSTUP_TOOLCHAIN` environment variable
+- Supports all rustup features (toolchains, targets, components)
 
 To update Rust:
 ```bash
+mise upgrade rust      # Update to latest version
 rustup update          # Update all installed toolchains
 rustup install nightly # Install nightly toolchain
 rustup default stable  # Set default toolchain
