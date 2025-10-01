@@ -61,7 +61,7 @@ info() { echo -e "${BLUE}ℹ️  $1${NC}" || true; }
 success() { echo -e "${GREEN}✅ $1${NC}"; }
 warn() { echo -e "${YELLOW}⚠️  $1${NC}"; }
 error() { echo -e "${RED}❌ $1${NC}" >&2; }
-debug() { [[ "${DEBUG:-}" == "1" ]] && echo -e "${PURPLE}🐛 $1${NC}" >&2 || true; }
+debug() { if [[ "${DEBUG:-}" == "1" ]]; then echo -e "${PURPLE}🐛 $1${NC}" >&2; fi; }
 step() { echo -e "${CYAN}▶️  $1${NC}"; }
 
 # Global variables

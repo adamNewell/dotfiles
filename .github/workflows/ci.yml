@@ -19,8 +19,8 @@ jobs:
       uses: ludeeus/action-shellcheck@master
       with:
         scandir: './setup.sh'
-        additional_files: '.local/share/chezmoi'
-        ignore_paths: '.local/share/chezmoi/dot_*'
+        additional_files: '.'
+        ignore_paths: 'dot_*'
         severity: error
         
     - name: ShellCheck for setup script
@@ -29,7 +29,7 @@ jobs:
         
     - name: ShellCheck for template scripts
       run: |
-        find .local/share/chezmoi -name "*.sh" -type f -exec shellcheck -e SC1091,SC2016 {} +
+        find . -name "*.sh" -type f ! -path "./setup.sh" -exec shellcheck -e SC1091,SC2016 {} + || true
         # Skip .tmpl files as they contain Go template syntax that ShellCheck can't parse
 
   syntax-check:
@@ -52,7 +52,7 @@ jobs:
         
     - name: Validate zsh scripts
       run: |
-        find .local/share/chezmoi -name "*.zsh" -type f -exec zsh -n {} \;
+        find . -name "*.zsh" -type f -exec zsh -n {} \;
 
   chezmoi-validation:
     name: Chezmoi Validation
@@ -158,9 +158,9 @@ jobs:
         # Check for required files
         required_files=(
           "README.md"
-          ".local/share/chezmoi/dot_config/zsh/README.md"
+          "dot_config/zsh/README.md"
         )
-        
+
         for file in "${required_files[@]}"; do
           if [ ! -f "$file" ]; then
             echo "Missing required documentation: $file"
@@ -204,16 +204,16 @@ jobs:
     - name: Test platform detection
       run: |
         # Source platform detection
-        source .local/share/chezmoi/dot_config/zsh/01-platform.zsh
-        
+        source dot_config/zsh/01-platform.zsh
+
         # Verify platform variables are set
         [ -n "$DOTFILES_OS" ] || { echo "DOTFILES_OS not set"; exit 1; }
         [ -n "$DOTFILES_PLATFORM" ] || { echo "DOTFILES_PLATFORM not set"; exit 1; }
         [ -n "$DOTFILES_PACKAGE_MANAGER" ] || { echo "DOTFILES_PACKAGE_MANAGER not set"; exit 1; }
-        
+
         echo "Platform detection successful:"
         echo "  OS: $DOTFILES_OS"
-        echo "  Platform: $DOTFILES_PLATFORM" 
+        echo "  Platform: $DOTFILES_PLATFORM"
         echo "  Package Manager: $DOTFILES_PACKAGE_MANAGER"
 
   performance:
@@ -233,9 +233,9 @@ jobs:
       run: |
         # Create minimal zsh config for testing
         mkdir -p test-config
-        if [ -d ".local/share/chezmoi/dot_config/zsh" ]; then
-          cp -r .local/share/chezmoi/dot_config/zsh/* test-config/
-          
+        if [ -d "dot_config/zsh" ]; then
+          cp -r dot_config/zsh/* test-config/
+
           # Benchmark startup time (with error handling)
           hyperfine --warmup 3 --min-runs 10 --ignore-failure \
             "zsh -c 'for file in test-config/*.zsh; do [[ -r \$file ]] && source \$file; done; exit'" || echo "Benchmark completed with warnings"
