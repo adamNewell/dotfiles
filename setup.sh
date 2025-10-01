@@ -39,7 +39,7 @@ fi
 #
 # Usage: curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/setup.sh | bash
 
-set -e
+# Don't use set -e - we handle errors explicitly with return codes
 set -o pipefail
 
 # Configuration
@@ -231,12 +231,12 @@ parse_args() {
                 ;;
             --help|-h)
                 show_usage
-                exit 0
+                return 0
                 ;;
             *)
                 warn "Unknown option: $1"
                 show_usage
-                exit 1
+                return 1
                 ;;
         esac
     done
@@ -256,9 +256,9 @@ detect_platform() {
         darwin) DETECTED_OS="macos" ;;
         linux) DETECTED_OS="linux" ;;
         mingw*|msys*|cygwin*) DETECTED_OS="windows" ;;
-        *) 
+        *)
             error "Unsupported operating system: ${os_name}"
-            exit 1
+            return 1
             ;;
     esac
     
@@ -300,7 +300,7 @@ detect_package_manager() {
                 PACKAGE_MANAGER="zypper"
             else
                 error "No supported package manager found"
-                exit 1
+                return 1
             fi
             ;;
         windows)
@@ -343,15 +343,15 @@ ensure_zsh() {
                 ;;
             *)
                 error "Cannot install zsh with package manager: ${PACKAGE_MANAGER}"
-                exit 1
+                return 1
                 ;;
         esac
     fi
-    
+
     # Verify zsh installation
     if ! command -v zsh >/dev/null 2>&1; then
         error "Failed to install zsh. Cannot proceed."
-        exit 1
+        return 1
     fi
     
     local zsh_path
@@ -367,10 +367,14 @@ ensure_zsh() {
     local current_shell
     if [[ "$(uname)" == "Darwin" ]]; then
         # macOS: use dscl
-        current_shell=$(dscl . -read "/Users/$USER" UserShell | awk '{print $2}' || echo "$SHELL")
+        current_shell=$(dscl . -read "/Users/$USER" UserShell | awk '{print $2}' 2>/dev/null || echo "$SHELL")
     else
-        # Linux: use getent
-        current_shell=$(getent passwd "$USER" | cut -d: -f7 || echo "$SHELL")
+        # Linux: use getent if available, otherwise fallback to /etc/passwd
+        if command -v getent >/dev/null 2>&1; then
+            current_shell=$(getent passwd "$USER" | cut -d: -f7 2>/dev/null || echo "$SHELL")
+        else
+            current_shell=$(grep "^$USER:" /etc/passwd | cut -d: -f7 2>/dev/null || echo "$SHELL")
+        fi
     fi
     
     if [[ "$current_shell" != "$zsh_path" ]]; then
@@ -389,14 +393,16 @@ ensure_zsh() {
     # At this point we should already be in zsh due to early re-execution
     if [[ -n "${BASH_VERSION:-}" ]]; then
         error "Still running in bash after re-execution attempt. Something went wrong."
-        exit 1
+        return 1
     fi
 }
 
 # Install prerequisites
 install_prerequisites() {
+    skip_if_completed "install_prerequisites" "prerequisite installation" && return 0
+
     step "Installing prerequisites..."
-    
+
     # FIRST: Ensure we're using zsh
     ensure_zsh
     
@@ -407,7 +413,7 @@ install_prerequisites() {
                 info "Installing Xcode Command Line Tools..."
                 xcode-select --install
                 warn "Please complete Xcode Command Line Tools installation and re-run this script"
-                exit 1
+                return 1
             fi
             
             # Install Homebrew if needed
@@ -449,10 +455,14 @@ install_prerequisites() {
             install_essential_wsl_tools
             ;;
     esac
+
+    mark_checkpoint "install_prerequisites"
 }
 
 # Install Homebrew (macOS/Linux)
 install_homebrew() {
+    skip_if_completed "install_homebrew" "Homebrew installation" && return 0
+
     info "Installing Homebrew..."
     warn "This will download and execute the Homebrew installer"
     warn "Please review: https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
@@ -470,24 +480,33 @@ install_homebrew() {
         info "Alternatively, install Homebrew manually first:"
         info "  /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
         info "Then re-run this script."
-        exit 1
+        return 1
     fi
-    
+
     local installer="/tmp/dotfiles_setup_homebrew_$$.sh"
-    
-    if curl -fsSL "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh" -o "${installer}"; then
+
+    if retry_command 3 5 curl --connect-timeout 10 --max-time 300 -fsSL "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh" -o "${installer}"; then
         # Basic verification
         if head -n1 "${installer}" | grep -q '^#!/bin/bash'; then
             # Don't set NONINTERACTIVE - let Homebrew handle interactivity
             /bin/bash "${installer}"
             rm -f "${installer}"
+
+            # Verify installation
+            update_path
+            if ! command -v brew >/dev/null 2>&1; then
+                error "Homebrew was installed but 'brew' command is not accessible"
+                return 1
+            fi
+            success "Homebrew installed and accessible"
         else
             error "Downloaded Homebrew installer appears invalid"
-            exit 1
+            rm -f "${installer}"
+            return 1
         fi
     else
         error "Failed to download Homebrew installer"
-        exit 1
+        return 1
     fi
     
     # Add to PATH for this session
@@ -505,6 +524,8 @@ install_homebrew() {
             fi
             ;;
     esac
+
+    mark_checkpoint "install_homebrew"
 }
 
 # Install chezmoi
@@ -758,6 +779,8 @@ install_modern_cli_tools() {
 
 # Setup shell environment
 setup_shell_environment() {
+    skip_if_completed "setup_shell_environment" "shell environment setup" && return 0
+
     step "Setting up shell environment..."
     
     # Set Zsh as default shell
@@ -801,36 +824,48 @@ setup_shell_environment() {
     else
         warn "zsh not found - skipping shell environment setup"
     fi
-    
+
     success "Shell environment configured"
+    mark_checkpoint "setup_shell_environment"
 }
 
 # Install chezmoi binary directly
 install_chezmoi_binary() {
     info "Installing chezmoi binary..."
-    
+
     local install_dir="$HOME/.local/bin"
     mkdir -p "${install_dir}"
-    
+
     # Ensure PATH includes install directory BEFORE installation
     export PATH="${install_dir}:${PATH}"
-    
-    # Download and install chezmoi
-    if curl -fsSL "https://get.chezmoi.io" | sh -s -- -b "${install_dir}"; then
-        success "chezmoi binary installed to ${install_dir}"
-        
-        # Verify chezmoi is accessible
-        if ! command -v chezmoi >/dev/null 2>&1; then
-            error "chezmoi was installed but is not accessible in PATH"
-            info "Current PATH: ${PATH}"
-            exit 1
+
+    # Download and install chezmoi with retry logic
+    local max_attempts=3
+    local attempt=1
+
+    while (( attempt <= max_attempts )); do
+        if curl --connect-timeout 10 --max-time 300 -fsSL "https://get.chezmoi.io" | sh -s -- -b "${install_dir}"; then
+            success "chezmoi binary installed to ${install_dir}"
+
+            # Verify chezmoi is accessible
+            if command -v chezmoi >/dev/null 2>&1; then
+                return 0
+            else
+                error "chezmoi was installed but is not accessible in PATH"
+                info "Current PATH: ${PATH}"
+                return 1
+            fi
         fi
-        
-        # No bash configuration - we only support zsh
-    else
-        error "Failed to install chezmoi binary"
-        exit 1
-    fi
+
+        if (( attempt < max_attempts )); then
+            warn "Failed to install chezmoi (attempt ${attempt}/${max_attempts}), retrying..."
+            sleep 5
+        fi
+        ((attempt++))
+    done
+
+    error "Failed to install chezmoi binary after ${max_attempts} attempts"
+    return 1
 }
 
 # Install dotfiles
@@ -1082,18 +1117,15 @@ EOF
     # Check if running as root
     if [[ $EUID -eq 0 ]]; then
         error "Do not run this script as root"
-        exit 1
+        return 1
     fi
     
     # Detection phase (needed for bash version handling)
     detect_platform
     info "Platform detection completed, proceeding to package manager detection..."
-    
-    # Temporarily disable set -e for package manager detection
-    set +e
+
     detect_package_manager
-    set -e
-    
+
     info "Package manager detection completed, proceeding with installation..."
     
     echo
