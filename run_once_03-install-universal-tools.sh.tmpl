@@ -2,7 +2,8 @@
 # Install universal CLI tools via cargo, npm, etc.
 # Cross-platform tool installation
 
-set -e
+# Don't exit on error - handle errors explicitly
+set -o pipefail
 
 # Colors for output
 RED='\033[0;31m'
@@ -16,24 +17,36 @@ success() { echo -e "${GREEN}✅ $1${NC}"; }
 warn() { echo -e "${YELLOW}⚠️  $1${NC}"; }
 error() { echo -e "${RED}❌ $1${NC}" >&2; }
 
+# Update PATH to include all necessary directories
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+
 # Activate mise for this script to have access to installed tools
 if command -v mise >/dev/null 2>&1; then
-    eval "$(mise activate bash)"
+    eval "$(mise activate bash)" 2>/dev/null || true
+else
+    warn "mise not found in PATH - some language-specific tools may not be available"
 fi
 
-# Ensure we have access to cargo from rustup
+# Ensure we have access to cargo from rustup (if installed via mise)
 if [[ -f "$HOME/.cargo/env" ]]; then
     source "$HOME/.cargo/env"
 fi
 
-# Update PATH to include all necessary directories
-export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
-
-# Install tools via mise (if available and .tool-versions exists)
-if command -v mise >/dev/null 2>&1 && [[ -f "$HOME/.tool-versions" ]]; then
-    info "🛠️  Installing tools via mise..."
-    mise install
-    success "mise tools installed"
+# Install tools via mise (if available and config exists)
+if command -v mise >/dev/null 2>&1; then
+    if [[ -f "$HOME/.config/mise/config.toml" ]]; then
+        info "🛠️  Installing tools via mise..."
+        # Don't fail the script if mise install fails
+        if mise install; then
+            success "mise tools installed"
+        else
+            warn "Some mise tools failed to install - continuing anyway"
+        fi
+    else
+        info "No mise config found, skipping mise tool installation"
+    fi
+else
+    warn "mise not available - skipping mise tool installation"
 fi
 
 # Install Rust-based CLI tools via cargo

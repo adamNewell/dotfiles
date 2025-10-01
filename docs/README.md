@@ -141,9 +141,7 @@ rm -rf ~/.cache/sheldon && sheldon lock   # Rebuild plugin cache
 │   │   ├── 10-completions.zsh       # Shell completions
 │   │   ├── 20-tools/                # Tool-specific configurations
 │   │   └── 30-functions/            # Custom functions
-│   ├── packages/                    # Package management
-│   │   ├── package-definitions.yaml # Cross-platform packages
-│   │   └── Brewfile.tmpl            # Homebrew packages
+│   ├── .chezmoidata.yaml            # Package definitions and template data
 │   ├── macos-defaults.yaml          # macOS system preferences
 │   └── run_*.sh.tmpl                # Setup and maintenance scripts
 ├── setup.sh                        # Universal installer
@@ -189,7 +187,7 @@ chezmoi edit ~/.config/zsh/30-functions/my-functions.zsh
 
 ```bash
 # Add new packages to definitions
-chezmoi edit ~/.local/share/chezmoi/packages/package-definitions.yaml
+chezmoi edit ~/.local/share/chezmoi/.chezmoidata.yaml
 
 # Update specific tool versions
 mise use python@3.12

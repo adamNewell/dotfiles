@@ -2,29 +2,106 @@
 
 Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/), featuring automated setup, cross-platform package management, and organized shell configuration.
 
-## 🚀 Installation
+## 🚀 Quick Start
 
-### Complete Setup
+### One-Line Installation
 
 ```bash
-# Full environment setup (recommended)
+# Full environment setup (recommended for new machines)
 curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/setup.sh | bash
+```
 
+This will:
+1. Install chezmoi dotfile manager
+2. Clone this repository to `~/.local/share/chezmoi`
+3. Install platform-specific packages (Homebrew/apt/dnf/winget)
+4. Set up zsh as your default shell
+5. Install development tools (mise, Rust, Node.js, Python, Go)
+6. Install modern CLI tools (ripgrep, fd, bat, eza, zoxide, etc.)
+7. Apply dotfile configurations to your home directory
+
+### Installation Options
+
+```bash
 # Minimal installation (essential tools only)
 curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/setup.sh | bash -s -- --minimal
 
-# Configuration only (skip packages)
+# Configuration only (skip package installation)
 curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/setup.sh | bash -s -- --skip-packages
 ```
 
-### Alternative Methods
+### Post-Installation
+
+After installation completes:
 
 ```bash
-# Direct chezmoi installation
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply adamNewell/dotfiles
+# Restart your terminal or reload shell
+exec zsh
 
-# Update existing setup
+# Verify setup
+chezmoi doctor
+```
+
+### Updating
+
+```bash
+# Update dotfiles and reinstall modified packages
 chezmoi update
+
+# Preview changes before applying
+chezmoi diff
+
+# Apply changes without updating
+chezmoi apply
+```
+
+## 📦 Package Managers Overview
+
+This environment uses specialized package managers for different components:
+
+### 🍺 **Homebrew** - System & CLI Tools (macOS/Linux)
+- **Manages**: System packages, CLI tools, GUI applications (casks), fonts
+- **Config**: [os/macos/Brewfile.tmpl](os/macos/Brewfile.tmpl)
+- **Usage**: `brew install <package>`, `brew upgrade`, `brew bundle`
+- **Primary package manager** for macOS; installed automatically by setup script
+
+### ⚡ **Sheldon** - Zsh Plugin Manager
+- **Manages**: Zsh plugins (syntax highlighting, autosuggestions, completions, themes)
+- **Config**: [dot_config/sheldon/plugins.toml](dot_config/sheldon/plugins.toml)
+- **Usage**: `sheldon lock` (update cache), `sheldon add <plugin>`, `sheldon source` (load)
+- **Why**: Fast, declarative TOML-based configuration; 10x faster than Oh My Zsh
+
+### 📝 **Neovim Plugins**
+- **lazy.nvim**: Plugin manager for Neovim plugins, colorschemes
+  - **Config**: [dot_config/nvim/lua/plugins/](dot_config/nvim/lua/plugins/)
+  - **Usage**: `:Lazy install`, `:Lazy update`, `:Lazy sync`
+- **mason.nvim**: Package manager for LSP servers, DAP servers, linters, formatters
+  - **Config**: Configured within Neovim
+  - **Usage**: `:Mason`, `:MasonInstall <package>`, `:MasonUpdate`
+
+### 🏠 **chezmoi** - Dotfile Orchestrator
+- **Manages**: All configuration files and coordinates installation scripts
+- **Config**: [.chezmoidata.yaml](.chezmoidata.yaml), [.chezmoiexternal.yaml](.chezmoiexternal.yaml)
+- **Usage**: `chezmoi apply`, `chezmoi update`, `chezmoi edit <file>`
+
+### Quick Management Commands
+
+```bash
+# Update Homebrew packages
+brew upgrade
+
+# Update Zsh plugins
+sheldon lock && exec zsh
+
+# Add a Zsh plugin
+chezmoi edit ~/.config/sheldon/plugins.toml
+# Add: [plugins.name]
+#      github = "user/repo"
+sheldon lock && exec zsh
+
+# Update Neovim plugins and tools
+nvim +Lazy update      # Update plugins
+nvim +MasonUpdate      # Update LSP servers & tools
 ```
 
 ## ✨ Components
@@ -40,66 +117,92 @@ chezmoi update
 
 ```
 dotfiles/
-├── .local/share/chezmoi/           # chezmoi source directory
-│   ├── dot_config/                 # ~/.config configurations
-│   │   ├── git/                    # Git configuration with templates
-│   │   ├── kitty/                  # Kitty terminal emulator
-│   │   ├── nvim/                   # Neovim editor configuration
-│   │   ├── sheldon/                # Sheldon Zsh plugin manager
-│   │   ├── tmux/                   # tmux terminal multiplexer
-│   │   └── zsh/                    # Organized Zsh configuration
-│   │       ├── 01-environment.zsh  # Environment variables
-│   │       ├── 02-path.zsh         # PATH configuration
-│   │       ├── 03-plugins.zsh      # Plugin loading
-│   │       ├── 10-completions.zsh  # Shell completions
-│   │       ├── 20-tools/           # Tool-specific configs
-│   │       └── 30-functions/       # Custom functions
-│   ├── packages/                   # Package management
-│   │   ├── package-definitions.yaml# Cross-platform package definitions
-│   │   └── Brewfile.tmpl          # Templated Homebrew packages
-│   ├── macos-defaults.yaml         # macOS system preferences
-│   ├── run_once_*.sh.tmpl          # Automated setup scripts
-│   ├── run_onchange_*.sh.tmpl      # Change-triggered scripts
-│   └── .chezmoiexternal.yaml       # Direct binary downloads
-├── .config/chezmoi/                # chezmoi configuration
+├── .chezmoidata.yaml               # Package definitions and cross-platform config
+├── .chezmoiexternal.yaml           # Direct binary downloads
+├── dot_config/                     # ~/.config configurations (XDG compliant)
+│   ├── git/                        # Git configuration with commit templates
+│   ├── kitty/                      # Kitty terminal emulator
+│   ├── nvim/                       # Neovim editor configuration
+│   ├── sheldon/                    # Sheldon Zsh plugin manager
+│   ├── tmux/                       # tmux terminal multiplexer
+│   └── zsh/                        # Organized Zsh configuration
+│       ├── 01-environment.zsh      # Environment variables and exports
+│       ├── 02-path.zsh             # PATH configuration
+│       ├── 03-plugins.zsh          # Plugin loading via Sheldon
+│       ├── 10-completions.zsh      # Shell completion settings
+│       ├── 11-history.zsh          # History configuration
+│       ├── 12-options.zsh          # Shell options (setopt)
+│       ├── 13-keybindings.zsh      # Custom key bindings
+│       ├── 20-tools/               # Tool-specific configs
+│       ├── 30-functions/           # Custom shell functions
+│       └── 31-aliases.zsh          # Command aliases
+├── os/macos/                       # macOS-specific configuration
+│   └── Brewfile.tmpl               # Templated Homebrew packages
+├── run_once_*.sh.tmpl              # One-time automated setup scripts
+│   ├── 00-set-default-shell        # Set zsh as default shell
+│   ├── 01-install-mise             # Install mise version manager
+│   ├── 02-install-platform-packages# Platform-specific packages
+│   ├── 03-install-universal-tools  # Cross-platform CLI tools
+│   ├── 05-setup-macos-defaults     # macOS system preferences
+│   └── 99-validate-setup           # Validate installation
+├── run_onchange_*.sh.tmpl          # Re-run when file changes
+│   └── 04-setup-shell-tools        # Shell plugin setup
+├── setup.sh                        # Main installation script
 └── docs/                           # Documentation
 ```
-
 ## 🛠️ Automated Setup Scripts
 
-The repository uses chezmoi's run scripts for automated setup:
+The repository uses chezmoi's templated run scripts for automated, idempotent setup:
 
-1. **`run_once_01-install-mise.sh.tmpl`** - Install mise version manager
-2. **`run_once_02-install-platform-packages.sh.tmpl`** - Platform-specific package installation
-3. **`run_once_03-install-universal-tools.sh.tmpl`** - Cross-platform CLI tools (cargo/npm/go)
-4. **`run_onchange_04-setup-shell-tools.sh.tmpl`** - Shell configuration and plugin setup
-5. **`run_once_99-validate-setup.sh.tmpl`** - Final validation and system check
+1. **`run_once_00-set-default-shell.sh.tmpl`** - Set zsh as default shell
+2. **`run_once_01-install-mise.sh.tmpl`** - Install mise version manager for languages
+3. **`run_once_02-install-platform-packages.sh.tmpl`** - Platform-specific packages (Homebrew/apt/dnf)
+4. **`run_once_03-install-universal-tools.sh.tmpl`** - Cross-platform CLI tools (cargo/npm/go)
+5. **`run_onchange_04-setup-shell-tools.sh.tmpl`** - Shell plugin setup (re-runs on changes)
+6. **`run_once_05-setup-macos-defaults.py.tmpl`** - macOS system preferences (macOS only)
+7. **`run_once_99-validate-setup.sh.tmpl`** - Validate installation and check dependencies
+
+Scripts are templated (`.tmpl`) to support cross-platform conditionals and variable substitution.
 
 ## 📦 Package Management
 
-### Package Sources
+### How It Works
 
-- **mise**: Version management for programming languages (Node.js, Python, Go, Rust)
-- **Cargo**: Rust-based CLI tools (ripgrep, fd, bat, eza, zoxide, sheldon)
-- **Platform-specific**: Homebrew (macOS), native package managers (Linux), winget/scoop (Windows)
-- **Direct downloads**: Binary downloads via chezmoi externals
+All package definitions live in **`.chezmoidata.yaml`**, which provides a single source of truth for cross-platform package management. Chezmoi templates read this file to generate platform-specific installation scripts.
 
-### Configuration Files
+### Package Categories
 
-- **`packages/package-definitions.yaml`** - Cross-platform package definitions
-- **`packages/Brewfile.tmpl`** - macOS Homebrew packages
-- **`.chezmoiexternal.yaml`** - Direct binary downloads
+1. **Languages** (via mise): Node.js, Python, Rust, Go
+2. **CLI Tools**: Cross-platform tools with fallback package managers
+3. **Platform Packages**: macOS (Homebrew), Linux (apt/dnf/pacman), Windows (winget/scoop)
+4. **Direct Downloads**: Binaries via `.chezmoiexternal.yaml`
 
-### Example Package Definition
+### Adding New Tools
+
+Edit `.chezmoidata.yaml`:
 
 ```yaml
 cli_tools:
-  ripgrep:
-    cargo: "ripgrep"
-    brew: "ripgrep"
-    apt: "ripgrep"
-    description: "Fast grep replacement"
+  your-tool:
+    cargo: "package-name"      # Preferred: Rust/Cargo
+    brew: "package-name"       # macOS via Homebrew
+    apt: "package-name"        # Debian/Ubuntu
+    dnf: "package-name"        # Fedora/RHEL
+    npm: "package-name"        # Node.js ecosystem
+    go: "github.com/..."       # Go install
+    description: "What it does"
 ```
+
+Then run `chezmoi apply` to install.
+
+### Package Manager Priority
+
+The system tries package managers in this order:
+1. **mise** - Language version management
+2. **cargo** - Fast, reliable Rust tools
+3. **brew** - macOS primary
+4. **apt/dnf/pacman** - Linux native
+5. **npm/go** - Language ecosystems
 
 ## ⚡ Shell Configuration
 
@@ -142,33 +245,72 @@ dock:
   hide_recent_apps: true
 ```
 
-## 🔧 Common Commands
+## 🔧 Common Tasks
 
-### Dotfile Management
+### Daily Dotfile Management
 
 ```bash
-chezmoi update                                    # Update from repository
-chezmoi diff                                      # Preview changes
-chezmoi edit ~/.config/zsh/01-environment.zsh    # Edit managed file
-chezmoi add ~/.config/newapp/config.yaml         # Start managing new file
-chezmoi apply --force                             # Force apply changes
+# Update dotfiles from repository
+chezmoi update
+
+# Preview what would change
+chezmoi diff
+
+# Edit a managed file in your editor
+chezmoi edit ~/.config/zsh/01-environment.zsh
+
+# Add a new file to dotfiles
+chezmoi add ~/.config/newapp/config.yaml
+
+# Apply local changes
+chezmoi apply
 ```
 
-### Package Updates
+### Managing Packages
 
 ```bash
-mise upgrade                    # Update language versions
-brew upgrade                    # Update macOS packages
-sudo apt upgrade               # Update Ubuntu/Debian packages
-cargo install-update -a       # Update Rust tools
+# Add a new tool to .chezmoidata.yaml, then:
+chezmoi apply                  # Install via automated scripts
+
+# Update existing packages
+mise upgrade                   # Update language versions
+brew upgrade                   # Update Homebrew packages (macOS)
+cargo install-update -a        # Update Rust/Cargo tools
 ```
 
-### Shell Management
+### Customizing Your Setup
 
 ```bash
-sheldon lock                   # Update plugin cache
-exec zsh                       # Reload shell configuration
-chezmoi edit ~/.config/sheldon/plugins.toml  # Edit plugins
+# Edit package definitions
+chezmoi edit ~/.local/share/chezmoi/.chezmoidata.yaml
+
+# Customize zsh configuration
+chezmoi edit ~/.config/zsh/31-aliases.zsh
+chezmoi edit ~/.config/zsh/01-environment.zsh
+
+# Add zsh plugins (managed by Sheldon)
+chezmoi edit ~/.config/sheldon/plugins.toml
+sheldon lock && exec zsh       # Update plugin cache and reload
+
+# macOS: customize system preferences
+chezmoi edit ~/.local/share/chezmoi/run_once_05-setup-macos-defaults.py.tmpl
+```
+
+### Troubleshooting
+
+```bash
+# Check chezmoi health
+chezmoi doctor
+
+# View what chezmoi would do
+chezmoi apply --dry-run --verbose
+
+# Re-run setup scripts (useful after adding packages)
+chezmoi state delete-bucket --bucket=scriptState
+chezmoi apply
+
+# Reset to repository state
+chezmoi apply --force
 ```
 
 ## 🌍 Platform Support
@@ -179,19 +321,72 @@ chezmoi edit ~/.config/sheldon/plugins.toml  # Edit plugins
 | Linux    | ✅ Full  | Native (apt/dnf/pacman) | ⚠️ Limited         |
 | Windows  | ✅ Basic | winget/scoop            | ⚠️ Limited         |
 
-## 📚 Documentation
+## 🎯 Key Features
 
-Detailed component documentation:
+### For New Users
 
-- [Package Management](docs/PACKAGE_MANAGEMENT.md) - Package definitions and platform handling
-- [Shell Configuration](docs/SHELL_CONFIGURATION.md) - Zsh organization and customization
-- [chezmoi Operations](docs/CHEZMOI_USAGE.md) - Dotfile management commands
-- [macOS Preferences](docs/MACOS_SETUP.md) - System preference automation
+- **One-line installation**: Get a full dev environment in minutes
+- **Sensible defaults**: Carefully curated tools and configurations
+- **Easy customization**: All config in predictable locations
+- **Safe updates**: Preview changes before applying with `chezmoi diff`
+
+### For Power Users
+
+- **Template-driven**: Dynamic configs based on OS, hostname, or custom data
+- **Idempotent scripts**: Re-run safely without side effects
+- **XDG compliance**: Clean home directory following modern standards
+- **Version-controlled**: Track all changes with git
+
+### What's Included
+
+**Development Tools:**
+- mise (asdf replacement) for language version management
+- Node.js, Python, Rust, Go via mise
+- Git with custom aliases and delta diff viewer
+- Neovim with sensible config
+
+**Modern CLI Tools:**
+- `eza` - Modern `ls` with colors and icons
+- `ripgrep` - Fast code search
+- `fd` - Modern `find` replacement
+- `bat` - `cat` with syntax highlighting
+- `zoxide` - Smart `cd` with frecency
+- `fzf` - Fuzzy finder for everything
+- `sheldon` - Fast zsh plugin manager
+
+**Shell Environment:**
+- Zsh with numbered, organized configuration files
+- Plugin management via Sheldon
+- Custom functions and aliases
+- Enhanced completions and history
+
+## 🤔 Frequently Asked Questions
+
+**Q: Will this overwrite my existing dotfiles?**
+A: No. Chezmoi manages files in `~/.local/share/chezmoi` and symlinks/copies them. Use `chezmoi diff` to preview changes before applying.
+
+**Q: How do I customize configs after installation?**
+A: Use `chezmoi edit <file>` to edit in the source directory, then `chezmoi apply` to activate changes.
+
+**Q: Can I use this on multiple machines?**
+A: Yes! That's the point. Chezmoi supports machine-specific templates and conditionals.
+
+**Q: How do I uninstall?**
+A: Run `chezmoi purge` to remove all managed files, then delete `~/.local/share/chezmoi`.
+
+**Q: Do I need to use all the included tools?**
+A: No. Edit `.chezmoidata.yaml` to remove unwanted packages before installation, or use `--skip-packages` flag.
+
+## 📚 Further Reading
+
+- [chezmoi Documentation](https://www.chezmoi.io/) - Official chezmoi docs
+- [mise Documentation](https://mise.jdx.dev/) - Language version management
+- [Sheldon Documentation](https://sheldon.cli.rs/) - Zsh plugin manager
 
 ## 📄 License
 
-MIT License - Personal dotfiles repository, feel free to fork and adapt.
+MIT License - Personal dotfiles repository. Feel free to fork, modify, and adapt for your own use.
 
 ---
 
-*These dotfiles are designed for efficiency, elegance, and cross-platform compatibility. They represent a modern approach to dotfile management using industry-standard tools and best practices.*
+**Questions or Issues?** Open an issue at [github.com/adamNewell/dotfiles](https://github.com/adamNewell/dotfiles/issues)

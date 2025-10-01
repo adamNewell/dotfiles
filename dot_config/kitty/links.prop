@@ -1,2 +1,0 @@
-$DOTFILES/kitty/kitty.conf=$XDG_CONFIG_HOME/kitty/kitty.conf
-$DOTFILES/kitty/current-theme.conf=$XDG_CONFIG_HOME/kitty/current-theme.conf

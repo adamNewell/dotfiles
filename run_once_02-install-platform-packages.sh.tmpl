@@ -2,7 +2,8 @@
 # Platform-specific package installation
 # Installs base packages using the native package manager
 
-set -e
+# Don't exit on error - handle errors explicitly
+set -o pipefail
 
 # Colors for output  
 readonly RED='\033[0;31m'
@@ -56,14 +57,21 @@ if [[ -f "$brewfile_template" ]]; then
     # Process the template and create a temporary Brewfile
     if chezmoi execute-template < "$brewfile_template" > /tmp/Brewfile; then
         info "Installing packages from templated Brewfile..."
-        brew bundle --file=/tmp/Brewfile
+        # Don't fail if some packages fail to install
+        if brew bundle --file=/tmp/Brewfile; then
+            success "Homebrew packages installed"
+        else
+            warn "Some Homebrew packages failed to install - check output above"
+            info "You can re-run 'chezmoi apply' to retry installation"
+        fi
         rm -f /tmp/Brewfile
-        success "Homebrew packages installed"
     else
         warn "Failed to process Brewfile template"
+        info "Skipping Homebrew package installation"
     fi
 else
     warn "Templated Brewfile not found at $brewfile_template"
+    info "Skipping Homebrew package installation"
 fi
 
 {{- else if eq .chezmoi.os "linux" }}

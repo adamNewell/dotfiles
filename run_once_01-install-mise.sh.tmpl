@@ -2,7 +2,8 @@
 # Install mise (universal version manager)
 # Runs once per machine
 
-set -e
+# Don't exit on error - handle errors explicitly
+set -o pipefail
 
 # Colors for output
 readonly RED='\033[0;31m'
@@ -16,22 +17,49 @@ success() { echo -e "${GREEN}✅ $1${NC}"; }
 warn() { echo -e "${YELLOW}⚠️  $1${NC}"; }
 error() { echo -e "${RED}❌ $1${NC}" >&2; }
 
+# Update PATH to ensure we can find mise if already installed
+export PATH="${HOME}/.local/bin:${PATH}"
+
 # Check if mise is already installed
 if command -v mise >/dev/null 2>&1; then
     success "mise is already installed: $(mise --version)"
+
+    # Try to install/update tools from config if it exists
+    if [[ -f "${HOME}/.config/mise/config.toml" ]]; then
+        info "Installing/updating tools from mise config..."
+        if mise install; then
+            success "Tools installed/updated via mise"
+        else
+            warn "Some tools may have failed to install - you can run 'mise install' manually later"
+        fi
+    fi
+
     exit 0
 fi
 
 info "Installing mise (universal version manager)..."
 
-# Download and verify mise installer
+# Download and verify mise installer with retry logic
 readonly MISE_INSTALLER="/tmp/mise_install_$$.sh"
 trap 'rm -f "${MISE_INSTALLER}"' EXIT
 
-if ! curl -fsSL "https://mise.run" -o "${MISE_INSTALLER}"; then
-    error "Failed to download mise installer"
-    exit 1
-fi
+max_attempts=3
+attempt=1
+
+while (( attempt <= max_attempts )); do
+    if curl -fsSL "https://mise.run" -o "${MISE_INSTALLER}"; then
+        break
+    fi
+
+    if (( attempt < max_attempts )); then
+        warn "Failed to download mise installer (attempt ${attempt}/${max_attempts}), retrying..."
+        sleep 5
+    else
+        error "Failed to download mise installer after ${max_attempts} attempts"
+        exit 1
+    fi
+    ((attempt++))
+done
 
 # Basic verification - check if it's a shell script
 if ! head -n1 "${MISE_INSTALLER}" | grep -qE '^#!/(bin/)?(ba)?sh'; then
@@ -40,7 +68,10 @@ if ! head -n1 "${MISE_INSTALLER}" | grep -qE '^#!/(bin/)?(ba)?sh'; then
 fi
 
 # Execute the installer
-sh "${MISE_INSTALLER}"
+if ! sh "${MISE_INSTALLER}"; then
+    error "mise installer script failed"
+    exit 1
+fi
 
 # Add to PATH for current session
 export PATH="${HOME}/.local/bin:${PATH}"
@@ -48,12 +79,16 @@ export PATH="${HOME}/.local/bin:${PATH}"
 # Verify installation
 if command -v mise >/dev/null 2>&1; then
     success "mise installed successfully: $(mise --version)"
-    
-    # Install tools from .tool-versions if it exists
-    if [[ -f "${HOME}/.tool-versions" ]]; then
-        info "Installing tools from .tool-versions..."
-        mise install
-        success "Tools installed via mise"
+
+    # Install tools from mise config if it exists
+    if [[ -f "${HOME}/.config/mise/config.toml" ]]; then
+        info "Installing tools from mise config..."
+        # Don't fail if tool installation fails - tools can be installed later
+        if mise install; then
+            success "Tools installed via mise"
+        else
+            warn "Some tools failed to install - you can run 'mise install' manually later"
+        fi
     fi
 else
     error "Failed to install mise"

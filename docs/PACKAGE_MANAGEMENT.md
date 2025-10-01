@@ -23,14 +23,36 @@ The scripts run in this order during `chezmoi apply`:
 
 ## Configuration Files
 
-### `.tool-versions`
-Defines versions for programming languages managed by mise:
+### `.chezmoidata.yaml`
+Central configuration file defining all package definitions and versions:
+- **Programming language versions** - Templated into `~/.config/mise/config.toml`
+- **CLI tools** - Cross-platform package manager mappings
+- **Platform-specific packages** - macOS, Linux, Windows package lists
+- **Package manager priority** - Installation order preferences
+
+```yaml
+# Language versions (single source of truth)
+languages:
+  nodejs: "22.11.0"
+  python: "3.12.0"
+  golang: "1.21.0"
+  rustup: "latest"
+
+# CLI tools with package manager options
+cli_tools:
+  eza:
+    cargo: "eza"
+    brew: "eza"
+    description: "Modern ls replacement"
 ```
-nodejs 22.11.0
-python 3.12.0
-rust 1.75.0
-golang 1.21.0
-```
+
+### `~/.config/mise/config.toml`
+Generated from `.chezmoidata.yaml` language versions. This file is templated - do not edit directly.
+
+To update language versions:
+1. Edit `.chezmoidata.yaml` in the chezmoi source directory
+2. Run `chezmoi apply` to regenerate the mise config
+3. Run `mise install` to install/update languages
 
 ### `.chezmoiexternal.yaml`
 Direct binary downloads for tools not available via package managers:
@@ -39,9 +61,9 @@ Direct binary downloads for tools not available via package managers:
 - fzf (fuzzy finder)
 
 ### Platform-specific package lists
-- **macOS**: `packages/brew/Brewfile`
-- **Linux**: Hardcoded in install script (varies by distro)
-- **Windows**: Hardcoded winget/scoop packages
+- **macOS**: `os/macos/Brewfile.tmpl` (generated from `.chezmoidata.yaml`)
+- **Linux**: Defined in `.chezmoidata.yaml` under `platform_packages.linux`
+- **Windows**: Defined in `.chezmoidata.yaml` under `platform_packages.windows`
 
 ## Tool Categories
 
@@ -80,13 +102,35 @@ exec zsh
 ### Adding New Tools
 
 #### Platform-specific tool
-Add to the appropriate section in `run_once_02-install-platform-packages.sh.tmpl`
+Add to `.chezmoidata.yaml` under the appropriate platform section:
+```yaml
+platform_packages:
+  darwin:
+    system:
+      - your-new-tool
+```
 
 #### Universal CLI tool
-Add to `run_once_03-install-universal-tools.sh.tmpl` in the appropriate language section
+Add to `.chezmoidata.yaml` under `cli_tools`:
+```yaml
+cli_tools:
+  your-tool:
+    cargo: "package-name"
+    brew: "package-name"
+    description: "What it does"
+```
 
-#### Version-managed tool
-Add to `.tool-versions` file
+#### Version-managed language
+Update version in `.chezmoidata.yaml` under `languages`:
+```yaml
+languages:
+  nodejs: "23.0.0"  # Update version here
+```
+Then apply and install:
+```bash
+chezmoi apply      # Regenerates ~/.config/mise/config.toml
+mise install       # Installs the new version
+```
 
 #### Direct binary download
 Add to `.chezmoiexternal.yaml`

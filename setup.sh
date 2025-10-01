@@ -44,7 +44,8 @@ set -o pipefail
 
 # Configuration
 readonly REPO_URL="https://github.com/adamNewell/dotfiles.git"
-readonly SCRIPT_VERSION="2.0.0"
+readonly SCRIPT_VERSION="2.1.0"
+readonly CHECKPOINT_FILE="${HOME}/.dotfiles_setup_checkpoints"
 
 # Colors for output
 readonly RED='\033[0;31m'
@@ -71,13 +72,96 @@ INSTALL_MODE="full"
 SKIP_PACKAGES=""
 SKIP_MODERN_TOOLS=""
 
+# Checkpoint management functions
+checkpoint_completed() {
+    local checkpoint="$1"
+    grep -q "^${checkpoint}$" "${CHECKPOINT_FILE}" 2>/dev/null
+}
+
+mark_checkpoint() {
+    local checkpoint="$1"
+    echo "${checkpoint}" >> "${CHECKPOINT_FILE}"
+    debug "Checkpoint marked: ${checkpoint}"
+}
+
+skip_if_completed() {
+    local checkpoint="$1"
+    local description="$2"
+
+    if checkpoint_completed "${checkpoint}"; then
+        info "Skipping ${description} (already completed)"
+        return 0  # true - should skip
+    fi
+    return 1  # false - should not skip
+}
+
+reset_checkpoints() {
+    rm -f "${CHECKPOINT_FILE}"
+    info "Installation checkpoints reset"
+}
+
+# Retry logic for network operations
+retry_command() {
+    local max_attempts="${1}"
+    local delay="${2}"
+    shift 2
+    local cmd=("$@")
+    local attempt=1
+
+    while (( attempt <= max_attempts )); do
+        if "${cmd[@]}"; then
+            return 0
+        fi
+
+        if (( attempt < max_attempts )); then
+            warn "Command failed (attempt ${attempt}/${max_attempts}), retrying in ${delay}s..."
+            sleep "${delay}"
+        fi
+        ((attempt++))
+    done
+
+    error "Command failed after ${max_attempts} attempts: ${cmd[*]}"
+    return 1
+}
+
+# Update PATH for current session
+update_path() {
+    # Add common installation directories to PATH
+    local new_paths=(
+        "${HOME}/.local/bin"
+        "/usr/local/bin"
+        "/opt/homebrew/bin"
+        "${HOME}/.cargo/bin"
+    )
+
+    for path_dir in "${new_paths[@]}"; do
+        if [[ -d "${path_dir}" ]] && [[ ":${PATH}:" != *":${path_dir}:"* ]]; then
+            export PATH="${path_dir}:${PATH}"
+            debug "Added to PATH: ${path_dir}"
+        fi
+    done
+
+    # Source Homebrew shellenv if available
+    if [[ -f "/opt/homebrew/bin/brew" ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
+    elif [[ -f "/usr/local/bin/brew" ]]; then
+        eval "$(/usr/local/bin/brew shellenv)" 2>/dev/null || true
+    elif [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" 2>/dev/null || true
+    fi
+}
+
 # Cleanup function
 cleanup() {
     local exit_code=$?
     debug "Cleaning up temporary files..."
-    rm -f /tmp/dotfiles_setup_*
+    rm -f /tmp/dotfiles_setup_* /tmp/Brewfile /tmp/mise_install_* /tmp/homebrew_install_*
+
     if [[ ${exit_code} -ne 0 ]]; then
         error "Installation failed with exit code ${exit_code}"
+        echo
+        warn "To resume installation, simply re-run the setup script"
+        info "To start fresh: rm ${CHECKPOINT_FILE} && re-run setup"
         echo
         info "For help, visit: https://github.com/adamNewell/dotfiles/issues"
     fi
@@ -425,51 +509,70 @@ install_homebrew() {
 
 # Install chezmoi
 install_chezmoi() {
-    # Ensure PATH includes common installation directories
-    export PATH="$HOME/.local/bin:/usr/local/bin:${PATH}"
-    
+    skip_if_completed "install_chezmoi" "chezmoi installation" && return 0
+
+    # Update PATH first
+    update_path
+
     if command -v chezmoi >/dev/null 2>&1; then
         info "chezmoi already installed: $(chezmoi --version | head -n1)"
+        mark_checkpoint "install_chezmoi"
         return 0
     fi
-    
+
     step "Installing chezmoi..."
-    
+
+    local install_success=false
+
     case "${PACKAGE_MANAGER}" in
         brew)
-            brew install chezmoi
+            if retry_command 3 5 brew install chezmoi; then
+                install_success=true
+            fi
             ;;
-        apt)
-            # Use binary install for chezmoi on Ubuntu/Debian
-            install_chezmoi_binary
-            ;;
-        dnf)
-            # Use binary install for chezmoi on Fedora
-            install_chezmoi_binary
+        apt|dnf)
+            # Use binary install for chezmoi on Linux
+            if install_chezmoi_binary; then
+                install_success=true
+            fi
             ;;
         pacman)
-            sudo pacman -S --noconfirm chezmoi
+            if retry_command 3 5 sudo pacman -S --noconfirm chezmoi; then
+                install_success=true
+            fi
             ;;
         winget)
-            winget install twpayne.chezmoi
+            if retry_command 3 5 winget install twpayne.chezmoi; then
+                install_success=true
+            fi
             ;;
         scoop)
-            scoop install chezmoi
+            if retry_command 3 5 scoop install chezmoi; then
+                install_success=true
+            fi
             ;;
         *)
-            install_chezmoi_binary
+            if install_chezmoi_binary; then
+                install_success=true
+            fi
             ;;
     esac
-    
-    # Refresh PATH and verify installation
-    export PATH="$HOME/.local/bin:/usr/local/bin:${PATH}"
-    if ! command -v chezmoi >/dev/null 2>&1; then
+
+    if [[ "${install_success}" != "true" ]]; then
         error "Failed to install chezmoi"
-        info "Please ensure $HOME/.local/bin is in your PATH"
-        exit 1
+        return 1
     fi
-    
+
+    # Refresh PATH and verify installation
+    update_path
+    if ! command -v chezmoi >/dev/null 2>&1; then
+        error "chezmoi was installed but is not accessible in PATH"
+        info "Please ensure $HOME/.local/bin is in your PATH"
+        return 1
+    fi
+
     success "chezmoi installed: $(chezmoi --version | head -n1)"
+    mark_checkpoint "install_chezmoi"
 }
 
 
@@ -732,12 +835,17 @@ install_chezmoi_binary() {
 
 # Install dotfiles
 install_dotfiles() {
+    skip_if_completed "install_dotfiles" "dotfiles installation" && return 0
+
     step "Installing dotfiles configuration..."
-    
+
+    # Update PATH to ensure chezmoi is available
+    update_path
+
     # Determine if we're using local or remote dotfiles
     local use_local=false
     local dotfiles_repo=""
-    
+
     if [[ -d "$HOME/dotfiles" && -f "$HOME/dotfiles/.chezmoi.yaml.tmpl" ]]; then
         use_local=true
         dotfiles_repo="$HOME/dotfiles"
@@ -746,55 +854,59 @@ install_dotfiles() {
         dotfiles_repo="${REPO_URL%.git}"  # Remove .git suffix
         info "Using remote repository: ${REPO_URL}"
     fi
-    
+
+    # Check if chezmoi is already initialized
+    local chezmoi_source_dir="${HOME}/.local/share/chezmoi"
+    local already_initialized=false
+
+    if [[ -d "${chezmoi_source_dir}/.git" ]]; then
+        info "Chezmoi source directory already exists"
+        already_initialized=true
+    fi
+
     # Initialize chezmoi
-    info "Initializing chezmoi..."
-    
-    if [[ "$use_local" == "true" ]]; then
-        # For local dotfiles, ensure clean state first
-        info "Preparing for local chezmoi initialization..."
-        rm -rf "$HOME/.local/share/chezmoi"
-        rm -rf "$HOME/.config/chezmoi"
-        
-        # Initialize chezmoi with the local repository as source
-        if chezmoi init --apply --source="$HOME/dotfiles"; then
-            success "Chezmoi initialized with local dotfiles"
+    if [[ "${already_initialized}" == "false" ]]; then
+        info "Initializing chezmoi..."
+
+        if [[ "$use_local" == "true" ]]; then
+            # For local dotfiles, use source directory
+            if retry_command 2 3 chezmoi init --source="$HOME/dotfiles"; then
+                success "Chezmoi initialized with local dotfiles"
+            else
+                error "Failed to initialize chezmoi with local dotfiles"
+                return 1
+            fi
         else
-            error "Failed to initialize chezmoi with local dotfiles"
-            exit 1
+            # For remote repository, use chezmoi's standard approach
+            if retry_command 3 5 chezmoi init "${REPO_URL}"; then
+                success "Chezmoi initialized with remote repository"
+            else
+                error "Failed to initialize chezmoi with remote repository"
+                return 1
+            fi
         fi
     else
-        # For remote repository, use chezmoi's standard approach
-        info "Using remote repository: ${REPO_URL}"
-        
-        # Ensure clean state before initialization
-        info "Preparing for chezmoi initialization..."
-        rm -rf "$HOME/.local/share/chezmoi"
-        rm -rf "$HOME/.config/chezmoi"
-        
-        # Use chezmoi's standard repository handling
-        info "Initializing chezmoi with repository..."
-        if chezmoi init --apply "${REPO_URL}"; then
-            success "Chezmoi initialized and applied with remote repository"
+        info "Updating existing chezmoi source directory..."
+        if retry_command 2 3 chezmoi update --no-tty; then
+            success "Chezmoi source updated"
         else
-            error "Failed to initialize chezmoi with remote repository"
-            exit 1
+            warn "Failed to update chezmoi source, continuing with existing version"
         fi
     fi
-    
-    # Ensure chezmoi applies all files
-    info "Ensuring all dotfiles are applied..."
-    if chezmoi apply --force; then
+
+    # Apply dotfiles
+    info "Applying dotfiles configuration..."
+    if retry_command 2 3 chezmoi apply --force; then
         success "Dotfiles applied successfully"
-        
+
         # Verify key directories were created
         if [[ -d "$HOME/.config" ]]; then
             success ".config directory populated"
-            
+
             # Check specific important directories
-            local important_dirs=("zsh" "fzf" "git" "nvim" "kitty" "sheldon" "tmux")
+            local important_dirs=("zsh" "git" "mise")
             local missing_count=0
-            
+
             for dir in "${important_dirs[@]}"; do
                 if [[ -d "$HOME/.config/$dir" ]]; then
                     debug "✓ .config/$dir exists"
@@ -803,20 +915,21 @@ install_dotfiles() {
                     ((missing_count++))
                 fi
             done
-            
+
             if [[ $missing_count -eq 0 ]]; then
                 success "All expected configuration directories created"
             else
                 warn "$missing_count configuration directories are missing"
-                info "Run 'chezmoi apply' manually to fix any missing files"
+                info "This may be normal if you haven't installed those tools yet"
             fi
         else
-            error ".config directory not created - chezmoi configuration failed"
-            exit 1
+            warn ".config directory not created yet - this may be normal"
         fi
+
+        mark_checkpoint "install_dotfiles"
     else
         error "Failed to apply dotfiles"
-        exit 1
+        return 1
     fi
 }
 
@@ -826,28 +939,48 @@ install_packages() {
         info "Skipping package installation (--skip-packages specified)"
         return 0
     fi
-    
+
+    skip_if_completed "install_packages" "package installation" && return 0
+
     step "Installing packages..."
-    
-    # Install modern CLI tools first
-    install_modern_cli_tools
-    
+
+    # Update PATH before running package scripts
+    update_path
+
+    # Install modern CLI tools first (if not skipped)
+    if [[ "${SKIP_MODERN_TOOLS}" != "true" ]]; then
+        install_modern_cli_tools
+    fi
+
     # The packages will be installed via chezmoi run scripts
-    # Just ensure the scripts are executable and run them
-    
     local chezmoi_source_dir
-    chezmoi_source_dir="$(chezmoi source-path)"
-    
+    if ! chezmoi_source_dir="$(chezmoi source-path 2>/dev/null)"; then
+        warn "Could not determine chezmoi source directory"
+        return 1
+    fi
+
     if [[ -d "${chezmoi_source_dir}" ]]; then
         info "Package installation will be handled by chezmoi scripts"
         info "Running chezmoi to execute installation scripts..."
-        
-        # Force re-run of installation scripts
-        chezmoi apply --force
-        
-        success "Package installation initiated"
+
+        # Update PATH again before chezmoi runs scripts
+        update_path
+
+        # Apply with retry logic
+        if retry_command 2 5 chezmoi apply --force; then
+            success "Package installation scripts executed"
+            mark_checkpoint "install_packages"
+
+            # Update PATH one more time after packages are installed
+            update_path
+        else
+            warn "Some package installations may have failed"
+            info "You can re-run this script to retry, or run 'chezmoi apply' manually"
+            return 1
+        fi
     else
         warn "Chezmoi source directory not found, skipping package installation"
+        return 1
     fi
 }
 

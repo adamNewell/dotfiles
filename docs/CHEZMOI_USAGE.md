@@ -72,10 +72,7 @@ All chezmoi source files are in `.local/share/chezmoi/`:
 ├── run_once_*.sh.tmpl          # Setup scripts (run once)
 ├── run_onchange_*.sh.tmpl      # Scripts that run when changed
 ├── .chezmoiexternal.yaml       # External file downloads
-├── .chezmoidata.yaml           # Template data
-└── packages/
-    ├── package-definitions.yaml # Package data
-    └── Brewfile.tmpl           # Templated Brewfile
+└── .chezmoidata.yaml           # Template data and package definitions
 ```
 
 ### File Naming Convention
@@ -382,7 +379,7 @@ chezmoi state delete-bucket --bucket=entryState
 
 1. **Edit package definitions**:
    ```bash
-   chezmoi edit ~/.local/share/chezmoi/packages/package-definitions.yaml
+   chezmoi edit ~/.local/share/chezmoi/.chezmoidata.yaml
    ```
 
 2. **Apply changes**:

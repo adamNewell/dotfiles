@@ -186,9 +186,9 @@ test_file_structure() {
     # Scripts
     assert_file_exists "${REPO_ROOT}/.local/share/chezmoi/scripts/package-manager.sh"
     assert_file_exists "${REPO_ROOT}/.local/share/chezmoi/scripts/error-handler.sh"
-    
+
     # Package definitions
-    assert_file_exists "${REPO_ROOT}/.local/share/chezmoi/packages/simplified-packages.yaml"
+    assert_file_exists "${REPO_ROOT}/.local/share/chezmoi/.chezmoidata.yaml"
 }
 
 # Script validation tests

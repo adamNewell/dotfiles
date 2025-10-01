@@ -186,10 +186,10 @@ The dotfiles automatically install and configure Homebrew with a templated Brewf
 
 ```bash
 # Edit package definitions
-chezmoi edit ~/.local/share/chezmoi/packages/package-definitions.yaml
+chezmoi edit ~/.local/share/chezmoi/.chezmoidata.yaml
 
-# Or edit Brewfile template directly
-chezmoi edit ~/.local/share/chezmoi/packages/Brewfile.tmpl
+# Or edit Brewfile template directly (if you have one)
+chezmoi edit ~/.local/share/chezmoi/os/macos/Brewfile.tmpl
 ```
 
 **Install new packages**:
