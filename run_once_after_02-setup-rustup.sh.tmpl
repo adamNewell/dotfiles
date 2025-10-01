@@ -1,0 +1,24 @@
+#!/bin/bash
+# Install Rust via rustup (official installer)
+# https://rustup.rs
+
+set -o pipefail
+
+# Skip if already installed
+if command -v rustup >/dev/null 2>&1 && command -v rustc >/dev/null 2>&1; then
+    echo "Rust already installed: $(rustc --version)"
+    rustup update 2>/dev/null || true
+    exit 0
+fi
+
+# Install rustup via official installer
+echo "Installing Rust via rustup..."
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile default
+
+# Verify
+if [[ -f "${HOME}/.cargo/env" ]]; then
+    source "${HOME}/.cargo/env"
+    if command -v rustc >/dev/null 2>&1; then
+        echo "Rust installed: $(rustc --version)"
+    fi
+fi

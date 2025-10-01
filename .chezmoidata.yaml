@@ -8,7 +8,6 @@ languages:
   nodejs: "latest"
   python: "latest"
   golang: "latest"
-  rustup: "latest"
 
 # Essential CLI tools with cross-platform availability
 cli_tools:

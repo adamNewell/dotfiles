@@ -54,6 +54,18 @@ To update language versions:
 2. Run `chezmoi apply` to regenerate the mise config
 3. Run `mise install` to install/update languages
 
+**Note on Rust:** Rust is managed separately via `rustup` and not managed by mise. This provides better control over:
+- Multiple toolchains (stable, beta, nightly)
+- Cross-compilation targets
+- Component management (clippy, rustfmt, etc.)
+
+To update Rust:
+```bash
+rustup update          # Update all installed toolchains
+rustup install nightly # Install nightly toolchain
+rustup default stable  # Set default toolchain
+```
+
 ### `.chezmoiexternal.yaml`
 Direct binary downloads for tools not available via package managers:
 - age (encryption)
