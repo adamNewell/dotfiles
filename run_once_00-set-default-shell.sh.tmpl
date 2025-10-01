@@ -54,8 +54,15 @@ fi
 
 ZSH_PATH=$(which zsh)
 
-# Check current shell
-CURRENT_SHELL=$(getent passwd "$USER" | cut -d: -f7)
+# Check current shell (cross-platform)
+if [[ "$(uname)" == "Darwin" ]]; then
+    # macOS: use dscl
+    CURRENT_SHELL=$(dscl . -read "/Users/$USER" UserShell | awk '{print $2}')
+else
+    # Linux: use getent
+    CURRENT_SHELL=$(getent passwd "$USER" | cut -d: -f7)
+fi
+
 if [ "$CURRENT_SHELL" = "$ZSH_PATH" ]; then
     echo "✅ Already using zsh as default shell"
     

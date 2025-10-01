@@ -279,9 +279,15 @@ ensure_zsh() {
         echo "${zsh_path}" | sudo tee -a /etc/shells >/dev/null
     fi
     
-    # Check current shell
+    # Check current shell (cross-platform)
     local current_shell
-    current_shell=$(getent passwd "$USER" | cut -d: -f7 || echo "$SHELL")
+    if [[ "$(uname)" == "Darwin" ]]; then
+        # macOS: use dscl
+        current_shell=$(dscl . -read "/Users/$USER" UserShell | awk '{print $2}' || echo "$SHELL")
+    else
+        # Linux: use getent
+        current_shell=$(getent passwd "$USER" | cut -d: -f7 || echo "$SHELL")
+    fi
     
     if [[ "$current_shell" != "$zsh_path" ]]; then
         info "Setting zsh as default shell..."
