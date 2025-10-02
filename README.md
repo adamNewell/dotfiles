@@ -202,6 +202,30 @@ The system tries package managers in this order:
 4. **apt/dnf/pacman** - Linux native
 5. **npm/go** - Language ecosystems
 
+## 🔄 Utility Scripts
+
+### Reconcile Dotfiles
+
+The **[reconcile-dotfiles.sh](bin/README.md)** script helps keep your dotfiles in sync with your actual system:
+
+```bash
+./bin/reconcile-dotfiles.sh
+```
+
+**What it does:**
+- Scans all installed packages on your system (Homebrew, mise, cargo, npm, apt)
+- Compares against `.chezmoidata.yaml` to find packages NOT in your config
+- Shows an interactive list of packages to add
+- Updates `.chezmoidata.yaml` with your selections
+- Commits and pushes changes to your repo
+
+**Use cases:**
+- You installed tools outside of dotfiles: `brew install some-tool` → sync them back
+- Monthly maintenance to catch ad-hoc installations
+- Audit what's installed vs. what's tracked
+
+See **[bin/README.md](bin/README.md)** for detailed documentation.
+
 ## ⚡ Shell Configuration
 
 ### File Organization
