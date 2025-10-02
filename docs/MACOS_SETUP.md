@@ -144,62 +144,30 @@ dock:
 
 ### Homebrew Integration
 
-The dotfiles automatically install and configure Homebrew with a templated Brewfile.
+The dotfiles automatically install and configure Homebrew with a templated Brewfile generated from `.chezmoidata.yaml`.
 
 #### Package Categories
 
-**System Utilities**:
-- curl, wget, tree, parallel
-- pigz, zopfli, p7zip (compression tools)
-- pv (pipe viewer), trash (safe deletion)
-- openssh, mackup (backup tool)
+The packages are defined in `.chezmoidata.yaml` under the `platform_packages.darwin` key. They are organized into the following categories:
 
-**Development Tools**:
-- git, git-extras, git-flow, git-lfs
-- hub (GitHub CLI), tmux, neovim
-- docker, node (latest LTS)
-
-**Shell Enhancement**:
-- bash, zsh, zsh-completions
-- oh-my-posh (prompt)
-- findutils, gnu-sed, grep, gawk (GNU tools)
-
-**CLI Tools** (managed by cross-platform definitions):
-- ripgrep, fd, bat, eza (modern Unix tools)
-- fzf (fuzzy finder), jq/yq (JSON/YAML processors)
-- git-delta (better git diff)
-
-**Applications**:
-- kitty (terminal emulator)
-- firefox@developer-edition
-- obsidian (note-taking)
-- visual-studio-code
-- sublime-text
-
-**Fonts**:
-- font-hack-nerd-font
-- font-meslo-lg-nerd-font
+- **system**: Basic system utilities.
+- **development**: Tools for software development.
+- **shell**: Shell-related tools and enhancements.
+- **applications**: GUI applications.
+- **fonts**: System fonts.
 
 #### Managing Packages
 
-**Add new packages**:
+To add or remove packages, edit the `.chezmoidata.yaml` file:
 
 ```bash
-# Edit package definitions
 chezmoi edit ~/.local/share/chezmoi/.chezmoidata.yaml
-
-# Or edit Brewfile template directly (if you have one)
-chezmoi edit ~/.local/share/chezmoi/os/macos/Brewfile.tmpl
 ```
 
-**Install new packages**:
+Then, apply the changes:
 
 ```bash
-# Re-run package installation
-chezmoi apply --force --include=scripts
-
-# Or manually with Homebrew
-brew bundle --file=~/.local/share/chezmoi/packages/Brewfile
+chezmoi apply
 ```
 
 ## Development Environment

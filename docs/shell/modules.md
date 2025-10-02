@@ -2,184 +2,70 @@
 
 Documentation for the modular Zsh configuration components that extend the core functionality.
 
-## aliases.zsh
+## 01-environment.zsh
 
-> Source: `.config/zsh/aliases.zsh`
+- **Source**: `dot_config/zsh/01-environment.zsh`
+- **Purpose**: Sets up the core environment, including XDG base directories and other fundamental environment variables.
 
-Common command aliases and shortcuts for improved productivity.
+## 02-path.zsh
 
-### Categories
+- **Source**: `dot_config/zsh/02-path.zsh`
+- **Purpose**: Manages the `$PATH` environment variable, adding directories for user binaries, tool-specific paths, and system paths.
 
-1. Git Aliases:
-   ```zsh
-   alias g='git'
-   alias ga='git add'
-   alias gc='git commit'
-   alias gp='git push'
-   ```
+## 03-plugins.zsh
 
-2. Directory Navigation:
-   ```zsh
-   alias ..='cd ..'
-   alias ...='cd ../..'
-   alias ll='ls -lah'
-   alias l='ls -lh'
-   ```
+- **Source**: `dot_config/zsh/03-plugins.zsh`
+- **Purpose**: Loads Zsh plugins using Sheldon.
 
-3. System Commands:
-   ```zsh
-   alias df='df -h'
-   alias du='du -h'
-   alias grep='grep --color=auto'
-   ```
+## 10-completions.zsh
 
-4. Development:
-   ```zsh
-   alias py='python'
-   alias pip='pip3'
-   alias node='node'
-   ```
+- **Source**: `dot_config/zsh/10-completions.zsh`
+- **Purpose**: Configures the shell's autocompletion system.
 
-## exports.zsh
+## 11-history.zsh
 
-> Source: `.config/zsh/exports.zsh`
+- **Source**: `dot_config/zsh/11-history.zsh`
+- **Purpose**: Sets up command history.
 
-Environment variable exports for various tools and settings.
+## 12-options.zsh
 
-### Categories
+- **Source**: `dot_config/zsh/12-options.zsh`
+- **Purpose**: Configures shell behavior and features using `setopt`.
 
-1. Editor Settings:
-   ```zsh
-   export EDITOR='nvim'
-   export VISUAL='nvim'
-   export PAGER='less'
-   ```
+## 13-keybindings.zsh
 
-2. Language Settings:
-   ```zsh
-   export LANG='en_US.UTF-8'
-   export LC_ALL='en_US.UTF-8'
-   ```
+- **Source**: `dot_config/zsh/13-keybindings.zsh`
+- **Purpose**: Sets up custom key bindings.
 
-3. Tool Configurations:
-   ```zsh
-   export FZF_DEFAULT_OPTS='--height 40% --layout=reverse'
-   export BAT_THEME='Dracula'
-   ```
+## 20-tools/
 
-## path.zsh
+- **Source**: `dot_config/zsh/20-tools/`
+- **Purpose**: A directory for tool-specific configurations.
 
-> Source: `.config/zsh/path.zsh`
+## 30-functions/
 
-PATH environment management and modifications.
+- **Source**: `dot_config/zsh/30-functions/`
+- **Purpose**: A directory for custom shell functions.
 
-### Categories
+## 31-aliases.zsh
 
-1. User Binaries:
-   ```zsh
-   path=(
-     $HOME/.local/bin
-     $HOME/bin
-     $path
-   )
-   ```
+- **Source**: `dot_config/zsh/31-aliases.zsh`
+- **Purpose**: Contains common command aliases and shortcuts.
 
-2. Tool-specific Paths:
-   ```zsh
-   path=(
-     $CARGO_HOME/bin
-     $GOPATH/bin
-     $path
-   )
-   ```
+## 90-local.zsh
 
-3. System Paths:
-   ```zsh
-   path=(
-     /usr/local/bin
-     /usr/bin
-     /bin
-     $path
-   )
-   ```
-
-## tools.zsh
-
-> Source: `.config/zsh/tools.zsh`
-
-Development tool configurations and initializations.
-
-### Categories
-
-1. Language Version Managers:
-   ```zsh
-   # Python - pyenv
-   eval "$(pyenv init -)"
-
-   # Node.js - nvm
-   [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
-
-   # Rust - rustup
-   source "$CARGO_HOME/env"
-   ```
-
-2. Build Tools:
-   ```zsh
-   # Homebrew
-   eval "$(/opt/homebrew/bin/brew shellenv)"
-
-   # Make
-   export MAKEFLAGS="-j$(nproc)"
-   ```
-
-## local.zsh
-
-> Source: `.config/zsh/local.zsh`
-
-Machine-specific configurations and private settings.
-
-### Categories
-
-1. Local Settings:
-   ```zsh
-   # Machine-specific aliases
-   alias project='cd ~/Projects/current'
-
-   # Local paths
-   path=($HOME/Work/bin $path)
-   ```
-
-2. Private Configurations:
-   ```zsh
-   # API keys
-   export API_KEY='xxx'
-
-   # Private aliases
-   alias work='cd ~/Work/private'
-   ```
+- **Source**: `dot_config/zsh/90-local.zsh`
+- **Purpose**: For machine-specific configurations and private settings that are not version-controlled.
 
 ## Tips
 
-1. Organization:
-   - Group related aliases together
-   - Comment sections clearly
-   - Use descriptive names
-   - Keep files focused
+1. **Organization**:
+   - Group related settings in the appropriate files.
+   - Use comments to explain complex configurations.
 
-2. Maintenance:
-   - Review aliases regularly
-   - Update paths when needed
-   - Clean up unused exports
-   - Document changes
+2. **Maintenance**:
+   - Review your configuration periodically to remove unused settings.
+   - Keep your documentation up-to-date with your configuration.
 
-3. Performance:
-   - Keep files lightweight
-   - Use lazy loading when possible
-   - Minimize dependencies
-   - Profile load times
-
-4. Security:
-   - Keep sensitive data in local.zsh
-   - Use environment variables
-   - Avoid hardcoding credentials
-   - Check file permissions
+3. **Security**:
+   - Keep sensitive data in `90-local.zsh` and ensure it is not committed to version control.

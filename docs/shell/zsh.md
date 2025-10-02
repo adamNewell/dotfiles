@@ -6,18 +6,21 @@ A modular and well-organized Zsh configuration that provides a powerful and effi
 
 ```
 .config/zsh/
-├── .zshenv          # Environment variables, always sourced first
-├── .zprofile        # Login shell settings
-├── .zshrc           # Interactive shell configuration
-├── aliases.zsh      # Command aliases
-├── exports.zsh      # Environment exports
-├── path.zsh         # PATH modifications
-├── tools.zsh        # Development tools configuration
-├── local.zsh        # Local machine-specific settings
-├── functions/       # Custom Zsh functions
-├── completions/     # Custom completion definitions
-├── plugins/         # Custom plugins
-└── ohmyzsh/         # Oh My Zsh installation
+├── .zprofile
+├── .zshenv
+├── .zshrc
+├── 01-environment.zsh
+├── 01-platform.zsh
+├── 02-path.zsh
+├── 03-plugins.zsh
+├── 10-completions.zsh
+├── 11-history.zsh
+├── 12-options.zsh
+├── 13-keybindings.zsh
+├── 20-tools/
+├── 30-functions/
+├── 31-aliases.zsh
+└── 90-local.zsh
 ```
 
 ## Core Configuration Files
@@ -41,117 +44,76 @@ Login shell configuration, sourced only for login shells:
 
 Main configuration file for interactive shells:
 - Sources modular configuration files
-- Sets up Oh My Zsh
+- Sets up Sheldon for plugin management
 - Configures plugins and themes
 - Sets shell options and key bindings
 - Initializes completions
 
 ## Modular Components
 
-### aliases.zsh
+The Zsh configuration is broken down into a series of modular files, loaded in a specific order to ensure a predictable and maintainable environment.
 
-Common command aliases and shortcuts:
-- Git aliases
-- Directory navigation
-- System commands
-- Utility functions
+### 01-environment.zsh
 
-### exports.zsh
+- **Purpose**: Sets up the core environment, including XDG base directories and other fundamental environment variables.
 
-Environment variable exports:
-- Editor preferences
-- Language settings
-- Tool-specific configurations
-- System preferences
+### 02-path.zsh
 
-### path.zsh
+- **Purpose**: Manages the `$PATH` environment variable, adding directories for user binaries, tool-specific paths, and system paths.
 
-PATH environment management:
-- User binaries
-- System paths
-- Tool-specific paths
-- Custom script directories
+### 03-plugins.zsh
 
-### tools.zsh
+- **Purpose**: Loads Zsh plugins using Sheldon, a fast and declarative plugin manager.
 
-Development tool configurations:
-- Language version managers
-- Build tools
-- Development environments
-- SDK configurations
+### 10-completions.zsh
 
-### local.zsh
+- **Purpose**: Configures the shell's autocompletion system, including enabling and configuring `compinit`.
 
-Machine-specific configurations:
-- Local aliases
-- Custom paths
-- Machine-specific settings
-- Private configurations
+### 11-history.zsh
 
-## Custom Components
+- **Purpose**: Sets up command history with sensible defaults, such as history size and file location.
 
-### functions/
+### 12-options.zsh
 
-Custom Zsh functions directory:
-- Utility functions
-- Custom commands
-- Shell helpers
-- Task automation scripts
+- **Purpose**: Configures shell behavior and features using `setopt`.
 
-### completions/
+### 13-keybindings.zsh
 
-Custom completion definitions:
-- Tool-specific completions
-- Command completions
-- Custom completions
+- **Purpose**: Sets up custom key bindings for navigation, editing, and other actions.
 
-### plugins/
+### 20-tools/
 
-Custom plugin directory:
-- Local plugins
-- Custom extensions
-- Specific functionality
+- **Purpose**: A directory for tool-specific configurations, such as for `git`, `fzf`, and various programming languages.
 
-## Integration
+### 30-functions/
 
-### Oh My Zsh
+- **Purpose**: A directory for custom shell functions, organized by category.
 
-Integrated Oh My Zsh framework:
-- Theme support
-- Plugin management
-- Completion system
-- Framework utilities
+### 31-aliases.zsh
+
+- **Purpose**: Contains common command aliases and shortcuts.
+
+### 90-local.zsh
+
+- **Purpose**: For machine-specific configurations and private settings that are not version-controlled.
+
+## Plugin Management with Sheldon
+
+This configuration uses [Sheldon](https://sheldon.cli.rs/) for Zsh plugin management. Sheldon is a fast, declarative plugin manager that uses a TOML file for configuration.
+
+- **Configuration**: `dot_config/sheldon/plugins.toml`
+- **Usage**: `sheldon lock` to update the plugin cache.
 
 ## Features
 
-1. Shell Experience:
-   - Command history
-   - Tab completion
-   - Directory navigation
-   - Command correction
-
-2. Development Tools:
-   - Language version management
-   - Build tool integration
-   - Development environments
-   - SDK configurations
-
-3. Customization:
-   - Custom functions
-   - Aliases
-   - Key bindings
-   - Machine-specific settings
-
-4. Performance:
-   - Lazy loading
-   - Modular structure
-   - Optimized sourcing
-   - Efficient completions
+- **Modular and Organized**: The configuration is split into logical files, making it easy to manage and customize.
+- **Fast Startup**: By using Sheldon and a well-organized structure, the shell starts quickly.
+- **XDG Compliant**: The configuration follows the XDG Base Directory Specification for a clean home directory.
+- **Customizable**: Easily extendable with custom functions, aliases, and tool configurations.
 
 ## Tips
 
-1. Use `local.zsh` for machine-specific settings
-2. Add custom functions to the functions directory
-3. Keep sensitive information in local.zsh
-4. Use modular files for organization
-5. Leverage Oh My Zsh plugins when available
+- Use `90-local.zsh` for machine-specific settings.
+- Add custom functions to the `30-functions/` directory.
+- Keep sensitive information in `90-local.zsh`.
+- Use the modular files to keep your configuration organized.

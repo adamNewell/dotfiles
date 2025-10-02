@@ -1,178 +1,63 @@
 # Zsh Custom Components
 
-Documentation for custom components and Oh My Zsh integration in the Zsh configuration.
+Documentation for custom components in the Zsh configuration.
 
 ## Custom Functions
 
-> Source: `.config/zsh/functions/`
+> Source: `dot_config/zsh/30-functions/`
 
 Directory containing custom Zsh functions for extended functionality.
 
 ### Organization
 
-1. Function Types:
-   - Utility functions
-   - Git helpers
-   - Project management
-   - System operations
-
-2. File Structure:
-   ```
-   functions/
-   ├── git/           # Git-related functions
-   ├── project/       # Project management
-   ├── system/        # System operations
-   └── utils/         # Utility functions
-   ```
+Functions are organized into files based on their category, such as `archive.zsh`, `directory.zsh`, `fzf.zsh`, etc.
 
 ### Usage Examples
 
-1. Git Functions:
-   ```zsh
-   # Create and switch to new branch
-   function gnb() {
-     git checkout -b "$1"
-   }
-
-   # Clean merged branches
-   function gcm() {
-     git branch --merged | grep -v "\*" | xargs -n 1 git branch -d
-   }
-   ```
-
-2. Project Functions:
-   ```zsh
-   # Create new project directory
-   function mkproject() {
-     mkdir -p "$1" && cd "$1"
-   }
-
-   # Initialize development environment
-   function devinit() {
-     pyenv local 3.10.0
-     python -m venv .venv
-     source .venv/bin/activate
-   }
-   ```
+```zsh
+# Example from archive.zsh
+# Extracts any archive file
+ex() {
+  if [ -f "$1" ] ; then
+    case "$1" in
+      *.tar.bz2)   tar xjf "$1"     ;;
+      *.tar.gz)    tar xzf "$1"     ;;
+      *.bz2)       bunzip2 "$1"     ;;
+      *.rar)       unrar x "$1"     ;;
+      *.gz)        gunzip "$1"      ;;
+      *.tar)       tar xf "$1"      ;;
+      *.tbz2)      tar xjf "$1"     ;;
+      *.tgz)       tar xzf "$1"     ;;
+      *.zip)       unzip "$1"       ;;
+      *.Z)         uncompress "$1"  ;;
+      *.7z)        7z x "$1"        ;;
+      *)           echo "'$1' cannot be extracted via ex()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+```
 
 ## Custom Completions
 
-> Source: `.config/zsh/completions/`
+> Source: `dot_config/zsh/completions/`
 
 Custom completion definitions for commands and functions.
 
 ### Organization
 
-1. Completion Types:
-   - Command completions
-   - Function completions
-   - Tool-specific completions
-   - Custom completions
-
-2. File Structure:
-   ```
-   completions/
-   ├── _git          # Git completions
-   ├── _docker       # Docker completions
-   ├── _custom       # Custom command completions
-   └── _project      # Project-related completions
-   ```
-
-### Examples
-
-1. Command Completion:
-   ```zsh
-   #compdef example-command
-
-   _example-command() {
-     local -a commands
-     commands=(
-       'start:Start the service'
-       'stop:Stop the service'
-       'restart:Restart the service'
-     )
-     _describe 'command' commands
-   }
-   ```
-
-2. Function Completion:
-   ```zsh
-   #compdef mkproject
-
-   _mkproject() {
-     _arguments \
-       '-t[template]:template:(python node rust)' \
-       '-n[name]:project name:'
-   }
-   ```
-
-## Oh My Zsh Integration
-
-> Source: `.config/zsh/ohmyzsh/`
-
-Oh My Zsh framework integration and customization.
-
-### Configuration
-
-1. Theme Setup:
-   ```zsh
-   # Theme configuration
-   ZSH_THEME="robbyrussell"
-   CASE_SENSITIVE="true"
-   HYPHEN_INSENSITIVE="true"
-   ```
-
-2. Plugin Management:
-   ```zsh
-   # Plugin configuration
-   plugins=(
-     git
-     docker
-     kubectl
-     zsh-autosuggestions
-     zsh-syntax-highlighting
-   )
-   ```
-
-### Custom Theme
-
-1. Theme Components:
-   ```zsh
-   # Custom prompt elements
-   PROMPT='${ret_status}%{$fg_bold[green]%}%p %{$fg[cyan]%}%c %{$fg_bold[blue]%}$(git_prompt_info)%{$fg_bold[blue]%}% %{$reset_color%}'
-   ```
-
-2. Git Integration:
-   ```zsh
-   # Git status in prompt
-   ZSH_THEME_GIT_PROMPT_PREFIX="git:(%{$fg[red]%}"
-   ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
-   ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}✗"
-   ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%})"
-   ```
+Completion files are named after the command they provide completions for, e.g., `_gwctl`.
 
 ## Tips
 
-1. Function Organization:
-   - Group related functions
-   - Use descriptive names
-   - Document usage
-   - Include examples
+1. **Function Organization**:
+   - Group related functions into the same file.
+   - Use descriptive names for files and functions.
 
-2. Completion Management:
-   - Keep completions updated
-   - Test with different inputs
-   - Document options
-   - Handle errors
+2. **Completion Management**:
+   - Keep completions updated with the commands they support.
 
-3. Oh My Zsh:
-   - Keep plugins minimal
-   - Update regularly
-   - Customize thoughtfully
-   - Profile performance
-
-4. Maintenance:
-   - Review unused functions
-   - Update documentation
-   - Test completions
-   - Monitor load time
+3. **Maintenance**:
+   - Review unused functions and completions periodically.
+   - Update documentation when adding or changing functions.

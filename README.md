@@ -57,9 +57,19 @@ chezmoi apply
 
 This environment uses specialized package managers for different components:
 
+### 🏠 **chezmoi** - Dotfile Orchestrator
+- **Manages**: All configuration files and coordinates installation scripts
+- **Config**: [.chezmoidata.yaml](.chezmoidata.yaml), [.chezmoiexternal.yaml](.chezmoiexternal.yaml)
+- **Usage**: `chezmoi apply`, `chezmoi update`, `chezmoi edit <file>`
+
+### 🚀 **mise** - Language Version Manager
+- **Manages**: Versions for Node.js, Python, Go, and Rust
+- **Config**: `dot_config/mise/config.toml.tmpl` (generated from `.chezmoidata.yaml`)
+- **Usage**: `mise install`, `mise use <tool>@<version>`
+
 ### 🍺 **Homebrew** - System & CLI Tools (macOS/Linux)
 - **Manages**: System packages, CLI tools, GUI applications (casks), fonts
-- **Config**: [os/macos/Brewfile.tmpl](os/macos/Brewfile.tmpl)
+- **Config**: `os/macos/Brewfile.tmpl` (generated from `.chezmoidata.yaml`)
 - **Usage**: `brew install <package>`, `brew upgrade`, `brew bundle`
 - **Primary package manager** for macOS; installed automatically by setup script
 
@@ -67,20 +77,15 @@ This environment uses specialized package managers for different components:
 - **Manages**: Zsh plugins (syntax highlighting, autosuggestions, completions, themes)
 - **Config**: [dot_config/sheldon/plugins.toml](dot_config/sheldon/plugins.toml)
 - **Usage**: `sheldon lock` (update cache), `sheldon add <plugin>`, `sheldon source` (load)
-- **Why**: Fast, declarative TOML-based configuration; 10x faster than Oh My Zsh
+- **Why**: Fast, declarative TOML-based configuration.
 
 ### 📝 **Neovim Plugins**
 - **lazy.nvim**: Plugin manager for Neovim plugins, colorschemes
-  - **Config**: [dot_config/nvim/lua/plugins/](dot_config/nvim/lua/plugins/)
+  - **Config**: [dot_config/nvim/lua/adamNewell/lazy.lua](dot_config/nvim/lua/adamNewell/lazy.lua)
   - **Usage**: `:Lazy install`, `:Lazy update`, `:Lazy sync`
 - **mason.nvim**: Package manager for LSP servers, DAP servers, linters, formatters
-  - **Config**: Configured within Neovim
+  - **Config**: [dot_config/nvim/lua/adamNewell/plugins/lsp/mason.lua](dot_config/nvim/lua/adamNewell/plugins/lsp/mason.lua)
   - **Usage**: `:Mason`, `:MasonInstall <package>`, `:MasonUpdate`
-
-### 🏠 **chezmoi** - Dotfile Orchestrator
-- **Manages**: All configuration files and coordinates installation scripts
-- **Config**: [.chezmoidata.yaml](.chezmoidata.yaml), [.chezmoiexternal.yaml](.chezmoiexternal.yaml)
-- **Usage**: `chezmoi apply`, `chezmoi update`, `chezmoi edit <file>`
 
 ### Quick Management Commands
 
@@ -114,39 +119,39 @@ nvim +MasonUpdate      # Update LSP servers & tools
 ## 📁 Repository Structure
 
 ```
-dotfiles/
-├── .chezmoidata.yaml               # Package definitions and cross-platform config
-├── .chezmoiexternal.yaml           # Direct binary downloads
-├── dot_config/                     # ~/.config configurations (XDG compliant)
-│   ├── git/                        # Git configuration with commit templates
-│   ├── kitty/                      # Kitty terminal emulator
-│   ├── nvim/                       # Neovim editor configuration
-│   ├── sheldon/                    # Sheldon Zsh plugin manager
-│   ├── tmux/                       # tmux terminal multiplexer
-│   └── zsh/                        # Organized Zsh configuration
-│       ├── 01-environment.zsh      # Environment variables and exports
-│       ├── 02-path.zsh             # PATH configuration
-│       ├── 03-plugins.zsh          # Plugin loading via Sheldon
-│       ├── 10-completions.zsh      # Shell completion settings
-│       ├── 11-history.zsh          # History configuration
-│       ├── 12-options.zsh          # Shell options (setopt)
-│       ├── 13-keybindings.zsh      # Custom key bindings
-│       ├── 20-tools/               # Tool-specific configs
-│       ├── 30-functions/           # Custom shell functions
-│       └── 31-aliases.zsh          # Command aliases
-├── os/macos/                       # macOS-specific configuration
-│   └── Brewfile.tmpl               # Templated Homebrew packages
-├── run_once_*.sh.tmpl              # One-time automated setup scripts
-│   ├── 00-set-default-shell        # Set zsh as default shell
-│   ├── 01-install-mise             # Install mise version manager
-│   ├── 02-install-platform-packages# Platform-specific packages
-│   ├── 03-install-universal-tools  # Cross-platform CLI tools
-│   ├── 05-setup-macos-defaults     # macOS system preferences
-│   └── 99-validate-setup           # Validate installation
-├── run_onchange_*.sh.tmpl          # Re-run when file changes
-│   └── 04-setup-shell-tools        # Shell plugin setup
-├── setup.sh                        # Main installation script
-└── docs/                           # Documentation
+.
+├── .chezmoi.yaml.tmpl
+├── .chezmoidata.yaml
+├── .chezmoiexternal.yaml
+├── .chezmoiignore
+├── dot_config
+│   ├── fzf
+│   ├── git
+│   ├── kitty
+│   ├── mackup
+│   ├── mise
+│   ├── npm
+│   ├── nvim
+│   ├── pip
+│   ├── ripgrep
+│   ├── sheldon
+│   ├── tmux
+│   └── zsh
+├── dot_local
+│   └── private_share
+│       └── oh-my-posh
+├── dot_zshenv
+├── install.sh
+├── os
+│   └── macos
+├── README.md
+├── run_onchange_04-setup-shell-tools.sh.tmpl
+├── run_once_00-set-default-shell.sh.tmpl
+├── run_once_01-install-mise.sh.tmpl
+├── run_once_02-install-platform-packages.sh.tmpl
+├── run_once_03-install-universal-tools.sh.tmpl
+├── run_once_05-setup-macos-defaults.py.tmpl
+└── run_once_99-validate-setup.sh.tmpl
 ```
 ## 🛠️ Automated Setup Scripts
 
@@ -362,19 +367,22 @@ chezmoi apply --force
 ### What's Included
 
 **Development Tools:**
-- mise (asdf replacement) for language version management
-- Node.js, Python, Rust, Go via mise
-- Git with custom aliases and delta diff viewer
-- Neovim with sensible config
+- **mise**: for language version management (Node.js, Python, Rust, Go)
+- **Git**: with custom aliases and delta diff viewer
+- **Neovim**: with a sensible configuration
 
 **Modern CLI Tools:**
-- `eza` - Modern `ls` with colors and icons
-- `ripgrep` - Fast code search
-- `fd` - Modern `find` replacement
-- `bat` - `cat` with syntax highlighting
-- `zoxide` - Smart `cd` with frecency
-- `fzf` - Fuzzy finder for everything
-- `sheldon` - Fast zsh plugin manager
+- **eza**: Modern `ls` with colors and icons
+- **ripgrep**: Fast code search
+- **fd**: Modern `find` replacement
+- **bat**: `cat` with syntax highlighting
+- **zoxide**: Smart `cd` with frecency
+- **fzf**: Fuzzy finder for everything
+- **sheldon**: Fast zsh plugin manager
+- **git-delta**: Better git diff viewer
+- **lazygit**: Terminal UI for git
+- **jq** & **yq**: JSON/YAML processor
+- **tldr**: Simplified man pages
 
 **Shell Environment:**
 - Zsh with numbered, organized configuration files

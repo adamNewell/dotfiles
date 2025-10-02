@@ -33,10 +33,10 @@ Central configuration file defining all package definitions and versions:
 ```yaml
 # Language versions (single source of truth)
 languages:
-  nodejs: "22.11.0"
-  python: "3.12.0"
-  golang: "1.21.0"
-  rust: "latest"  # mise uses rustup under the hood
+  nodejs: latest
+  python: latest
+  golang: latest
+  rust: latest
 
 # CLI tools with package manager options
 cli_tools:
@@ -66,6 +66,10 @@ rustup update          # Update all installed toolchains
 rustup install nightly # Install nightly toolchain
 rustup default stable  # Set default toolchain
 ```
+
+### `bin/reconcile-dotfiles.py`
+
+A utility script that helps keep your `.chezmoidata.yaml` file in sync with the packages installed on your system. See the [script's README](../bin/README.md) for more information.
 
 ### `.chezmoiexternal.yaml`
 Direct binary downloads for tools not available via package managers:
