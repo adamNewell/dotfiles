@@ -2,7 +2,8 @@
 # Validate the complete dotfiles setup
 # Final validation script that runs after all other setup scripts
 
-set -e
+# Don't exit on error - we want to collect all validation results
+set +e
 
 # Colors for output
 RED='\033[0;31m'
@@ -28,12 +29,12 @@ VALIDATION_ERRORS=0
 check_command() {
     local cmd="$1"
     local description="$2"
-    
+
     if command -v "$cmd" >/dev/null 2>&1; then
         success "$description: $cmd available"
     else
         warn "$description: $cmd not found"
-        ((VALIDATION_ERRORS++))
+        VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
     fi
 }
 
@@ -60,22 +61,30 @@ check_command "sheldon" "Zsh plugin manager"
 # Check programming languages (if managed by mise)
 if command -v mise >/dev/null 2>&1; then
     info "📋 Checking mise-managed tools..."
-    
-    # Check if mise tools are available
-    if [[ -f "$HOME/.tool-versions" ]]; then
-        success ".tool-versions file exists"
-        
+
+    # Check if mise config exists (either .tool-versions or config.toml)
+    if [[ -f "$HOME/.tool-versions" ]] || [[ -f "$HOME/.config/mise/config.toml" ]]; then
+        success "mise configuration file exists"
+
         # List installed tools
-        if mise list 2>/dev/null | grep -q "nodejs"; then
+        if mise list 2>/dev/null | grep -q "node"; then
             success "Node.js managed by mise"
         fi
-        
+
         if mise list 2>/dev/null | grep -q "python"; then
             success "Python managed by mise"
         fi
+
+        if mise list 2>/dev/null | grep -q "go"; then
+            success "Go managed by mise"
+        fi
+
+        if mise list 2>/dev/null | grep -q "rust"; then
+            success "Rust managed by mise"
+        fi
     else
-        warn ".tool-versions file not found"
-        ((VALIDATION_ERRORS++))
+        warn "mise configuration file not found (checked .tool-versions and ~/.config/mise/config.toml)"
+        VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
     fi
 fi
 
@@ -118,7 +127,7 @@ if command -v chezmoi >/dev/null 2>&1; then
     fi
 else
     error "chezmoi not found"
-    ((VALIDATION_ERRORS++))
+    VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
 fi
 
 # Summary
@@ -129,9 +138,10 @@ if [[ $VALIDATION_ERRORS -eq 0 ]]; then
     info "  1. Restart your shell or run: exec zsh"
     info "  2. Run 'sheldon lock' to update plugin cache"
     info "  3. Customize configurations as needed"
+    exit 0
 else
     warn "⚠️  Setup completed with $VALIDATION_ERRORS warnings"
     info "Check the warnings above and install missing tools as needed"
+    info "This is normal during CI - some tools may not be needed in test environments"
+    exit 0  # Exit successfully even with warnings - they're informational
 fi
-
-success "Validation complete!"

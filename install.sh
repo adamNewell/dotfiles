@@ -18,7 +18,6 @@ error() { printf "${RED}❌ %s${NC}\n" "$1" >&2; }
 
 # Configuration
 REPO_URL="https://github.com/adamNewell/dotfiles.git"
-CHEZMOI_BIN="${HOME}/.local/bin/chezmoi"
 
 main() {
     echo "╔══════════════════════════════════════════════════════════════╗"
