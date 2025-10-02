@@ -230,7 +230,7 @@ _gwctl() {
                 '--region=[Region to use]:region:(stage na-prod eu-prod)' \
                 '--site=[Site ID]:site ID'
               ;;
-              
+
             # Config commands
             "cfg configDiff")
               _arguments '*:node ID:_files'
@@ -248,7 +248,7 @@ _gwctl() {
             "cfg getNodeConfigFile")
               _arguments '*:node ID'
               ;;
-              
+
             # Gateway commands
             "gateway setConfig")
               _arguments \
@@ -261,7 +261,7 @@ _gwctl() {
             "gateway update")
               _arguments '--version=[Version to update to]:version'
               ;;
-              
+
             # Node commands
             "node getCfg")
               _arguments \
@@ -276,7 +276,7 @@ _gwctl() {
                 '1:node ID' \
                 '--interval=[Polling interval in ms]:interval'
               ;;
-              
+
             # Thread commands
             "thread setPowerLevels")
               _arguments \
@@ -286,7 +286,7 @@ _gwctl() {
             "thread setGatewayTxPower")
               _arguments '--level=[Power level (0-3)]:level:(0 1 2 3)'
               ;;
-              
+
             # Groups commands
             "groups tint")
               _arguments \
@@ -295,19 +295,19 @@ _gwctl() {
                 '--hue=[Hue value]:hue' \
                 '--saturation=[Saturation value]:saturation'
               ;;
-              
+
             # Scenes commands
             "scenes execute")
               _arguments '1:scene ID'
               ;;
-              
+
             # Default completion for commands with a node ID parameter
             "node "*|"nodes "*|"clearsky "*|"skycamera "*)
               # Assume first argument is often a node ID
               # This could be refined further with more specific patterns
               _arguments '1:node ID'
               ;;
-              
+
             *)
               # Default case for commands with no specific completion defined
               _files

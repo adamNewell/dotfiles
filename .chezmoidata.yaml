@@ -1,103 +1,87 @@
-# Universal package definitions for cross-platform installation
-# Used by chezmoi templates to generate platform-specific package lists
-
-# Core development languages (managed via mise)
-# Single source of truth for language versions
-# Templated into ~/.config/mise/config.toml
 languages:
-  nodejs: "latest"
-  python: "latest"
-  golang: "latest"
-  rust: "latest"
-# Essential CLI tools with cross-platform availability
+  nodejs: latest
+  python: latest
+  golang: latest
+  rust: latest
 cli_tools:
-  # Modern file utilities
   eza:
-    cargo: "eza"
-    brew: "eza"
-    apt: "eza"
-    description: "Modern ls replacement with colors and icons"
+    cargo: eza
+    brew: eza
+    apt: eza
+    description: Modern ls replacement with colors and icons
   fd:
-    cargo: "fd-find"
-    brew: "fd"
-    apt: "fd-find"
-    dnf: "fd-find"
-    pacman: "fd"
-    scoop: "fd"
-    description: "Modern find replacement"
+    cargo: fd-find
+    brew: fd
+    apt: fd-find
+    dnf: fd-find
+    pacman: fd
+    scoop: fd
+    description: Modern find replacement
   ripgrep:
-    cargo: "ripgrep"
-    brew: "ripgrep"
-    apt: "ripgrep"
-    dnf: "ripgrep"
-    pacman: "ripgrep"
-    scoop: "ripgrep"
-    description: "Fast grep replacement"
+    cargo: ripgrep
+    brew: ripgrep
+    apt: ripgrep
+    dnf: ripgrep
+    pacman: ripgrep
+    scoop: ripgrep
+    description: Fast grep replacement
   bat:
-    cargo: "bat"
-    brew: "bat"
-    apt: "bat"
-    dnf: "bat"
-    pacman: "bat"
-    scoop: "bat"
-    description: "Cat with syntax highlighting"
+    cargo: bat
+    brew: bat
+    apt: bat
+    dnf: bat
+    pacman: bat
+    scoop: bat
+    description: Cat with syntax highlighting
   zoxide:
-    cargo: "zoxide"
-    brew: "zoxide"
-    apt: "zoxide"
-    dnf: "zoxide"
-    pacman: "zoxide"
-    description: "Smart cd replacement with frecency"
-  # Shell and terminal
+    cargo: zoxide
+    brew: zoxide
+    apt: zoxide
+    dnf: zoxide
+    pacman: zoxide
+    description: Smart cd replacement with frecency
   sheldon:
-    cargo: "sheldon"
-    brew: "sheldon"
-    description: "Fast zsh plugin manager"
-  # Git utilities
+    cargo: sheldon
+    brew: sheldon
+    description: Fast zsh plugin manager
   git-delta:
-    cargo: "git-delta"
-    brew: "git-delta"
-    apt: "git-delta"
-    dnf: "git-delta"
-    scoop: "delta"
-    description: "Better git diff viewer"
+    cargo: git-delta
+    brew: git-delta
+    apt: git-delta
+    dnf: git-delta
+    scoop: delta
+    description: Better git diff viewer
   lazygit:
-    brew: "lazygit"
-    apt: "lazygit"
-    scoop: "lazygit"
-    description: "Terminal UI for git"
-  # Data processing
+    brew: lazygit
+    apt: lazygit
+    scoop: lazygit
+    description: Terminal UI for git
   jq:
-    brew: "jq"
-    apt: "jq"
-    dnf: "jq"
-    pacman: "jq"
-    scoop: "jq"
-    description: "JSON processor"
+    brew: jq
+    apt: jq
+    dnf: jq
+    pacman: jq
+    scoop: jq
+    description: JSON processor
   yq:
-    brew: "yq"
-    go: "github.com/mikefarah/yq/v4@latest"
-    description: "YAML processor"
-  # Documentation and help
+    brew: yq
+    go: github.com/mikefarah/yq/v4@latest
+    description: YAML processor
   tldr:
-    cargo: "tealdeer"
-    npm: "tldr"
-    brew: "tlrc"
-    apt: "tldr"
-    description: "Simplified man pages"
-  # Fuzzy finder and selection
+    cargo: tealdeer
+    npm: tldr
+    brew: tlrc
+    apt: tldr
+    description: Simplified man pages
   fzf:
-    brew: "fzf"
-    apt: "fzf"
-    dnf: "fzf"
-    pacman: "fzf"
-    go: "github.com/junegunn/fzf@latest"
-    description: "Fuzzy finder for command line"
-# Platform-specific system packages
+    brew: fzf
+    apt: fzf
+    dnf: fzf
+    pacman: fzf
+    go: github.com/junegunn/fzf@latest
+    description: Fuzzy finder for command line
 platform_packages:
-  # macOS via Homebrew
   darwin:
-    # Core system utilities
     system:
       - btop
       - curl
@@ -114,7 +98,8 @@ platform_packages:
       - tree
       - wget
       - zopfli
-    # Development tools
+      - gh
+      - shellcheck
     development:
       - docker
       - git
@@ -125,7 +110,6 @@ platform_packages:
       - neovim
       - node
       - tmux
-    # Enhanced shell tools
     shell:
       - bash
       - bash-completion@2
@@ -136,7 +120,6 @@ platform_packages:
       - oh-my-posh
       - zsh
       - zsh-completions
-    # Applications
     applications:
       - angry-ip-scanner
       - bazecor
@@ -150,13 +133,11 @@ platform_packages:
       - visual-studio-code
       - webex
       - zoom
-    # Fonts
+      - slack
     fonts:
       - font-hack-nerd-font
       - font-meslo-lg-nerd-font
-  # Linux distributions
   linux:
-    # Debian/Ubuntu packages
     debian:
       essential:
         - build-essential
@@ -173,7 +154,6 @@ platform_packages:
         - gnupg
         - lsb-release
         - apt-transport-https
-    # Fedora/RHEL packages  
     fedora:
       essential:
         - gcc
@@ -188,7 +168,6 @@ platform_packages:
         - unzip
         - dnf-plugins-core
         - ca-certificates
-    # Arch Linux packages
     arch:
       essential:
         - base-devel
@@ -201,9 +180,7 @@ platform_packages:
         - tree
         - unzip
         - ca-certificates
-  # Windows packages
   windows:
-    # Windows Package Manager (winget)
     winget:
       - Git.Git
       - Neovim.Neovim
@@ -214,7 +191,6 @@ platform_packages:
       - Mozilla.Firefox.DeveloperEdition
       - Obsidian.Obsidian
       - Microsoft.VisualStudioCode
-    # Scoop packages (alternative)
     scoop:
       - git
       - neovim
@@ -227,17 +203,15 @@ platform_packages:
       - curl
       - wget
       - oh-my-posh
-# Package manager priority order
-# First available manager in this list will be used
 package_manager_priority:
-  - mise # Version managers and some CLI tools
-  - cargo # Rust-based CLI tools (fast, reliable)
-  - brew # macOS primary
-  - apt # Debian/Ubuntu
-  - dnf # Fedora/RHEL
-  - pacman # Arch Linux
-  - winget # Windows (modern)
-  - scoop # Windows (community)
-  - npm # Node.js ecosystem tools
-  - pip # Python ecosystem tools
-  - go # Go ecosystem tools
+  - mise
+  - cargo
+  - brew
+  - apt
+  - dnf
+  - pacman
+  - winget
+  - scoop
+  - npm
+  - pip
+  - go

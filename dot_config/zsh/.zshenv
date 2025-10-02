@@ -11,6 +11,10 @@
 : ${XDG_BIN_HOME:=$HOME/.local/bin}
 : ${XDG_LIB_HOME:=$HOME/.local/lib}
 
+# Ensure pip uses XDG locations (exported early so pip picks them up when invoked)
+export PIP_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/pip"
+export PIP_CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/pip/pip.conf"
+
 # =============================================================================
 #                               ZSH Configuration
 # =============================================================================

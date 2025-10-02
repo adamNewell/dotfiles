@@ -18,7 +18,7 @@ warn() { echo -e "${YELLOW}⚠️  $1${NC}"; }
 # Setup sheldon (Zsh plugin manager)
 if command -v sheldon >/dev/null 2>&1; then
     info "🐚 Setting up sheldon plugins..."
-    
+
     # Lock and install plugins
     if sheldon lock 2>/dev/null; then
         success "sheldon plugins locked and installed"
@@ -32,7 +32,7 @@ fi
 # Setup fzf integration (if available)
 if command -v fzf >/dev/null 2>&1; then
     info "🔍 Setting up fzf integration..."
-    
+
     # Find fzf share directory dynamically
     FZF_SHARE=""
     for path in "/opt/homebrew/share/fzf" "/usr/local/share/fzf" "/usr/share/fzf" "$HOME/.fzf"; do
@@ -41,7 +41,7 @@ if command -v fzf >/dev/null 2>&1; then
             break
         fi
     done
-    
+
     if [[ -n "$FZF_SHARE" ]]; then
         success "fzf shell integration available at $FZF_SHARE"
     else
@@ -52,7 +52,7 @@ fi
 # Setup oh-my-posh theme (if available)
 if command -v oh-my-posh >/dev/null 2>&1; then
     info "🎨 oh-my-posh is available"
-    
+
     # Theme will be configured via zsh config
     success "oh-my-posh ready"
 fi

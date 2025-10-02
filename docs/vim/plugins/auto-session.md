@@ -49,4 +49,4 @@ The plugin automatically:
 2. Use manual save before major changes
 3. Can be configured to auto-save more frequently
 4. Integrates well with other plugins like nvim-tree
-5. Helps maintain workflow continuity between sessions 
+5. Helps maintain workflow continuity between sessions

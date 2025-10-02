@@ -35,4 +35,4 @@ function gz() {
     local ratio=$(echo "$gzipsize * 100 / $origsize" | bc -l);
     printf "orig: %d bytes\n" "$origsize";
     printf "gzip: %d bytes (%2.2f%%)\n" "$gzipsize" "$ratio";
-} 
+}

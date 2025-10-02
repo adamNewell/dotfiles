@@ -3,13 +3,13 @@
 # Start an HTTP server from a directory, optionally specifying the port
 function server() {
     local port="${1:-8000}";
-    
+
     # Check if Python 3 is available
     if ! command -v python3 >/dev/null 2>&1; then
         echo "ERROR: Python 3 is required but not installed." >&2
         return 1
     fi
-    
+
     sleep 1 && open "http://localhost:${port}/" &
     # Use Python 3's http.server module instead of deprecated Python 2 SimpleHTTPServer
     # Set the default Content-Type to `text/plain` instead of `application/octet-stream`
@@ -78,11 +78,11 @@ function whereami() {
     # Try wired connection first, if not found use wireless
     local private_ip
     private_ip=$(ipconfig getifaddr en1 || ipconfig getifaddr en0)
-    
+
     # Get public IP using HTTPS and with timeout
     local public_ip
     public_ip=$(curl -s --max-time 5 https://ifconfig.me 2>/dev/null || echo "Failed to fetch")
-    
+
     echo "Private IP: ${private_ip:-No private IP found}"
     echo "Public IP: ${public_ip:-No public IP found}"
-} 
+}

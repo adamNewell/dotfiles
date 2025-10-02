@@ -131,4 +131,4 @@ Main configuration file for interactive shells.
 2. Use .zprofile for machine-specific login tasks
 3. Organize .zshrc with clear sections
 4. Comment configurations for clarity
-5. Use modular files for better maintenance 
+5. Use modular files for better maintenance

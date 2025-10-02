@@ -15,4 +15,7 @@ export PYTHONHISTFILE="$XDG_STATE_HOME/python/history"
 
 # pip configuration
 export PIP_CONFIG_FILE="$XDG_CONFIG_HOME/pip/pip.conf"
-export PIP_LOG_FILE="$XDG_CACHE_HOME/pip/log"
+export PIP_LOG_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/pip/log"
+
+# Ensure pip uses the XDG cache directory for cache and logs
+export PIP_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/pip"

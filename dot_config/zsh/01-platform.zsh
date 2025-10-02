@@ -21,14 +21,14 @@ case "${DOTFILES_OS}" in
         export DOTFILES_IS_MACOS=true
         export DOTFILES_IS_LINUX=false
         export DOTFILES_IS_WINDOWS=false
-        
+
         # macOS-specific settings
         export BROWSER="open"
         export DOTFILES_PACKAGE_MANAGER="brew"
-        
+
         # Detect macOS version
         export DOTFILES_MACOS_VERSION="$(sw_vers -productVersion)"
-        
+
         # Check if Apple Silicon
         if [[ "${DOTFILES_ARCH}" == "arm64" ]]; then
             export DOTFILES_IS_APPLE_SILICON=true
@@ -42,7 +42,7 @@ case "${DOTFILES_OS}" in
         export DOTFILES_IS_LINUX=true
         export DOTFILES_IS_WINDOWS=false
         export DOTFILES_IS_APPLE_SILICON=false
-        
+
         # Detect Linux distribution
         if [[ -f "/etc/os-release" ]]; then
             source "/etc/os-release"
@@ -52,7 +52,7 @@ case "${DOTFILES_OS}" in
             export DOTFILES_LINUX_DISTRO="unknown"
             export DOTFILES_LINUX_VERSION="unknown"
         fi
-        
+
         # Detect package manager
         if command -v apt-get >/dev/null 2>&1; then
             export DOTFILES_PACKAGE_MANAGER="apt"
@@ -65,7 +65,7 @@ case "${DOTFILES_OS}" in
         else
             export DOTFILES_PACKAGE_MANAGER="unknown"
         fi
-        
+
         # Linux-specific settings
         export BROWSER="${BROWSER:-xdg-open}"
         ;;
@@ -75,10 +75,10 @@ case "${DOTFILES_OS}" in
         export DOTFILES_IS_LINUX=false
         export DOTFILES_IS_WINDOWS=true
         export DOTFILES_IS_APPLE_SILICON=false
-        
+
         # Windows-specific settings
         export BROWSER="${BROWSER:-cmd.exe /c start}"
-        
+
         # Detect Windows package manager
         if command -v winget >/dev/null 2>&1; then
             export DOTFILES_PACKAGE_MANAGER="winget"
@@ -154,7 +154,7 @@ get_cache_dir() {
 find_tool_path() {
     local tool="$1"
     local paths=()
-    
+
     case "${tool}" in
         "brew")
             paths=(
@@ -181,14 +181,14 @@ find_tool_path() {
             )
             ;;
     esac
-    
+
     for path in "${paths[@]}"; do
         if [[ -e "${path}" ]]; then
             echo "${path}"
             return 0
         fi
     done
-    
+
     return 1
 }
 

@@ -77,4 +77,4 @@ local signs = {
 2. Use `<leader>ca` to see available code actions (like auto-imports, fixes)
 3. Use `[d` and `]d` to navigate through diagnostics
 4. Use `<leader>rn` for smart renaming across the project
-5. LSP servers are automatically installed when you open a relevant file 
+5. LSP servers are automatically installed when you open a relevant file

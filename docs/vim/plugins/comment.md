@@ -51,4 +51,4 @@ A plugin for smart commenting that supports multiple languages and complex comme
 2. Use with counts: `3gcc` to comment 3 lines
 3. Works with complex files like JSX/TSX
 4. Automatically uses correct comment style for file type
-5. Can be used with dot-repeat for multiple comments 
+5. Can be used with dot-repeat for multiple comments

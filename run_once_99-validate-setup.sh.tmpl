@@ -120,7 +120,7 @@ done
 info "🏠 Checking chezmoi setup..."
 if command -v chezmoi >/dev/null 2>&1; then
     success "chezmoi is available"
-    
+
     # Check if chezmoi source is correct
     if chezmoi source-path | grep -q "{{ .chezmoi.sourceDir }}"; then
         success "chezmoi source path is configured"

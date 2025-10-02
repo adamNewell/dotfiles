@@ -41,4 +41,4 @@ The dashboard is configured with the following sections:
 2. Use the quick actions for common operations
 3. The session restore option helps you continue where you left off
 4. All buttons show the actual keybindings they represent
-5. The dashboard is optimized for fast startup time 
+5. The dashboard is optimized for fast startup time

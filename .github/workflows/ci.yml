@@ -1,251 +1,174 @@
 name: Dotfiles CI/CD
-
 on:
   push:
-    branches: [ main, dev ]
+    branches: [main, dev]
   pull_request:
-    branches: [ main ]
-
+    branches: [main]
 jobs:
   shellcheck:
     name: Shell Script Validation
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: ShellCheck for install script
+        run: 'shellcheck -e SC1091 install.sh
 
-    - name: ShellCheck for install script
-      run: |
-        shellcheck -e SC1091 install.sh
+          '
+      - name: ShellCheck for template scripts
+        run: 'find . -name "*.sh.tmpl" -type f -exec bash -c ''shellcheck -e SC1091,SC2016,SC2148 {} || true'' \;
 
-    - name: ShellCheck for template scripts
-      run: |
-        find . -name "*.sh.tmpl" -type f -exec bash -c 'shellcheck -e SC1091,SC2016,SC2148 {} || true' \;
-        # Template files may have chezmoi template syntax that ShellCheck can't fully parse
+          # Template files may have chezmoi template syntax that ShellCheck can''t fully parse
 
+          '
   syntax-check:
     name: Syntax Validation
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install bash and zsh
+        run: 'sudo apt-get update
 
-    - name: Install bash and zsh
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y bash zsh
+          sudo apt-get install -y bash zsh
 
-    - name: Validate install script
-      run: |
-        bash -n install.sh
+          '
+      - name: Validate install script
+        run: 'bash -n install.sh
 
-    - name: Validate bash template scripts
-      run: |
-        # Basic syntax check for bash templates (may have template syntax)
-        find . -name "*.sh.tmpl" -type f -exec bash -c 'bash -n {} 2>/dev/null || echo "Syntax check skipped for {} (contains templates)"' \;
+          '
+      - name: Validate bash template scripts
+        run: '# Basic syntax check for bash templates (may have template syntax)
 
-    - name: Validate zsh scripts
-      run: |
-        find . -name "*.zsh" -type f -exec zsh -n {} \;
+          find . -name "*.sh.tmpl" -type f -exec bash -c ''bash -n {} 2>/dev/null || echo "Syntax check skipped for {} (contains templates)"'' \;
 
+          '
+      - name: Validate zsh scripts
+        run: 'find . -name "*.zsh" -type f -exec zsh -n {} \;
+
+          '
   chezmoi-validation:
     name: Chezmoi Validation
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-
+        os:
+          - ubuntu-latest
+          - macos-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install chezmoi
+        run: 'sh -c "$(curl -fsLS get.chezmoi.io)"
 
-    - name: Install chezmoi
-      run: |
-        sh -c "$(curl -fsLS get.chezmoi.io)"
+          '
+      - name: Validate chezmoi configuration
+        run: '# Initialize chezmoi with current repo (in CI mode to skip interactive steps)
 
-    - name: Validate chezmoi configuration
-      run: |
-        # Initialize chezmoi with current repo (in CI mode to skip interactive steps)
-        export CI=true
-        ./bin/chezmoi init --apply .
-        ./bin/chezmoi doctor
+          export CI=true
 
-    - name: Test chezmoi data parsing
-      run: |
-        ./bin/chezmoi data
+          ./bin/chezmoi init --apply .
 
-    - name: Validate template syntax
-      run: |
-        # Test basic template functionality
-        ./bin/chezmoi execute-template < /dev/null || echo "Template validation completed"
+          ./bin/chezmoi doctor
 
+          '
+      - name: Test chezmoi data parsing
+        run: './bin/chezmoi data
+
+          '
+      - name: Validate template syntax
+        run: '# Test basic template functionality
+
+          ./bin/chezmoi execute-template < /dev/null || echo "Template validation completed"
+
+          '
   security-scan:
     name: Security Scanning
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Run git-secrets
-      run: |
-        git clone https://github.com/awslabs/git-secrets.git
-        cd git-secrets && sudo make install
-        cd ..
-        git secrets --register-aws
-        git secrets --scan
-        
-    - name: Check for hardcoded credentials
-      run: |
-        # Check for common credential patterns (excluding documentation and test files)
-        ! grep -r -E "(password|secret|key|token)\s*=\s*['\"][^'\"]+['\"]" . \
-          --exclude-dir=.git \
-          --exclude-dir=git-secrets \
-          --exclude-dir=docs \
-          --exclude="*.md" || {
-          echo "Potential hardcoded credentials found"
-          exit 1
-        }
-        
-    - name: Validate external download checksums
-      run: |
-        # Ensure all external downloads have checksums
-        if [ -f ".chezmoiexternal.yaml" ]; then
-          # Check if file has actual download definitions (not just comments)
-          if grep -qE '^\s*".*":\s*$' .chezmoiexternal.yaml; then
-            python3 -c "
-        import yaml
-        import sys
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run git-secrets
+        run: 'git clone https://github.com/awslabs/git-secrets.git
 
-        with open('.chezmoiexternal.yaml', 'r') as f:
-            content = f.read()
-            # Skip template sections for validation
-            lines = [line for line in content.split('\n') if not line.strip().startswith('{{') and not line.strip().startswith('#')]
-            yaml_content = '\n'.join(lines)
+          cd git-secrets && sudo make install
 
-        try:
-            data = yaml.safe_load(yaml_content)
-            if data:
-                missing_checksums = []
-                for path, config in data.items():
-                    if isinstance(config, dict) and 'url' in config:
-                        if 'checksum' not in config:
-                            # Allow .local/bin/chezmoi to skip checksum (latest release)
-                            if path != '.local/bin/chezmoi':
-                                missing_checksums.append(path)
-                if missing_checksums:
-                    print(f'WARNING: {', '.join(missing_checksums)} missing checksums')
-                    sys.exit(1)
-        except yaml.YAMLError as e:
-            print(f'YAML parsing error: {e}')
-            sys.exit(1)
-        "
-          else
-            echo "No external downloads defined, skipping checksum validation"
-          fi
-        else
-          echo ".chezmoiexternal.yaml not found, skipping checksum validation"
-        fi
+          cd ..
 
+          git secrets --register-aws
+
+          git secrets --scan
+
+          '
+      - name: Check for hardcoded credentials
+        run: "# Check for common credential patterns (excluding documentation and test files)\n! grep -r -E \"(password|secret|key|token)\\s*=\\s*['\\\"][^'\\\"]+['\\\"]\" . \\\n  --exclude-dir=.git \\\n  --exclude-dir=git-secrets \\\n  --exclude-dir=docs \\\n  --exclude=\"*.md\" || {\n  echo \"Potential hardcoded credentials found\"\n  exit 1\n}\n"
+      - name: Validate external download checksums
+        run: "# Ensure all external downloads have checksums\nif [ -f \".chezmoiexternal.yaml\" ]; then\n  # Check if file has actual download definitions (not just comments)\n  if grep -qE '^\\s*\".*\":\\s*$' .chezmoiexternal.yaml; then\n    python3 -c \"\nimport yaml\nimport sys\n\nwith open('.chezmoiexternal.yaml', 'r') as f:\n    content = f.read()\n    # Skip template sections for validation\n    lines = [line for line in content.split('\\n') if not line.strip().startswith('{{') and not line.strip().startswith('#')]\n    yaml_content = '\\n'.join(lines)\n\ntry:\n    data = yaml.safe_load(yaml_content)\n    if data:\n        missing_checksums = []\n        for path, config in data.items():\n            if isinstance(config, dict) and 'url' in config:\n                if 'checksum' not in config:\n                    # Allow .local/bin/chezmoi to skip checksum (latest release)\n                    if path != '.local/bin/chezmoi':\n                        missing_checksums.append(path)\n        if missing_checksums:\n            print(f'WARNING: {', '.join(missing_checksums)} missing checksums')\n            sys.exit(1)\nexcept yaml.YAMLError as e:\n    print(f'YAML parsing error: {e}')\n    sys.exit(1)\n\"\n  else\n    echo \"No external downloads defined, skipping checksum validation\"\n  fi\nelse\n  echo \".chezmoiexternal.yaml not found, skipping checksum validation\"\nfi\n"
   documentation:
     name: Documentation Validation
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Check for required documentation
-      run: |
-        # Check for required files
-        required_files=(
-          "README.md"
-          "dot_config/zsh/README.md"
-        )
-
-        for file in "${required_files[@]}"; do
-          if [ ! -f "$file" ]; then
-            echo "Missing required documentation: $file"
-            exit 1
-          fi
-        done
-        
-    - name: Validate markdown syntax
-      uses: DavidAnson/markdownlint-cli2-action@v17
-      with:
-        globs: '**/*.md'
-
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Check for required documentation
+        run: "# Check for required files\nrequired_files=(\n  \"README.md\"\n  \"dot_config/zsh/README.md\"\n)\n\nfor file in \"${required_files[@]}\"; do\n  if [ ! -f \"$file\" ]; then\n    echo \"Missing required documentation: $file\"\n    exit 1\n  fi\ndone\n"
+      - name: Validate markdown syntax
+        uses: DavidAnson/markdownlint-cli2-action@v17
+        with:
+          globs: '**/*.md'
   integration-test:
     name: Integration Testing
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-
+        os:
+          - ubuntu-latest
+          - macos-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Test package manager detection
-      run: |
-        # Test package manager detection (simplified test)
-        echo "Testing package manager detection..."
-        if command -v apt-get >/dev/null 2>&1; then
-          echo "✓ apt package manager detected"
-        elif command -v brew >/dev/null 2>&1; then
-          echo "✓ brew package manager detected"
-        elif command -v dnf >/dev/null 2>&1; then
-          echo "✓ dnf package manager detected"
-        else
-          echo "⚠ No supported package manager detected"
-        fi
-
-    - name: Test chezmoi template rendering
-      run: |
-        # Install chezmoi
-        sh -c "$(curl -fsLS get.chezmoi.io)"
-
-        # Test that templates can render platform-specific values
-        export CI=true
-        if ./bin/chezmoi data | grep -q "os"; then
-          echo "✓ Chezmoi data contains OS information"
-        else
-          echo "✗ Failed to get OS data from chezmoi"
-          exit 1
-        fi
-
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Test package manager detection
+        run: "# Test package manager detection (simplified test)\necho \"Testing package manager detection...\"\nif command -v apt-get >/dev/null 2>&1; then\n  echo \"✓ apt package manager detected\"\nelif command -v brew >/dev/null 2>&1; then\n  echo \"✓ brew package manager detected\"\nelif command -v dnf >/dev/null 2>&1; then\n  echo \"✓ dnf package manager detected\"\nelse\n  echo \"⚠ No supported package manager detected\"\nfi\n"
+      - name: Test chezmoi template rendering
+        run: "# Install chezmoi\nsh -c \"$(curl -fsLS get.chezmoi.io)\"\n\n# Test that templates can render platform-specific values\nexport CI=true\nif ./bin/chezmoi data | grep -q \"os\"; then\n  echo \"✓ Chezmoi data contains OS information\"\nelse\n  echo \"✗ Failed to get OS data from chezmoi\"\n  exit 1\nfi\n"
   performance:
     name: Performance Testing
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install chezmoi and dependencies
+        run: 'sh -c "$(curl -fsLS get.chezmoi.io)"
 
-    - name: Install chezmoi and dependencies
-      run: |
-        sh -c "$(curl -fsLS get.chezmoi.io)"
-        sudo apt-get update
-        sudo apt-get install -y zsh
+          sudo apt-get update
 
-    - name: Install hyperfine
-      run: |
-        wget https://github.com/sharkdp/hyperfine/releases/download/v1.18.0/hyperfine_1.18.0_amd64.deb
-        sudo dpkg -i hyperfine_1.18.0_amd64.deb
+          sudo apt-get install -y zsh
 
-    - name: Benchmark chezmoi apply time
-      run: |
-        # Benchmark how long it takes to apply dotfiles (dry run)
-        export CI=true
-        hyperfine --warmup 2 --min-runs 5 \
-          "./bin/chezmoi apply --dry-run --verbose ." || echo "Benchmark completed"
+          '
+  yaml-format:
+    name: YAML Formatting Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install formatter deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --user ruamel.yaml
+      - name: Run YAML formatter in check mode
+        run: |
+          python ./bin/format_yaml.py --check
+      - name: Install hyperfine
+        run: 'wget https://github.com/sharkdp/hyperfine/releases/download/v1.18.0/hyperfine_1.18.0_amd64.deb
 
-    - name: Benchmark template rendering
-      run: |
-        # Benchmark template execution performance
-        if [ -f "run_once_02-install-platform-packages.sh.tmpl" ]; then
-          hyperfine --warmup 2 --min-runs 10 \
-            "./bin/chezmoi execute-template < run_once_02-install-platform-packages.sh.tmpl > /dev/null" || echo "Benchmark completed"
-        fi
+          sudo dpkg -i hyperfine_1.18.0_amd64.deb
+
+          '
+      - name: Benchmark chezmoi apply time
+        run: "# Benchmark how long it takes to apply dotfiles (dry run)\nexport CI=true\nhyperfine --warmup 2 --min-runs 5 \\\n  \"./bin/chezmoi apply --dry-run --verbose .\" || echo \"Benchmark completed\"\n"
+      - name: Benchmark template rendering
+        run: "# Benchmark template execution performance\nif [ -f \"run_once_02-install-platform-packages.sh.tmpl\" ]; then\n  hyperfine --warmup 2 --min-runs 10 \\\n    \"./bin/chezmoi execute-template < run_once_02-install-platform-packages.sh.tmpl > /dev/null\" || echo \"Benchmark completed\"\nfi"

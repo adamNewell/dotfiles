@@ -96,4 +96,4 @@ ensure_installed = {
 2. Use incremental selection to quickly select code blocks based on the syntax tree
 3. Treesitter parsers are automatically installed when you open a file of that type
 4. The indentation feature provides better auto-indent based on syntax
-5. Auto-tag feature automatically closes HTML/XML tags 
+5. Auto-tag feature automatically closes HTML/XML tags

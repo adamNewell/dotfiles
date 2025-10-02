@@ -3,7 +3,7 @@
 _gwctl_set_config() {
   # Expand the path
   local config_dir=${GWCTL_CONFIG_DIR:+${~GWCTL_CONFIG_DIR}}
-  
+
   # Use the GWCTL_CONFIG_DIR environment variable if it exists
   if [[ -n "$config_dir" && -d "$config_dir" ]]; then
     local -a config_files
@@ -19,4 +19,3 @@ _gwctl_set_config() {
 }
 
 compdef _gwctl_set_config gwctl_set_config
-

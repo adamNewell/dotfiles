@@ -64,4 +64,4 @@ The plugin is configured to:
 2. Use range formatting for partial file formatting
 3. Formatters are automatically installed via Mason
 4. Supports both file and visual selection formatting
-5. Integrates with LSP for additional formatting capabilities 
+5. Integrates with LSP for additional formatting capabilities

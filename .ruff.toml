@@ -1,0 +1,12 @@
+# Repository-level Ruff configuration
+# Allows up to 125 character long lines to match project conventions
+line-length = 125
+exclude = [
+  ".git",
+  "__pycache__",
+  ".venv",
+  ".cache",
+  ".mypy_cache",
+  ".ruff_cache",
+  "node_modules",
+]

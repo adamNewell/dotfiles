@@ -56,4 +56,4 @@ Default navigation keys that work in both Vim and tmux:
 2. Combine with tmux sessions for project management
 3. Create custom layouts for different tasks
 4. Navigate without thinking about the environment
-5. Works with nested tmux sessions 
+5. Works with nested tmux sessions

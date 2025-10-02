@@ -57,4 +57,4 @@ A pretty diagnostics, references, telescope results, quickfix and location list 
 2. Use document diagnostics for focused debugging
 3. Quickfix list is great for search results
 4. Location list works well with LSP references
-5. Todo integration helps track project tasks 
+5. Todo integration helps track project tasks

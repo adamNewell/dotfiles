@@ -154,4 +154,4 @@ Integrated Oh My Zsh framework:
 2. Add custom functions to the functions directory
 3. Keep sensitive information in local.zsh
 4. Use modular files for organization
-5. Leverage Oh My Zsh plugins when available 
+5. Leverage Oh My Zsh plugins when available

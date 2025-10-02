@@ -52,23 +52,23 @@ fi
 # Install Rust-based CLI tools via cargo
 if command -v cargo >/dev/null 2>&1; then
     info "🦀 Installing Rust CLI tools via cargo..."
-    
+
     # List of essential Rust CLI tools
     RUST_TOOLS=(
         "sheldon"         # Zsh plugin manager
         "eza"            # Modern ls replacement
-        "zoxide"         # Smart cd replacement  
+        "zoxide"         # Smart cd replacement
         "ripgrep"        # Fast grep replacement
         "fd-find"        # Modern find replacement
         "bat"            # Cat with syntax highlighting
         "git-delta"      # Better git diff viewer
         "tealdeer"       # tldr client (Rust implementation)
     )
-    
+
     for tool in "${RUST_TOOLS[@]}"; do
         # Extract binary name (remove package suffixes)
         binary_name=$(echo "$tool" | sed 's/-find$//' | sed 's/tealdeer/tldr/')
-        
+
         if ! command -v "$binary_name" >/dev/null 2>&1; then
             info "Installing $tool..."
             if cargo install "$tool"; then
@@ -87,16 +87,16 @@ fi
 # Install Node.js-based tools via npm (if available)
 if command -v npm >/dev/null 2>&1; then
     info "📦 Installing Node.js CLI tools via npm..."
-    
+
     NODE_TOOLS=(
         "tldr"           # Simplified man pages
         "@antfu/ni"      # Universal package manager interface
     )
-    
+
     for tool in "${NODE_TOOLS[@]}"; do
         # Extract binary name for checking
         binary_name=$(echo "$tool" | sed 's/.*\///')
-        
+
         if ! command -v "$binary_name" >/dev/null 2>&1; then
             info "Installing $tool..."
             if npm install -g "$tool"; then
@@ -115,15 +115,15 @@ fi
 # Install Go-based tools (if go is available)
 if command -v go >/dev/null 2>&1; then
     info "🐹 Installing Go CLI tools..."
-    
+
     GO_TOOLS=(
         "github.com/mikefarah/yq/v4@latest"     # YAML processor
         "github.com/junegunn/fzf@latest"        # Fuzzy finder
     )
-    
+
     for tool in "${GO_TOOLS[@]}"; do
         tool_name=$(basename "$(echo "$tool" | cut -d'@' -f1)")
-        
+
         if ! command -v "$tool_name" >/dev/null 2>&1; then
             info "Installing $tool_name..."
             if go install "$tool"; then
@@ -150,7 +150,7 @@ if command -v sheldon >/dev/null 2>&1; then
     fi
 fi
 
-# Initialize zoxide if it was installed  
+# Initialize zoxide if it was installed
 if command -v zoxide >/dev/null 2>&1; then
     info "zoxide installed - will be initialized in shell config"
 fi

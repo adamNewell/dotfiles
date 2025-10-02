@@ -62,4 +62,4 @@ The plugin is configured with default settings:
 2. Hover over Vim functions for documentation
 3. Get type checking for your plugin code
 4. Access full Neovim API documentation
-5. Improves plugin development workflow 
+5. Improves plugin development workflow

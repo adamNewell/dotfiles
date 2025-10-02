@@ -62,4 +62,4 @@ The leader key is set to `<Space>`. Common key bindings are organized by categor
 - `K` - Show hover documentation
 - `<leader>ca` - Code actions
 
-See individual plugin documentation for detailed key bindings and features. 
+See individual plugin documentation for detailed key bindings and features.

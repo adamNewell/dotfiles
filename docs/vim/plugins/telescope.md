@@ -66,4 +66,4 @@ defaults = {
 2. Use `<Tab>` to select multiple items
 3. Type `:Telescope` to see all available pickers
 4. Use `<C-/>` in the telescope window to see all available key bindings
-5. The search is fuzzy by default - you don't need to type the exact string 
+5. The search is fuzzy by default - you don't need to type the exact string

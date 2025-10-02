@@ -48,4 +48,4 @@ A plugin for adding, changing, and removing surroundings (parentheses, brackets,
 2. Works with any motion (e.g., `ys2w` for two words)
 3. Visual mode surround is great for precise selections
 4. Can be used with dot-repeat for multiple changes
-5. Supports HTML/XML tags with `t` as the surround character 
+5. Supports HTML/XML tags with `t` as the surround character

@@ -32,7 +32,7 @@ command -v pyenv >/dev/null 2>&1 && eval "$(pyenv init -)"
 command -v pyenv >/dev/null 2>&1 && eval "$(pyenv virtualenv-init -)"
 
 # oh-my-posh prompt
-if command -v oh-my-posh >/dev/null 2>&1; then    
+if command -v oh-my-posh >/dev/null 2>&1; then
     local theme_path="$XDG_DATA_HOME/oh-my-posh/themes/adamnewell.toml"
     if [[ -f "$theme_path" ]]; then
         eval "$(oh-my-posh init zsh --config $theme_path)"

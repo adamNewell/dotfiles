@@ -54,7 +54,7 @@ node_modules/
 *.sqlite
 *.sqlite3
 
-# Log files  
+# Log files
 *.log
 
 # Backup files
@@ -79,7 +79,7 @@ node_modules/
 
 # Examples of encrypted file naming:
 # Instead of: .ssh/config → Use: private_encrypted_dot_ssh/config.age
-# Instead of: .aws/credentials → Use: private_encrypted_dot_aws/credentials.age 
+# Instead of: .aws/credentials → Use: private_encrypted_dot_aws/credentials.age
 # Instead of: .env → Use: private_encrypted_env.age
 
 # Repository files that should not be copied to home directory

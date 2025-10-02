@@ -84,4 +84,4 @@ The following icons are used to indicate different types of completions:
 2. Documentation for the current item is shown automatically
 3. Snippets can be expanded using `<Tab>` after selection
 4. Path completion works relative to the current file
-5. Buffer completion suggests words from all open buffers 
+5. Buffer completion suggests words from all open buffers

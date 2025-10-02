@@ -49,4 +49,4 @@ A plugin for previewing markdown files in your browser with synchronous scrollin
 2. Use synchronous scrolling to keep preview in sync
 3. Works with GitHub flavored markdown
 4. Supports custom CSS for styling
-5. Can be used with other markdown plugins 
+5. Can be used with other markdown plugins

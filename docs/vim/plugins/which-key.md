@@ -35,4 +35,4 @@ The plugin is configured with the following settings:
 2. The popup will show descriptions for commands where available
 3. Commands are grouped by category for easier navigation
 4. You can press `?` in the popup for more help
-5. The popup will automatically hide when you complete a command 
+5. The popup will automatically hide when you complete a command

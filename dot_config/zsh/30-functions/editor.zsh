@@ -28,4 +28,4 @@ function o() {
     else
         open "$@";
     fi;
-} 
+}

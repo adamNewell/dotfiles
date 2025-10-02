@@ -60,4 +60,4 @@ linters_by_ft = {
 2. Use manual linting when needed with `<leader>l`
 3. Linters are installed via Mason
 4. View results in diagnostic windows
-5. Configure severity levels per linter 
+5. Configure severity levels per linter

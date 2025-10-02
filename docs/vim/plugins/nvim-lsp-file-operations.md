@@ -52,4 +52,4 @@ The plugin works seamlessly with nvim-tree for:
 2. Let the plugin handle reference updates automatically
 3. Works with all LSP rename operations
 4. Maintains project integrity during refactoring
-5. No manual configuration required 
+5. No manual configuration required

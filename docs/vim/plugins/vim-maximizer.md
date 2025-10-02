@@ -28,4 +28,4 @@ A simple plugin that maximizes and restores the current window.
 2. Great for reading code in a split window layout
 3. Works with both vertical and horizontal splits
 4. The original window layout is preserved when toggling
-5. Can be used in combination with other window management commands 
+5. Can be used in combination with other window management commands

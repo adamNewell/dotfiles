@@ -15,10 +15,10 @@ A powerful hotkey daemon for macOS that enables complex keyboard shortcuts and s
    ```bash
    # Start skhd
    brew services start skhd
-   
+
    # Stop skhd
    brew services stop skhd
-   
+
    # Restart skhd
    brew services restart skhd
    ```
@@ -44,13 +44,13 @@ skhd is configured to provide a comprehensive set of keyboard shortcuts for:
    ```skhd
    # Simple hotkey
    alt - h : command
-   
+
    # Complex hotkey with multiple modifiers
    cmd + alt + ctrl - h : command
-   
+
    # Mode-based hotkey
    mode < key > : command
-   
+
    # Key sequence
    a -> b : command
    ```
@@ -66,10 +66,10 @@ skhd is configured to provide a comprehensive set of keyboard shortcuts for:
    ```skhd
    # Mode definition
    :: mode_name @ : notification_command
-   
+
    # Mode entry
    key ; mode_name
-   
+
    # Mode exit
    mode_name < escape > ; default
    ```
@@ -258,7 +258,7 @@ cmd + shift - v : toggle VPN
    ```bash
    # View service logs
    brew services info skhd
-   
+
    # Tail logs
    tail -f /usr/local/var/log/skhd.log
    ```
@@ -275,7 +275,7 @@ cmd + shift - v : toggle VPN
    ```skhd
    # Window focus
    alt - h : yabai -m window --focus west
-   
+
    # Space management
    shift + alt - n : yabai -m space --create
    ```
@@ -284,7 +284,7 @@ cmd + shift - v : toggle VPN
    ```skhd
    # Complex window management
    cmd + alt - c : osascript ~/.config/skhd/scripts/center-window.scpt
-   
+
    # System interactions
    cmd + shift - v : osascript -e 'tell application "System Events" to key code 9 using command down'
    ```
@@ -293,7 +293,7 @@ cmd + shift - v : toggle VPN
    ```skhd
    # Custom utilities
    cmd + shift - w : ~/.config/skhd/scripts/weather.sh
-   
+
    # System management
    cmd + shift - p : ~/.config/skhd/scripts/toggle-vpn.sh
    ```
@@ -357,4 +357,4 @@ cmd + shift - v : toggle VPN
 3. Related Tools:
    - [Yabai](https://github.com/koekeishiya/yabai)
    - [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
-   - [BetterTouchTool](https://folivora.ai/) 
+   - [BetterTouchTool](https://folivora.ai/)

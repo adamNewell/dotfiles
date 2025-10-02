@@ -597,7 +597,7 @@ class Reconciler:
                 )
 
                 # Create commit message
-                commit_msg = f"Update package configuration via reconcile-dotfiles\n\n"
+                commit_msg = "Update package configuration via reconcile-dotfiles\n\n"
                 if changes['mise_versions']:
                     commit_msg += "Mise version updates:\n"
                     for tool, version in changes['mise_versions'].items():

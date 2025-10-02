@@ -33,7 +33,7 @@ Directory containing custom Zsh functions for extended functionality.
    function gnb() {
      git checkout -b "$1"
    }
-   
+
    # Clean merged branches
    function gcm() {
      git branch --merged | grep -v "\*" | xargs -n 1 git branch -d
@@ -46,7 +46,7 @@ Directory containing custom Zsh functions for extended functionality.
    function mkproject() {
      mkdir -p "$1" && cd "$1"
    }
-   
+
    # Initialize development environment
    function devinit() {
      pyenv local 3.10.0
@@ -83,7 +83,7 @@ Custom completion definitions for commands and functions.
 1. Command Completion:
    ```zsh
    #compdef example-command
-   
+
    _example-command() {
      local -a commands
      commands=(
@@ -98,7 +98,7 @@ Custom completion definitions for commands and functions.
 2. Function Completion:
    ```zsh
    #compdef mkproject
-   
+
    _mkproject() {
      _arguments \
        '-t[template]:template:(python node rust)' \
@@ -175,4 +175,4 @@ Oh My Zsh framework integration and customization.
    - Review unused functions
    - Update documentation
    - Test completions
-   - Monitor load time 
+   - Monitor load time

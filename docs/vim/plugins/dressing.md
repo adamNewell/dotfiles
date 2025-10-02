@@ -82,4 +82,4 @@ require('dressing').setup({
 2. Leverage Telescope integration for fuzzy finding
 3. Customize appearance to match your colorscheme
 4. Take advantage of history features
-5. Use relative positioning for better context 
+5. Use relative positioning for better context

@@ -87,4 +87,4 @@ git = {
 1. Use `<leader>ef` to quickly locate current file in the tree
 2. Use `I` to toggle visibility of git ignored files
 3. Use `.` to run file operations on the selected file
-4. Use `<Tab>` for previewing files without leaving the tree 
+4. Use `<Tab>` for previewing files without leaving the tree

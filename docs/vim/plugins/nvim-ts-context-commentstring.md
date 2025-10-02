@@ -80,4 +80,4 @@ Works seamlessly with:
 2. Respects nested language contexts
 3. No manual configuration needed
 4. Improves commenting in complex files
-5. Maintains proper comment syntax 
+5. Maintains proper comment syntax

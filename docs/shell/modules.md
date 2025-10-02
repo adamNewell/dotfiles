@@ -115,10 +115,10 @@ Development tool configurations and initializations.
    ```zsh
    # Python - pyenv
    eval "$(pyenv init -)"
-   
+
    # Node.js - nvm
    [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
-   
+
    # Rust - rustup
    source "$CARGO_HOME/env"
    ```
@@ -127,7 +127,7 @@ Development tool configurations and initializations.
    ```zsh
    # Homebrew
    eval "$(/opt/homebrew/bin/brew shellenv)"
-   
+
    # Make
    export MAKEFLAGS="-j$(nproc)"
    ```
@@ -144,7 +144,7 @@ Machine-specific configurations and private settings.
    ```zsh
    # Machine-specific aliases
    alias project='cd ~/Projects/current'
-   
+
    # Local paths
    path=($HOME/Work/bin $path)
    ```
@@ -153,7 +153,7 @@ Machine-specific configurations and private settings.
    ```zsh
    # API keys
    export API_KEY='xxx'
-   
+
    # Private aliases
    alias work='cd ~/Work/private'
    ```
@@ -182,4 +182,4 @@ Machine-specific configurations and private settings.
    - Keep sensitive data in local.zsh
    - Use environment variables
    - Avoid hardcoding credentials
-   - Check file permissions 
+   - Check file permissions

@@ -24,4 +24,3 @@ alias ll="ls"
 
 # Update all Docker images
 alias docker-images-update="docker images | grep -v REPOSITORY | awk '{print $1}' | xargs -L1 docker pull"
-

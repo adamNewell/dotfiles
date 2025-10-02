@@ -61,7 +61,7 @@ When adding new configuration files:
 20-tools/docker.zsh         # Docker utilities
 21-tools/kubernetes.zsh     # Kubernetes tools
 
-# Custom functions (30-39 range)  
+# Custom functions (30-39 range)
 30-functions/text.zsh       # Text manipulation functions
 30-functions/development.zsh # Development workflow helpers
 

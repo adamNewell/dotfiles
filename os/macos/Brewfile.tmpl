@@ -13,7 +13,7 @@ tap 'noahgorstein/tap'          # Additional tools
 brew '{{ $pkg }}'
 {{- end }}
 
-# Development tools  
+# Development tools
 {{- range $pkg := (index .platform_packages.darwin "development") }}
 brew '{{ $pkg }}'
 {{- end }}

@@ -69,4 +69,4 @@ The plugin integrates with:
 2. No configuration needed for basic usage
 3. Respects complex JSX structures
 4. Updates nested tags correctly
-5. Maintains proper XML/HTML structure 
+5. Maintains proper XML/HTML structure

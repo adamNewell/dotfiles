@@ -41,4 +41,4 @@ A plugin for quick text substitution with motions and visual selections.
 2. Can be combined with any text object or motion
 3. Use with count for multiple substitutions
 4. Works seamlessly with dot-repeat
-5. Preserves your unnamed register for other operations 
+5. Preserves your unnamed register for other operations

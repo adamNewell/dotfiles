@@ -5,7 +5,7 @@
 # Don't exit on error - handle errors explicitly
 set -o pipefail
 
-# Colors for output  
+# Colors for output
 readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 readonly YELLOW='\033[1;33m'
@@ -24,24 +24,24 @@ info "🍎 Installing macOS packages via Homebrew..."
 # Install Homebrew if not present
 if ! command -v brew >/dev/null 2>&1; then
     info "Installing Homebrew..."
-    
+
     # Download and verify Homebrew installer
     readonly HOMEBREW_INSTALLER="/tmp/homebrew_install_$$.sh"
     trap 'rm -f "${HOMEBREW_INSTALLER}"' EXIT
-    
+
     if ! curl -fsSL "https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh" -o "${HOMEBREW_INSTALLER}"; then
         error "Failed to download Homebrew installer"
         exit 1
     fi
-    
+
     # Basic verification
     if ! head -n1 "${HOMEBREW_INSTALLER}" | grep -q '^#!/bin/bash'; then
         error "Downloaded file does not appear to be a valid shell script"
         exit 1
     fi
-    
+
     /bin/bash "${HOMEBREW_INSTALLER}"
-    
+
     # Add to PATH for this session
     if [[ -f "/opt/homebrew/bin/brew" ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -82,7 +82,7 @@ info "🐧 Installing Linux packages..."
 if command -v apt-get >/dev/null 2>&1; then
     PM="apt"
 elif command -v dnf >/dev/null 2>&1; then
-    PM="dnf" 
+    PM="dnf"
 elif command -v yum >/dev/null 2>&1; then
     PM="yum"
 elif command -v pacman >/dev/null 2>&1; then
@@ -131,23 +131,23 @@ info "🪟 Installing Windows packages..."
 
 if command -v winget >/dev/null 2>&1; then
     info "Using winget for package installation..."
-    
+
     # Install packages from package definitions
 {{- range $pkg := (index .platform_packages.windows "winget") }}
     winget install {{ $pkg }}
 {{- end }}
-    
+
     success "Windows packages installed via winget"
-    
+
 elif command -v scoop >/dev/null 2>&1; then
     info "Using scoop for package installation..."
-    
+
     # Install packages from package definitions
     scoop install \
 {{- range $pkg := (index .platform_packages.windows "scoop") }}
         {{ $pkg }} \
 {{- end }}
-    
+
     success "Windows packages installed via scoop"
 else
     warn "Neither winget nor scoop found. Please install one of them first."

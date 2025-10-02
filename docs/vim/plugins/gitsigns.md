@@ -70,4 +70,4 @@ LazyGit provides a full terminal UI for Git operations.
 2. Use `<leader>hp` to preview changes before staging
 3. Use `ih` text object with operations like `dih` (delete hunk) or `vih` (select hunk)
 4. LazyGit provides a more comprehensive interface for complex git operations
-5. Use `<leader>hB` to toggle inline blame for the current file 
+5. Use `<leader>hB` to toggle inline blame for the current file

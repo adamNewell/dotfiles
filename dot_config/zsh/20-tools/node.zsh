@@ -15,7 +15,7 @@ for nvm_path in "$HOME/.nvm" "/opt/homebrew/opt/nvm" "/usr/local/opt/nvm" "/usr/
         [[ -s "$nvm_path/bash_completion" ]] && source "$nvm_path/bash_completion"
         break
     fi
-done 
+done
 
 # Node.js settings
 export NODE_REPL_HISTORY_FILE="$XDG_STATE_HOME/node/repl_history"

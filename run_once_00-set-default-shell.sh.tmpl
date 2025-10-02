@@ -32,7 +32,7 @@ fi
 # Check if zsh is installed, if not install it
 if ! command -v zsh >/dev/null 2>&1; then
     echo "📦 zsh not found. Installing zsh..."
-    
+
     # Detect OS and install zsh
     if [[ "$(uname)" == "Darwin" ]]; then
         # macOS
@@ -63,13 +63,13 @@ if ! command -v zsh >/dev/null 2>&1; then
         echo "❌ Unsupported operating system"
         exit 1
     fi
-    
+
     # Verify installation
     if ! command -v zsh >/dev/null 2>&1; then
         echo "❌ Failed to install zsh"
         exit 1
     fi
-    
+
     echo "✅ zsh installed successfully"
 fi
 

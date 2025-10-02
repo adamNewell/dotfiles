@@ -22,4 +22,4 @@ fzf_comprun() {
       ssh)        fzf --preview 'dig {}'            "$@" ;;
       *)          fzf --preview "--preview 'bat -n --color=always --line-range :500 {}'" "$@" ;;
     esac
-} 
+}

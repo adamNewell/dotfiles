@@ -46,4 +46,4 @@ function example() {
 2. Helps identify nesting levels in complex code
 3. Makes it easier to spot indentation errors
 4. Works well with both spaces and tabs
-5. Improves code readability without being intrusive 
+5. Improves code readability without being intrusive

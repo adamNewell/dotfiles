@@ -127,7 +127,7 @@ Templates have access to these variables:
 # macOS-specific configuration
 export HOMEBREW_PREFIX="/opt/homebrew"
 {{- else if eq .chezmoi.os "linux" }}
-# Linux-specific configuration  
+# Linux-specific configuration
 export PATH="/usr/local/bin:$PATH"
 {{- end }}
 ```

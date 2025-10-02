@@ -56,4 +56,4 @@ Mason uses the following icons in its UI:
 2. Use the Mason UI to manage installed packages
 3. Check Mason log for installation issues
 4. Packages are installed globally for all projects
-5. Integrates seamlessly with nvim-lspconfig 
+5. Integrates seamlessly with nvim-lspconfig

@@ -58,4 +58,4 @@ The plugin integrates with nvim-cmp to provide smart pairing during completion:
 2. Respects treesitter syntax for smart pairing
 3. Can be customized per filetype
 4. Automatically skips over closing characters
-5. Fast and lightweight implementation 
+5. Fast and lightweight implementation

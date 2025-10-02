@@ -18,7 +18,7 @@ source_if_exists() { [[ -f "$1" && -r "$1" ]] && source "$1" }
 # =============================================================================
 # Load configurations in order of dependency:
 # 1. Foundation layer - Environment, PATH, plugins
-# 2. Initialization layer - Shell behavior, completions, history, keybindings  
+# 2. Initialization layer - Shell behavior, completions, history, keybindings
 # 3. Tools layer - Development tools and their configurations
 # 4. Interface layer - Functions, aliases, and user customizations
 
@@ -27,7 +27,7 @@ for config_file in "$ZDOTDIR"/0[1-3]-*.zsh(N); do
     source_if_exists "$config_file"
 done
 
-# Initialization Layer (10-13)  
+# Initialization Layer (10-13)
 for config_file in "$ZDOTDIR"/1[0-3]-*.zsh(N); do
     source_if_exists "$config_file"
 done
