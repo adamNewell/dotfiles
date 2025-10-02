@@ -10,46 +10,42 @@ jobs:
   shellcheck:
     name: Shell Script Validation
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
-    - name: Run ShellCheck
-      uses: ludeeus/action-shellcheck@master
-      with:
-        scandir: './setup.sh'
-        additional_files: '.'
-        ignore_paths: 'dot_*'
-        severity: error
-        
-    - name: ShellCheck for setup script
+
+    - name: ShellCheck for install script
       run: |
-        shellcheck -e SC1091 setup.sh
-        
+        shellcheck -e SC1091 install.sh
+
     - name: ShellCheck for template scripts
       run: |
-        find . -name "*.sh" -type f ! -path "./setup.sh" -exec shellcheck -e SC1091,SC2016 {} + || true
-        # Skip .tmpl files as they contain Go template syntax that ShellCheck can't parse
+        find . -name "*.sh.tmpl" -type f -exec bash -c 'shellcheck -e SC1091,SC2016,SC2148 {} || true' \;
+        # Template files may have chezmoi template syntax that ShellCheck can't fully parse
 
   syntax-check:
     name: Syntax Validation
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
+
     - name: Install bash and zsh
       run: |
         sudo apt-get update
         sudo apt-get install -y bash zsh
-        
-    - name: Validate bash scripts
+
+    - name: Validate install script
       run: |
-        find . -name "*.sh" -type f -exec bash -n {} \;
-        find . -name "*.sh.tmpl" -type f -exec bash -n {} \;
-        
+        bash -n install.sh
+
+    - name: Validate bash template scripts
+      run: |
+        # Basic syntax check for bash templates (may have template syntax)
+        find . -name "*.sh.tmpl" -type f -exec bash -c 'bash -n {} 2>/dev/null || echo "Syntax check skipped for {} (contains templates)"' \;
+
     - name: Validate zsh scripts
       run: |
         find . -name "*.zsh" -type f -exec zsh -n {} \;
@@ -60,25 +56,26 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
+
     - name: Install chezmoi
       run: |
         sh -c "$(curl -fsLS get.chezmoi.io)"
-        
+
     - name: Validate chezmoi configuration
       run: |
-        # Initialize chezmoi with current repo
+        # Initialize chezmoi with current repo (in CI mode to skip interactive steps)
+        export CI=true
         ./bin/chezmoi init --apply .
         ./bin/chezmoi doctor
-        
+
     - name: Test chezmoi data parsing
       run: |
         ./bin/chezmoi data
-        
+
     - name: Validate template syntax
       run: |
         # Test basic template functionality

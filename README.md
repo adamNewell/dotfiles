@@ -4,31 +4,26 @@ Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/), featuring aut
 
 ## 🚀 Quick Start
 
-### One-Line Installation
+### One-Command Installation
+
+Bootstrap a new system with a single command:
 
 ```bash
-# Full environment setup (recommended for new machines)
-curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/setup.sh | bash
+sh -c "$(curl -fsLS https://raw.githubusercontent.com/adamNewell/dotfiles/main/install.sh)"
 ```
 
 This will:
-1. Install chezmoi dotfile manager
+1. Install chezmoi (if not already installed)
 2. Clone this repository to `~/.local/share/chezmoi`
-3. Install platform-specific packages (Homebrew/apt/dnf/winget)
-4. Set up zsh as your default shell
-5. Install development tools (mise, Rust, Node.js, Python, Go)
-6. Install modern CLI tools (ripgrep, fd, bat, eza, zoxide, etc.)
-7. Apply dotfile configurations to your home directory
+3. Apply dotfiles to your home directory
+4. Run automated setup scripts that:
+   - Set zsh as your default shell
+   - Install platform-specific package manager (Homebrew on macOS)
+   - Install development tools via mise (Rust, Node.js, Python, Go)
+   - Install modern CLI tools (ripgrep, fd, bat, eza, zoxide, etc.)
+   - Apply platform-specific configurations
 
-### Installation Options
-
-```bash
-# Minimal installation (essential tools only)
-curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/setup.sh | bash -s -- --minimal
-
-# Configuration only (skip package installation)
-curl -fsSL https://raw.githubusercontent.com/adamNewell/dotfiles/main/setup.sh | bash -s -- --skip-packages
-```
+**That's it!** Chezmoi handles the entire setup automatically using `run_once_*` and `run_onchange_*` scripts.
 
 ### Post-Installation
 
@@ -40,6 +35,9 @@ exec zsh
 
 # Verify setup
 chezmoi doctor
+
+# Check what was installed
+chezmoi managed
 ```
 
 ### Updating
