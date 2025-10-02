@@ -9,7 +9,6 @@ languages:
   python: "latest"
   golang: "latest"
   rust: "latest"
-
 # Essential CLI tools with cross-platform availability
 cli_tools:
   # Modern file utilities
@@ -18,7 +17,6 @@ cli_tools:
     brew: "eza"
     apt: "eza"
     description: "Modern ls replacement with colors and icons"
-    
   fd:
     cargo: "fd-find"
     brew: "fd"
@@ -27,7 +25,6 @@ cli_tools:
     pacman: "fd"
     scoop: "fd"
     description: "Modern find replacement"
-    
   ripgrep:
     cargo: "ripgrep"
     brew: "ripgrep"
@@ -36,7 +33,6 @@ cli_tools:
     pacman: "ripgrep"
     scoop: "ripgrep"
     description: "Fast grep replacement"
-    
   bat:
     cargo: "bat"
     brew: "bat"
@@ -45,7 +41,6 @@ cli_tools:
     pacman: "bat"
     scoop: "bat"
     description: "Cat with syntax highlighting"
-    
   zoxide:
     cargo: "zoxide"
     brew: "zoxide"
@@ -53,13 +48,11 @@ cli_tools:
     dnf: "zoxide"
     pacman: "zoxide"
     description: "Smart cd replacement with frecency"
-
   # Shell and terminal
   sheldon:
     cargo: "sheldon"
     brew: "sheldon"
     description: "Fast zsh plugin manager"
-    
   # Git utilities
   git-delta:
     cargo: "git-delta"
@@ -68,13 +61,11 @@ cli_tools:
     dnf: "git-delta"
     scoop: "delta"
     description: "Better git diff viewer"
-    
   lazygit:
     brew: "lazygit"
     apt: "lazygit"
     scoop: "lazygit"
     description: "Terminal UI for git"
-    
   # Data processing
   jq:
     brew: "jq"
@@ -83,12 +74,10 @@ cli_tools:
     pacman: "jq"
     scoop: "jq"
     description: "JSON processor"
-    
   yq:
     brew: "yq"
     go: "github.com/mikefarah/yq/v4@latest"
     description: "YAML processor"
-    
   # Documentation and help
   tldr:
     cargo: "tealdeer"
@@ -96,7 +85,6 @@ cli_tools:
     brew: "tlrc"
     apt: "tldr"
     description: "Simplified man pages"
-
   # Fuzzy finder and selection
   fzf:
     brew: "fzf"
@@ -105,73 +93,67 @@ cli_tools:
     pacman: "fzf"
     go: "github.com/junegunn/fzf@latest"
     description: "Fuzzy finder for command line"
-
 # Platform-specific system packages
 platform_packages:
   # macOS via Homebrew
   darwin:
     # Core system utilities
     system:
+      - btop
       - curl
-      - wget
-      - tree
+      - mackup
+      - openssh
+      - p7zip
       - parallel
       - pigz
-      - zopfli
-      - p7zip
+      - pv
       - screen
       - ssh-copy-id
       - thefuck
       - trash
-      - pv
-      - openssh
-      - mackup
-      - btop
-      
+      - tree
+      - wget
+      - zopfli
     # Development tools
     development:
+      - docker
       - git
       - git-extras
       - git-flow
       - git-lfs
       - hub
-      - tmux
       - neovim
-      - docker
       - node
-      
+      - tmux
     # Enhanced shell tools
     shell:
       - bash
       - bash-completion@2
-      - zsh
-      - zsh-completions
-      - oh-my-posh
       - findutils
+      - gawk
       - gnu-sed
       - grep
-      - gawk
-      
+      - oh-my-posh
+      - zsh
+      - zsh-completions
     # Applications
     applications:
-      - kitty
-      - firefox@developer-edition
-      - obsidian
       - angry-ip-scanner
       - bazecor
+      - betterdisplay
       - discord
+      - drawio
+      - firefox@developer-edition
+      - kitty
+      - obsidian
       - sublime-text
       - visual-studio-code
-      - drawio
       - webex
       - zoom
-      
     # Fonts
     fonts:
       - font-hack-nerd-font
       - font-meslo-lg-nerd-font
-      
-
   # Linux distributions
   linux:
     # Debian/Ubuntu packages
@@ -191,7 +173,6 @@ platform_packages:
         - gnupg
         - lsb-release
         - apt-transport-https
-        
     # Fedora/RHEL packages  
     fedora:
       essential:
@@ -207,7 +188,6 @@ platform_packages:
         - unzip
         - dnf-plugins-core
         - ca-certificates
-        
     # Arch Linux packages
     arch:
       essential:
@@ -221,7 +201,6 @@ platform_packages:
         - tree
         - unzip
         - ca-certificates
-
   # Windows packages
   windows:
     # Windows Package Manager (winget)
@@ -235,7 +214,6 @@ platform_packages:
       - Mozilla.Firefox.DeveloperEdition
       - Obsidian.Obsidian
       - Microsoft.VisualStudioCode
-      
     # Scoop packages (alternative)
     scoop:
       - git
@@ -249,18 +227,17 @@ platform_packages:
       - curl
       - wget
       - oh-my-posh
-
 # Package manager priority order
 # First available manager in this list will be used
 package_manager_priority:
-  - mise      # Version managers and some CLI tools
-  - cargo     # Rust-based CLI tools (fast, reliable)
-  - brew      # macOS primary
-  - apt       # Debian/Ubuntu
-  - dnf       # Fedora/RHEL
-  - pacman    # Arch Linux
-  - winget    # Windows (modern)
-  - scoop     # Windows (community)
-  - npm       # Node.js ecosystem tools
-  - pip       # Python ecosystem tools
-  - go        # Go ecosystem tools
+  - mise # Version managers and some CLI tools
+  - cargo # Rust-based CLI tools (fast, reliable)
+  - brew # macOS primary
+  - apt # Debian/Ubuntu
+  - dnf # Fedora/RHEL
+  - pacman # Arch Linux
+  - winget # Windows (modern)
+  - scoop # Windows (community)
+  - npm # Node.js ecosystem tools
+  - pip # Python ecosystem tools
+  - go # Go ecosystem tools
