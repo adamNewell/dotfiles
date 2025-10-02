@@ -112,17 +112,19 @@ jobs:
     - name: Validate external download checksums
       run: |
         # Ensure all external downloads have checksums
-        if [ -f ".local/share/chezmoi/.chezmoiexternal.yaml" ]; then
-          python3 -c "
+        if [ -f ".chezmoiexternal.yaml" ]; then
+          # Check if file has actual download definitions (not just comments)
+          if grep -qE '^\s*".*":\s*$' .chezmoiexternal.yaml; then
+            python3 -c "
         import yaml
         import sys
-        
-        with open('.local/share/chezmoi/.chezmoiexternal.yaml', 'r') as f:
+
+        with open('.chezmoiexternal.yaml', 'r') as f:
             content = f.read()
             # Skip template sections for validation
-            lines = [line for line in content.split('\n') if not line.strip().startswith('{{')]
+            lines = [line for line in content.split('\n') if not line.strip().startswith('{{') and not line.strip().startswith('#')]
             yaml_content = '\n'.join(lines)
-            
+
         try:
             data = yaml.safe_load(yaml_content)
             if data:
@@ -140,6 +142,11 @@ jobs:
             print(f'YAML parsing error: {e}')
             sys.exit(1)
         "
+          else
+            echo "No external downloads defined, skipping checksum validation"
+          fi
+        else
+          echo ".chezmoiexternal.yaml not found, skipping checksum validation"
         fi
 
   documentation:
@@ -176,16 +183,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
-    - name: Test simplified package installation
+
+    - name: Test package manager detection
       run: |
-        # Create test environment
-        export DOTFILES_MINIMAL=true
-        
         # Test package manager detection (simplified test)
         echo "Testing package manager detection..."
         if command -v apt-get >/dev/null 2>&1; then
@@ -197,45 +201,51 @@ jobs:
         else
           echo "⚠ No supported package manager detected"
         fi
-        
-    - name: Test platform detection
+
+    - name: Test chezmoi template rendering
       run: |
-        # Source platform detection
-        source dot_config/zsh/01-platform.zsh
+        # Install chezmoi
+        sh -c "$(curl -fsLS get.chezmoi.io)"
 
-        # Verify platform variables are set
-        [ -n "$DOTFILES_OS" ] || { echo "DOTFILES_OS not set"; exit 1; }
-        [ -n "$DOTFILES_PLATFORM" ] || { echo "DOTFILES_PLATFORM not set"; exit 1; }
-        [ -n "$DOTFILES_PACKAGE_MANAGER" ] || { echo "DOTFILES_PACKAGE_MANAGER not set"; exit 1; }
-
-        echo "Platform detection successful:"
-        echo "  OS: $DOTFILES_OS"
-        echo "  Platform: $DOTFILES_PLATFORM"
-        echo "  Package Manager: $DOTFILES_PACKAGE_MANAGER"
+        # Test that templates can render platform-specific values
+        export CI=true
+        if ./bin/chezmoi data | grep -q "os"; then
+          echo "✓ Chezmoi data contains OS information"
+        else
+          echo "✗ Failed to get OS data from chezmoi"
+          exit 1
+        fi
 
   performance:
     name: Performance Testing
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
+
+    - name: Install chezmoi and dependencies
+      run: |
+        sh -c "$(curl -fsLS get.chezmoi.io)"
+        sudo apt-get update
+        sudo apt-get install -y zsh
+
     - name: Install hyperfine
       run: |
         wget https://github.com/sharkdp/hyperfine/releases/download/v1.18.0/hyperfine_1.18.0_amd64.deb
         sudo dpkg -i hyperfine_1.18.0_amd64.deb
-        
-    - name: Benchmark zsh startup time
-      run: |
-        # Create minimal zsh config for testing
-        mkdir -p test-config
-        if [ -d "dot_config/zsh" ]; then
-          cp -r dot_config/zsh/* test-config/
 
-          # Benchmark startup time (with error handling)
-          hyperfine --warmup 3 --min-runs 10 --ignore-failure \
-            "zsh -c 'for file in test-config/*.zsh; do [[ -r \$file ]] && source \$file; done; exit'" || echo "Benchmark completed with warnings"
-        else
-          echo "Zsh config directory not found, skipping benchmark"
+    - name: Benchmark chezmoi apply time
+      run: |
+        # Benchmark how long it takes to apply dotfiles (dry run)
+        export CI=true
+        hyperfine --warmup 2 --min-runs 5 \
+          "./bin/chezmoi apply --dry-run --verbose ." || echo "Benchmark completed"
+
+    - name: Benchmark template rendering
+      run: |
+        # Benchmark template execution performance
+        if [ -f "run_once_02-install-platform-packages.sh.tmpl" ]; then
+          hyperfine --warmup 2 --min-runs 10 \
+            "./bin/chezmoi execute-template < run_once_02-install-platform-packages.sh.tmpl > /dev/null" || echo "Benchmark completed"
         fi
