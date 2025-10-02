@@ -18,7 +18,11 @@ return {
     vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
       group = lint_augroup,
       callback = function()
-        lint.try_lint()
+        -- Only lint if the buffer has a name and the file exists
+        local bufname = vim.api.nvim_buf_get_name(0)
+        if bufname ~= "" and vim.fn.filereadable(bufname) == 1 then
+          lint.try_lint()
+        end
       end,
     })
 

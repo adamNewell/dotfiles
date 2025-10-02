@@ -7,10 +7,7 @@ return {
   config = function()
     -- import mason
     local mason = require("mason")
-
-    -- import mason-lspconfig
     local mason_lspconfig = require("mason-lspconfig")
-
     local mason_tool_installer = require("mason-tool-installer")
 
     -- enable mason and configure icons
@@ -24,8 +21,8 @@ return {
       },
     })
 
+    -- setup mason-lspconfig AFTER mason
     mason_lspconfig.setup({
-      -- list of servers for mason to install
       ensure_installed = {
         "html",
         "cssls",
@@ -33,12 +30,63 @@ return {
         "lua_ls",
         "pyright",
         "rust_analyzer",
-        "language-server-bitbake",
-        "docker_language_server",
+        "dockerls",
         "docker_compose_language_service",
         "eslint",
-        "gh_actions_ls",
-        "stylua"
+      },
+      automatic_installation = true,
+      handlers = {
+        -- Default handler for all servers
+        function(server_name)
+          require("lspconfig")[server_name].setup({
+            capabilities = require("cmp_nvim_lsp").default_capabilities(),
+          })
+        end,
+
+        -- Server-specific configurations
+        ["svelte"] = function()
+          require("lspconfig").svelte.setup({
+            capabilities = require("cmp_nvim_lsp").default_capabilities(),
+            on_attach = function(client, bufnr)
+              vim.api.nvim_create_autocmd("BufWritePost", {
+                pattern = { "*.js", "*.ts" },
+                callback = function(ctx)
+                  client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
+                end,
+              })
+            end,
+          })
+        end,
+
+        ["graphql"] = function()
+          require("lspconfig").graphql.setup({
+            capabilities = require("cmp_nvim_lsp").default_capabilities(),
+            filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
+          })
+        end,
+
+        ["emmet_ls"] = function()
+          require("lspconfig").emmet_ls.setup({
+            capabilities = require("cmp_nvim_lsp").default_capabilities(),
+            filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
+          })
+        end,
+
+        ["lua_ls"] = function()
+          require("lspconfig").lua_ls.setup({
+            capabilities = require("cmp_nvim_lsp").default_capabilities(),
+            settings = {
+              Lua = {
+                diagnostics = {
+                  globals = { "vim" },
+                },
+                completion = {
+                  callSnippet = "Replace",
+                },
+              },
+            },
+          })
+        end,
       },
     })
 
