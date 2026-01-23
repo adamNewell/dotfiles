@@ -1,7 +1,8 @@
 languages:
+  golang: latest
+  node: "25"
   nodejs: latest
   python: latest
-  golang: latest
   rust: latest
 cli_tools:
   eza:
@@ -100,6 +101,10 @@ platform_packages:
       - zopfli
       - gh
       - shellcheck
+      - fastfetch
+      - nvm
+      - pnpm
+      - uv
     development:
       - docker
       - git
@@ -134,6 +139,9 @@ platform_packages:
       - webex
       - zoom
       - slack
+      - docker-desktop
+      - spotify
+      - tunnelblick
     fonts:
       - font-hack-nerd-font
       - font-meslo-lg-nerd-font

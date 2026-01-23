@@ -14,3 +14,13 @@
 # Set $ZDOTDIR here to be able to store your other Zsh dotfiles
 # outside of $HOME.
 ZDOTDIR=$XDG_CONFIG_HOME/zsh
+. "$HOME/.local/share/cargo/env"
+
+if [[ -d "/opt/homebrew/bin" ]]; then
+    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+elif [[ -d "/usr/local/bin" ]]; then
+    export PATH="/usr/local/bin:$PATH"
+fi
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"

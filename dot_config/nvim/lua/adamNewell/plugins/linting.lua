@@ -10,7 +10,7 @@ return {
       javascriptreact = { "eslint_d" },
       typescriptreact = { "eslint_d" },
       svelte = { "eslint_d" },
-      python = { "pylint" },
+      python = { "ruff" },
     }
 
     local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
@@ -21,7 +21,10 @@ return {
         -- Only lint if the buffer has a name and the file exists
         local bufname = vim.api.nvim_buf_get_name(0)
         if bufname ~= "" and vim.fn.filereadable(bufname) == 1 then
-          lint.try_lint()
+          -- Small delay for BufWritePost to ensure file is fully written
+          vim.defer_fn(function()
+            lint.try_lint()
+          end, 100)
         end
       end,
     })

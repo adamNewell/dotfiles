@@ -65,6 +65,10 @@ node_modules/
 .gitconfig
 .gitignore_global
 
+# Local-only files (contain machine-specific secrets)
+.config/git/config
+.config/npm/npmrc
+
 # Zsh files (handled by ZDOTDIR)
 .zshrc
 
